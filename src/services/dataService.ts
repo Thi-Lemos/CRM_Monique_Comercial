@@ -187,13 +187,42 @@ export const dataService = {
     }
 
     const config = await this.getCriterios();
+    
+    // Otimização N+1: Carregar todas as produções em lote em uma única consulta
+    let allProds: ProducaoMensal[] = [];
+    if (supabase) {
+      try {
+        const { data, error } = await supabase
+          .from('producao')
+          .select('*');
+        if (!error && data) {
+          allProds = data as ProducaoMensal[];
+        }
+      } catch (err) {
+        console.warn('Erro ao obter todas as produções do Supabase, usando local:', err);
+      }
+    }
+    if (allProds.length === 0) {
+      allProds = getLocalDB().producao;
+    }
+
+    // Criar mapa de relacionamento parceiro_id -> produções
+    const prodsMap: { [key: string]: ProducaoMensal[] } = {};
+    for (const prod of allProds) {
+      if (!prodsMap[prod.parceiro_id]) {
+        prodsMap[prod.parceiro_id] = [];
+      }
+      prodsMap[prod.parceiro_id].push(prod);
+    }
+
     const finalParceiros: Parceiro[] = [];
     const fmtCur = (val: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(val);
 
     for (let p of list) {
       p.propostas_pagas_semana = p.propostas_pagas_semana !== undefined && p.propostas_pagas_semana !== null ? p.propostas_pagas_semana : 0;
       
-      const prods = await this.getProducao(p.id);
+      // Otimização: Ler do mapa em memória ao invés de bater no banco para cada parceiro
+      const prods = prodsMap[p.id] || [];
       const diasLimites = config.limites;
       const hoje = new Date();
       const dataCriacao = p.created_at ? new Date(p.created_at) : hoje;
