@@ -1,12 +1,12 @@
 :root {
   --primary-color: #0fb882; /* Verde Esmeralda Prata Digital */
   --primary-hover: #0da372; /* Verde um pouco mais escuro para hover no tema claro */
-  --secondary-color: #0f172a; /* Slate escuro para excelente contraste */
-  --bg-color: #f4fbf7; /* Fundo suave levemente esmeralda */
-  --card-bg: rgba(255, 255, 255, 0.75); /* Vidro translúcido claro */
-  --border-color: rgba(15, 184, 130, 0.12); /* Borda esmeralda translúcida sutil */
-  --text-main: #334155; /* Slate médio-escuro para excelente leitura */
-  --text-muted: #64748b; /* Slate médio para textos secundários */
+  --secondary-color: #172554; /* Azul Marinho Escuro para excelente contraste */
+  --bg-color: #eefdf9; /* Fundo suave levemente esmeralda clareado */
+  --card-bg: rgba(10, 90, 60, 0.18); /* Verde escuro translúcido glass */
+  --border-color: rgba(15, 184, 130, 0.22); /* Verde esmeralda translúcido sutil */
+  --text-main: #0f172a; /* Azul marinho escuro para leitura perfeita */
+  --text-muted: #475569; /* Azul marinho acinzentado para textos secundários */
   --success: #10b981;
   --success-bg: rgba(16, 185, 129, 0.12);
   --danger: #ef4444;
@@ -23,8 +23,8 @@
   --radius-lg: 20px;
   --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 
-  /* Gradiente especial para o fundo geral */
-  --bg-gradient: linear-gradient(135deg, #f4fbf7 0%, #edf4f0 50%, #e2ece6 100%);
+  /* Gradiente do verde da paleta para o verde mais claro vindo de inferior direita para superior esquerda */
+  --bg-gradient: linear-gradient(315deg, #a0f2d6 0%, #eefdf9 100%);
   --glass-blur: blur(20px);
 }
 
@@ -102,22 +102,23 @@ a {
 
 /* Cards Premium */
 .card {
-  background-color: var(--card-bg);
-  border: 1px solid var(--border-color);
+  background: rgba(10, 90, 60, 0.16);
+  border: 1px solid rgba(15, 184, 130, 0.25);
   border-radius: var(--radius-md);
   padding: 1.5rem;
   box-shadow: var(--shadow-sm);
   transition: var(--transition);
   position: relative;
   overflow: hidden;
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 
 .card:hover {
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-md), 0 0 0 1px rgba(15, 184, 130, 0.3);
   transform: translateY(-2px);
-  border-color: rgba(15, 184, 130, 0.3);
+  border-color: rgba(15, 184, 130, 0.4);
+  background: rgba(10, 90, 60, 0.22);
 }
 
 .card-title {
@@ -220,12 +221,12 @@ a {
 .table-container {
   width: 100%;
   overflow-x: auto;
-  border: 1px solid var(--border-color);
+  border: 1px solid rgba(15, 184, 130, 0.25);
   border-radius: var(--radius-md);
-  background-color: var(--card-bg);
+  background: rgba(10, 90, 60, 0.14);
   box-shadow: var(--shadow-sm);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 
 .table {
@@ -236,11 +237,11 @@ a {
 }
 
 .table th {
-  background-color: rgba(15, 184, 130, 0.05);
-  color: var(--text-muted);
-  font-weight: 600;
+  background-color: rgba(15, 184, 130, 0.12);
+  color: #0a3d2c;
+  font-weight: 700;
   padding: 1rem;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid rgba(15, 184, 130, 0.2);
   text-transform: uppercase;
   font-size: 0.75rem;
   letter-spacing: 0.05em;
@@ -248,7 +249,7 @@ a {
 
 .table td {
   padding: 1rem;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid rgba(15, 184, 130, 0.1);
   color: var(--text-main);
   vertical-align: middle;
 }
@@ -258,7 +259,8 @@ a {
 }
 
 .table tr:hover td {
-  background-color: rgba(15, 184, 130, 0.04);
+  background-color: rgba(15, 184, 130, 0.14);
+  color: #0a2e1f;
 }
 
 /* Badges / Etiquetas */

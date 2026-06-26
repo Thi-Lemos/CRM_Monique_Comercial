@@ -256,8 +256,16 @@ export default function Dashboard() {
           >
             <Upload size={16} /> Importar Planilha Semanal
           </button>
-          <div className="badge badge-info" style={{ padding: '0.5rem 1rem', fontSize: '0.8rem' }}>
-            Atualizado: Junho/2026
+          <div style={{ 
+            padding: '0.5rem 1rem', 
+            fontSize: '0.8rem', 
+            fontWeight: 700, 
+            color: '#dc2626',
+            backgroundColor: 'rgba(220, 38, 38, 0.08)',
+            border: '1px solid rgba(220, 38, 38, 0.2)',
+            borderRadius: 'var(--radius-sm)'
+          }}>
+            Atualizado: {new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}
           </div>
         </div>
       </div>
@@ -716,16 +724,17 @@ export default function Dashboard() {
             <table className="table">
               <thead>
                 <tr>
-                  <th>Pos.</th>
-                  <th>Parceiro</th>
-                  <th style={{ textAlign: 'right' }}>Vol. Prata</th>
-                  <th style={{ textAlign: 'right' }}>Conc. %</th>
-                  <th style={{ textAlign: 'center' }}>Score</th>
+                  <th style={{ backgroundColor: 'var(--secondary-color)', color: '#ffffff', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>Pos.</th>
+                  <th style={{ backgroundColor: 'var(--secondary-color)', color: '#ffffff', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>Parceiro</th>
+                  <th style={{ backgroundColor: 'var(--secondary-color)', color: '#ffffff', borderBottom: '1px solid rgba(255, 255, 255, 0.15)', textAlign: 'right' }}>Vol. Prata</th>
+                  <th style={{ backgroundColor: 'var(--secondary-color)', color: '#ffffff', borderBottom: '1px solid rgba(255, 255, 255, 0.15)', textAlign: 'right' }}>Conc. %</th>
+                  <th style={{ backgroundColor: 'var(--secondary-color)', color: '#ffffff', borderBottom: '1px solid rgba(255, 255, 255, 0.15)', textAlign: 'center' }}>Score</th>
                 </tr>
               </thead>
               <tbody>
-                {parceiros
+                {[...parceiros]
                   .sort((a, b) => b.vol_prata_mensal - a.vol_prata_mensal)
+                  .slice(0, 5)
                   .map((p, index) => {
                     const conc = p.vol_total_mensal > 0 ? (p.vol_prata_mensal / p.vol_total_mensal) * 100 : 0;
                     return (
@@ -1327,11 +1336,13 @@ function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs }: 
       height: '100%',
       backgroundColor: 'rgba(7, 12, 20, 0.7)',
       display: 'flex',
-      alignItems: 'center',
+      alignItems: 'flex-start',
       justifyContent: 'center',
       zIndex: 1000,
       backdropFilter: 'blur(10px)',
-      WebkitBackdropFilter: 'blur(10px)'
+      WebkitBackdropFilter: 'blur(10px)',
+      paddingTop: '3rem',
+      overflowY: 'auto'
     }}>
       <div className="card animate-scale" style={{
         width: '100%',
@@ -1340,9 +1351,10 @@ function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs }: 
         display: 'flex',
         flexDirection: 'column',
         padding: 0,
-        backgroundColor: 'rgba(15, 23, 42, 0.85)',
-        border: '1px solid rgba(255, 255, 255, 0.1)',
-        boxShadow: 'var(--shadow-lg)'
+        backgroundColor: 'rgba(209, 250, 237, 0.95)',
+        border: '1px solid rgba(15, 184, 130, 0.35)',
+        boxShadow: 'var(--shadow-lg)',
+        margin: '0 1rem 3rem'
       }}>
         {/* Cabeçalho */}
         <div style={{

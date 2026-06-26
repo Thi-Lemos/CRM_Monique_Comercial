@@ -194,21 +194,24 @@ export default function ExcelImporter({ onClose, onImportSuccess }: ExcelImporte
       height: '100%',
       backgroundColor: 'rgba(15, 23, 42, 0.6)',
       display: 'flex',
-      alignItems: 'center',
+      alignItems: 'flex-start',
       justifyContent: 'center',
       zIndex: 1000,
-      backdropFilter: 'blur(4px)'
+      backdropFilter: 'blur(4px)',
+      paddingTop: '3rem',
+      overflowY: 'auto'
     }}>
       <div className="card modal-card animate-scale" style={{
         width: '100%',
         maxWidth: '650px',
-        maxHeight: '90vh',
+        maxHeight: '85vh',
         display: 'flex',
         flexDirection: 'column',
         padding: 0,
         boxShadow: 'var(--shadow-lg)',
-        backgroundColor: 'rgba(15, 23, 42, 0.85)',
-        border: '1px solid rgba(255, 255, 255, 0.1)'
+        backgroundColor: 'rgba(209, 250, 237, 0.95)',
+        border: '1px solid rgba(15, 184, 130, 0.35)',
+        margin: '0 1rem 3rem'
       }}>
         {/* Cabeçalho */}
         <div style={{

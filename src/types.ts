@@ -3,7 +3,6 @@ export interface Parceiro {
   nome: string;
   cnpj: string;
   contato_principal: string;
-  whatsapp: string;
   email?: string;
   modelo_atuacao: 'Físico' | 'Digital' | 'Pastinhas' | 'Híbrido';
   area_geografica: 'Local' | 'Regional' | 'Estadual' | 'Nacional';

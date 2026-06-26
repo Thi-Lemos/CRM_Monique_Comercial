@@ -45,7 +45,6 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
     nome: '',
     cnpj: '',
     contato_principal: '',
-    whatsapp: '',
     email: '',
     modelo_atuacao: 'Físico' as any,
     area_geografica: 'Local' as any,
@@ -128,7 +127,6 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
       nome: partner.nome,
       cnpj: partner.cnpj || '',
       contato_principal: partner.contato_principal,
-      whatsapp: partner.whatsapp,
       email: partner.email || '',
       modelo_atuacao: partner.modelo_atuacao,
       area_geografica: partner.area_geografica,
@@ -216,7 +214,6 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
           <div>
             <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>CONTATO PRINCIPAL</span>
             <p style={{ fontWeight: 650, color: 'var(--secondary-color)', fontSize: '0.95rem', marginTop: '0.15rem' }}>{partner.contato_principal}</p>
-            <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{partner.whatsapp}</p>
           </div>
           <div>
             <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>VOL. PRATA ATUAL</span>
@@ -329,16 +326,16 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
             </button>
           </h3>
 
-          <div className="table-container" style={{ border: 'none', boxShadow: 'none' }}>
-            <table className="table">
+          <div className="table-container" style={{ border: 'none', boxShadow: 'none', overflowX: 'auto' }}>
+            <table className="table" style={{ fontSize: '0.8rem' }}>
               <thead>
                 <tr>
-                  <th>Mês/Ano</th>
-                  <th style={{ textAlign: 'right' }}>FGTS</th>
-                  <th style={{ textAlign: 'right' }}>CLT</th>
-                  <th style={{ textAlign: 'right' }}>CGV / Pix</th>
-                  <th style={{ textAlign: 'right' }}>Total Prata</th>
-                  <th style={{ textAlign: 'right' }}>Conc. %</th>
+                  <th style={{ backgroundColor: 'var(--secondary-color)', color: '#ffffff', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>Mês/Ano</th>
+                  <th style={{ backgroundColor: 'var(--secondary-color)', color: '#ffffff', borderBottom: '1px solid rgba(255, 255, 255, 0.15)', textAlign: 'right' }}>FGTS</th>
+                  <th style={{ backgroundColor: 'var(--secondary-color)', color: '#ffffff', borderBottom: '1px solid rgba(255, 255, 255, 0.15)', textAlign: 'right' }}>CLT</th>
+                  <th style={{ backgroundColor: 'var(--secondary-color)', color: '#ffffff', borderBottom: '1px solid rgba(255, 255, 255, 0.15)', textAlign: 'right' }}>CGV / Pix</th>
+                  <th style={{ backgroundColor: 'var(--secondary-color)', color: '#ffffff', borderBottom: '1px solid rgba(255, 255, 255, 0.15)', textAlign: 'right' }}>Total Prata</th>
+                  <th style={{ backgroundColor: 'var(--secondary-color)', color: '#ffffff', borderBottom: '1px solid rgba(255, 255, 255, 0.15)', textAlign: 'right' }}>Conc. %</th>
                 </tr>
               </thead>
               <tbody>
@@ -357,11 +354,11 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
                     }
                     return (
                       <tr key={p.id}>
-                        <td style={{ fontWeight: 650 }}>{p.mes.toString().padStart(2, '0')}/{p.ano}</td>
-                        <td style={{ textAlign: 'right' }}>{formatCurrency(p.vol_fgts)}</td>
-                        <td style={{ textAlign: 'right' }}>{formatCurrency(p.vol_clt)}</td>
-                        <td style={{ textAlign: 'right' }}>{formatCurrency(p.vol_cgv + p.vol_pix)}</td>
-                        <td style={{ textAlign: 'right', fontWeight: 650, color: 'var(--primary-color)' }}>{formatCurrency(p.vol_total!)}</td>
+                        <td style={{ fontWeight: 650, whiteSpace: 'nowrap' }}>{p.mes.toString().padStart(2, '0')}/{p.ano}</td>
+                        <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>{formatCurrency(p.vol_fgts)}</td>
+                        <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>{formatCurrency(p.vol_clt)}</td>
+                        <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>{formatCurrency(p.vol_cgv + p.vol_pix)}</td>
+                        <td style={{ textAlign: 'right', fontWeight: 650, color: 'var(--primary-color)', whiteSpace: 'nowrap' }}>{formatCurrency(p.vol_total!)}</td>
                         <td style={{ textAlign: 'right', fontWeight: 600 }}>{conc.toFixed(0)}%</td>
                       </tr>
                     );
@@ -392,11 +389,11 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
             <table className="table">
               <thead>
                 <tr>
-                  <th>Semana</th>
-                  <th style={{ textAlign: 'right' }}>FGTS</th>
-                  <th style={{ textAlign: 'right' }}>CLT</th>
-                  <th style={{ textAlign: 'right' }}>CGV / Pix</th>
-                  <th style={{ textAlign: 'right' }}>Total</th>
+                  <th style={{ backgroundColor: 'var(--secondary-color)', color: '#ffffff', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>Semana</th>
+                  <th style={{ backgroundColor: 'var(--secondary-color)', color: '#ffffff', borderBottom: '1px solid rgba(255, 255, 255, 0.15)', textAlign: 'right' }}>FGTS</th>
+                  <th style={{ backgroundColor: 'var(--secondary-color)', color: '#ffffff', borderBottom: '1px solid rgba(255, 255, 255, 0.15)', textAlign: 'right' }}>CLT</th>
+                  <th style={{ backgroundColor: 'var(--secondary-color)', color: '#ffffff', borderBottom: '1px solid rgba(255, 255, 255, 0.15)', textAlign: 'right' }}>CGV / Pix</th>
+                  <th style={{ backgroundColor: 'var(--secondary-color)', color: '#ffffff', borderBottom: '1px solid rgba(255, 255, 255, 0.15)', textAlign: 'right' }}>Total</th>
                 </tr>
               </thead>
               <tbody>
@@ -518,8 +515,8 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
             maxWidth: '650px',
             borderRadius: 'var(--radius-md)',
             boxShadow: 'var(--shadow-lg)',
-            backgroundColor: 'rgba(15, 23, 42, 0.85)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
+            backgroundColor: 'rgba(209, 250, 237, 0.95)',
+            border: '1px solid rgba(15, 184, 130, 0.35)',
             marginBottom: '2rem'
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
@@ -600,8 +597,8 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
             maxWidth: '750px',
             borderRadius: 'var(--radius-md)',
             boxShadow: 'var(--shadow-lg)',
-            backgroundColor: 'rgba(15, 23, 42, 0.85)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
+            backgroundColor: 'rgba(209, 250, 237, 0.95)',
+            border: '1px solid rgba(15, 184, 130, 0.35)',
             marginBottom: '2rem'
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
@@ -625,10 +622,6 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
                 <div className="form-group">
                   <label className="form-label">Contato Principal *</label>
                   <input type="text" required className="form-input" value={editFormData.contato_principal} onChange={(e) => setEditFormData(prev => ({ ...prev, contato_principal: e.target.value }))} />
-                </div>
-                <div className="form-group">
-                  <label className="form-label">WhatsApp *</label>
-                  <input type="text" required className="form-input" value={editFormData.whatsapp} onChange={(e) => setEditFormData(prev => ({ ...prev, whatsapp: e.target.value }))} />
                 </div>
                 <div className="form-group">
                   <label className="form-label">Email</label>

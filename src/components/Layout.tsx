@@ -6,8 +6,6 @@ import {
   Sliders, 
   LogOut, 
   ClipboardList,
-  ChevronLeft,
-  ChevronRight
 } from 'lucide-react';
 import logoImg from '../assets/logo.png';
 
@@ -20,7 +18,7 @@ interface LayoutProps {
 }
 
 export default function Layout({ children, activeTab, setActiveTab, onLogout, userEmail }: LayoutProps) {
-  const [isCollapsed, setIsCollapsed] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard size={20} /> },
@@ -32,142 +30,149 @@ export default function Layout({ children, activeTab, setActiveTab, onLogout, us
 
   return (
     <div className="app-container">
-      {/* Sidebar Barra Lateral */}
-      <aside style={{
-        width: isCollapsed ? '80px' : '260px',
-        backgroundColor: 'rgba(255, 255, 255, 0.75)',
-        backdropFilter: 'var(--glass-blur)',
-        WebkitBackdropFilter: 'var(--glass-blur)',
-        borderRight: '1px solid var(--border-color)',
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100vh',
-        position: 'sticky',
-        top: 0,
-        transition: 'width 0.3s ease'
-      }}>
+      {/* Sidebar Barra Lateral — expande ao hover */}
+      <aside
+        onMouseEnter={() => setIsExpanded(true)}
+        onMouseLeave={() => setIsExpanded(false)}
+        style={{
+          width: isExpanded ? '260px' : '68px',
+          background: 'rgba(15, 184, 130, 0.22)',
+          backdropFilter: 'blur(24px)',
+          WebkitBackdropFilter: 'blur(24px)',
+          borderRight: '1px solid rgba(15, 184, 130, 0.4)',
+          boxShadow: isExpanded ? '4px 0 24px rgba(15, 184, 130, 0.18)' : '2px 0 12px rgba(15, 184, 130, 0.10)',
+          display: 'flex',
+          flexDirection: 'column',
+          height: '100vh',
+          position: 'sticky',
+          top: 0,
+          transition: 'width 0.28s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.28s ease',
+          overflow: 'hidden',
+          zIndex: 50,
+          flexShrink: 0
+        }}
+      >
         {/* Header Logo */}
         <div style={{
-          padding: isCollapsed ? '1rem 0.5rem' : '1.5rem',
-          borderBottom: '1px solid var(--border-color)',
+          padding: '1.25rem 1rem',
+          borderBottom: '1px solid rgba(15, 184, 130, 0.2)',
           display: 'flex',
-          flexDirection: isCollapsed ? 'column' : 'row',
           alignItems: 'center',
-          gap: '0.75rem',
-          justifyContent: isCollapsed ? 'center' : 'space-between',
+          justifyContent: 'center',
+          minHeight: '72px',
+          overflow: 'hidden'
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-            <img 
-              src={logoImg} 
-              alt="Logo Prata Digital" 
-              style={{
-                width: isCollapsed ? '36px' : '150px',
-                height: isCollapsed ? '36px' : 'auto',
-                objectFit: isCollapsed ? 'cover' : 'contain',
-                objectPosition: 'left',
-                transition: 'all 0.3s ease',
-                borderRadius: isCollapsed ? '50%' : '0'
-              }}
-            />
-          </div>
-          
-          {/* Botão de Toggle */}
-          <button 
-            onClick={() => setIsCollapsed(!isCollapsed)}
-            title={isCollapsed ? "Expandir menu" : "Recolher menu"}
+          <img
+            src={logoImg}
+            alt="Logo Prata Digital"
             style={{
-              background: 'rgba(255,255,255,0.05)',
-              border: '1px solid var(--border-color)',
-              borderRadius: '50%',
-              width: '28px',
-              height: '28px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'var(--text-muted)',
-              cursor: 'pointer',
-              marginTop: isCollapsed ? '0.5rem' : '0',
-              transition: 'var(--transition)',
+              width: isExpanded ? '150px' : '36px',
+              height: 'auto',
+              maxHeight: '44px',
+              objectFit: 'contain',
+              objectPosition: isExpanded ? 'left' : 'center',
+              transition: 'width 0.28s cubic-bezier(0.4, 0, 0.2, 1)',
+              borderRadius: 0,
+              boxShadow: 'none',
+              background: 'transparent',
               flexShrink: 0
             }}
-          >
-            {isCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
-          </button>
+          />
         </div>
 
         {/* Menu de Navegação */}
-        <nav style={{ flex: 1, padding: isCollapsed ? '1rem 0.5rem' : '1.5rem 1rem', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+        <nav style={{ flex: 1, padding: '1rem 0.5rem', display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
           {menuItems.map((item) => {
             const isActive = activeTab === item.id;
+
             return (
               <button
                 key={item.id}
                 onClick={() => setActiveTab(item.id)}
-                title={isCollapsed ? item.label : undefined}
+                title={!isExpanded ? item.label : undefined}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: isCollapsed ? 'center' : 'flex-start',
-                  gap: isCollapsed ? '0' : '0.85rem',
+                  justifyContent: isExpanded ? 'flex-start' : 'center',
+                  gap: '0.85rem',
                   width: '100%',
-                  padding: isCollapsed ? '0.75rem 0' : '0.75rem 1rem',
+                  padding: '0.75rem 0.85rem',
                   fontSize: '0.9rem',
-                  fontWeight: isActive ? 600 : 500,
-                  color: isActive ? 'var(--primary-color)' : 'var(--text-muted)',
-                  backgroundColor: isActive ? 'rgba(15, 184, 130, 0.12)' : 'transparent',
-                  border: 'none',
+                  fontWeight: isActive ? 700 : 500,
+                  color: isActive ? '#0fb882' : '#1a4a3a',
+                  backgroundColor: isActive ? 'rgba(15, 184, 130, 0.25)' : 'transparent',
+                  border: isActive ? '1px solid rgba(15, 184, 130, 0.3)' : '1px solid transparent',
                   borderRadius: 'var(--radius-sm)',
                   cursor: 'pointer',
                   textAlign: 'left',
-                  transition: 'var(--transition)'
+                  transition: 'all 0.18s ease',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden'
+                }}
+                onMouseEnter={e => {
+                  if (!isActive) {
+                    (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'rgba(15, 184, 130, 0.18)';
+                    (e.currentTarget as HTMLButtonElement).style.color = '#0a2e22';
+                  }
+                }}
+                onMouseLeave={e => {
+                  if (!isActive) {
+                    (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'transparent';
+                    (e.currentTarget as HTMLButtonElement).style.color = '#1a4a3a';
+                  }
                 }}
               >
-                {item.icon}
-                {!isCollapsed && item.label}
+                <span style={{ flexShrink: 0, display: 'flex', alignItems: 'center' }}>{item.icon}</span>
+                <span style={{
+                  opacity: isExpanded ? 1 : 0,
+                  width: isExpanded ? 'auto' : 0,
+                  transition: 'opacity 0.2s ease 0.05s, width 0.28s ease',
+                  overflow: 'hidden',
+                  display: 'block'
+                }}>
+                  {item.label}
+                </span>
               </button>
             );
           })}
         </nav>
 
-        {/* Status de Conectividade e Rodapé */}
+        {/* Rodapé */}
         <div style={{
-          padding: isCollapsed ? '1rem 0.5rem' : '1rem 1.5rem',
-          borderTop: '1px solid var(--border-color)',
-          backgroundColor: 'rgba(0, 0, 0, 0.02)',
+          padding: '0.85rem 0.5rem',
+          borderTop: '1px solid rgba(15, 184, 130, 0.2)',
           display: 'flex',
-          flexDirection: 'column',
-          alignItems: isCollapsed ? 'center' : 'stretch',
-          gap: '0.75rem'
+          alignItems: 'center',
+          justifyContent: isExpanded ? 'space-between' : 'center',
+          gap: '0.5rem',
+          overflow: 'hidden'
         }}>
+          {isExpanded && (
+            <div style={{ overflow: 'hidden', opacity: isExpanded ? 1 : 0, transition: 'opacity 0.2s ease' }}>
+              <p style={{ fontSize: '0.8rem', fontWeight: 700, color: '#0f172a', whiteSpace: 'nowrap' }}>
+                Monique
+              </p>
+              <p style={{ fontSize: '0.7rem', color: '#334155', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '160px' }}>
+                {userEmail || 'monique@prata.com'}
+              </p>
+            </div>
+          )}
 
-          {/* Monique info */}
-          <div style={{ 
-            display: 'flex', 
-            flexDirection: isCollapsed ? 'column' : 'row', 
-            alignItems: 'center', 
-            justifyContent: 'space-between',
-            gap: isCollapsed ? '0.5rem' : '0'
-          }}>
-            {!isCollapsed && (
-              <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '150px' }}>
-                <p style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--secondary-color)' }}>
-                  Monique
-                </p>
-                <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', overflow: 'hidden' }}>
-                  {userEmail || 'monique@prata.com'}
-                </p>
-              </div>
-            )}
-            
-            <button 
-              onClick={onLogout}
-              className="btn btn-secondary btn-icon"
-              title="Sair do CRM"
-              style={{ padding: '0.375rem', borderRadius: 'var(--radius-sm)', flexShrink: 0 }}
-            >
-              <LogOut size={16} />
-            </button>
-          </div>
+          <button
+            onClick={onLogout}
+            className="btn btn-secondary btn-icon"
+            title="Sair do CRM"
+            style={{
+              padding: '0.375rem',
+              borderRadius: 'var(--radius-sm)',
+              flexShrink: 0,
+              color: '#172554',
+              borderColor: 'rgba(15, 184, 130, 0.35)',
+              backgroundColor: 'rgba(255, 255, 255, 0.7)'
+            }}
+          >
+            <LogOut size={16} />
+          </button>
         </div>
       </aside>
 

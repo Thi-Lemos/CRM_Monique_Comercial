@@ -23,7 +23,6 @@ export default function PartnersList({ onSelectPartner }: PartnersListProps) {
     nome: '',
     cnpj: '',
     contato_principal: '',
-    whatsapp: '',
     email: '',
     modelo_atuacao: 'Físico' as Parceiro['modelo_atuacao'],
     area_geografica: 'Local' as Parceiro['area_geografica'],
@@ -95,7 +94,6 @@ export default function PartnersList({ onSelectPartner }: PartnersListProps) {
       nome: '',
       cnpj: '',
       contato_principal: '',
-      whatsapp: '',
       email: '',
       modelo_atuacao: 'Físico',
       area_geografica: 'Local',
@@ -116,7 +114,6 @@ export default function PartnersList({ onSelectPartner }: PartnersListProps) {
       nome: partner.nome,
       cnpj: partner.cnpj,
       contato_principal: partner.contato_principal,
-      whatsapp: partner.whatsapp,
       email: partner.email || '',
       modelo_atuacao: partner.modelo_atuacao,
       area_geografica: partner.area_geografica,
@@ -133,7 +130,7 @@ export default function PartnersList({ onSelectPartner }: PartnersListProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.nome || !formData.cnpj || !formData.contato_principal || !formData.whatsapp) {
+    if (!formData.nome || !formData.cnpj || !formData.contato_principal) {
       alert('Por favor, preencha todos os campos obrigatórios.');
       return;
     }
@@ -173,7 +170,6 @@ export default function PartnersList({ onSelectPartner }: PartnersListProps) {
           const nome = row.Nome || row['Razão Social'] || row.nome || row.razao_social;
           const cnpj = row.CNPJ || row.cnpj;
           const contato = row.Contato || row['Contato Principal'] || row.contato;
-          const whatsapp = row.WhatsApp || row.whatsapp || row.telefone;
           const email = row.Email || row.email;
           const modelo = row.Modelo || row['Modelo de Atuação'] || row.modelo || 'Físico';
           const area = row.Area || row['Área Geográfica'] || row.area || 'Local';
@@ -193,7 +189,6 @@ export default function PartnersList({ onSelectPartner }: PartnersListProps) {
               nome,
               cnpj,
               contato_principal: contato || 'Não Informado',
-              whatsapp: whatsapp || 'Não Informado',
               email: email || '',
               modelo_atuacao: modelo as any,
               area_geografica: area as any,
@@ -202,7 +197,8 @@ export default function PartnersList({ onSelectPartner }: PartnersListProps) {
               vol_prata_mensal: volPrata,
               produtos_ativos: produtos,
               propostas_pagas_semana: propostasPagas,
-              status: 'Onboarding'
+              status: 'Reativação',
+              created_at: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
             });
             importados++;
           }
@@ -346,28 +342,31 @@ export default function PartnersList({ onSelectPartner }: PartnersListProps) {
           <table className="table" style={{ borderCollapse: 'separate', borderSpacing: 0 }}>
             <thead>
               <tr>
-                <th style={{ position: 'sticky', top: 0, backgroundColor: 'var(--primary-color)', color: '#070c14', zIndex: 10, borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>Parceiro / Razão Social</th>
-                <th style={{ position: 'sticky', top: 0, backgroundColor: 'var(--primary-color)', color: '#070c14', zIndex: 10, borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>CNPJ</th>
-                <th style={{ position: 'sticky', top: 0, backgroundColor: 'var(--primary-color)', color: '#070c14', zIndex: 10, borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>Contato</th>
-                <th style={{ position: 'sticky', top: 0, backgroundColor: 'var(--primary-color)', color: '#070c14', zIndex: 10, borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>WhatsApp</th>
-                <th style={{ position: 'sticky', top: 0, backgroundColor: 'var(--primary-color)', color: '#070c14', zIndex: 10, borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>Score / Classificação</th>
-                <th style={{ position: 'sticky', top: 0, backgroundColor: 'var(--primary-color)', color: '#070c14', zIndex: 10, borderBottom: '1px solid rgba(255, 255, 255, 0.15)', textAlign: 'right' }}>Vol. Prata</th>
-                <th style={{ position: 'sticky', top: 0, backgroundColor: 'var(--primary-color)', color: '#070c14', zIndex: 10, borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>Status</th>
-                <th style={{ position: 'sticky', top: 0, backgroundColor: 'var(--primary-color)', color: '#070c14', zIndex: 10, borderBottom: '1px solid rgba(255, 255, 255, 0.15)', textAlign: 'center' }}>Ações</th>
+                <th style={{ position: 'sticky', top: 0, backgroundColor: 'var(--primary-color)', color: '#ffffff', zIndex: 10, borderBottom: '1px solid rgba(255, 255, 255, 0.15)', fontWeight: 800 }}>Parceiro / Razão Social</th>
+                <th style={{ position: 'sticky', top: 0, backgroundColor: 'var(--primary-color)', color: '#ffffff', zIndex: 10, borderBottom: '1px solid rgba(255, 255, 255, 0.15)', fontWeight: 800 }}>CNPJ</th>
+                <th style={{ position: 'sticky', top: 0, backgroundColor: 'var(--primary-color)', color: '#ffffff', zIndex: 10, borderBottom: '1px solid rgba(255, 255, 255, 0.15)', fontWeight: 800 }}>Contato</th>
+                <th style={{ position: 'sticky', top: 0, backgroundColor: 'var(--primary-color)', color: '#ffffff', zIndex: 10, borderBottom: '1px solid rgba(255, 255, 255, 0.15)', fontWeight: 800 }}>Score / Classificação</th>
+                <th style={{ position: 'sticky', top: 0, backgroundColor: 'var(--primary-color)', color: '#ffffff', zIndex: 10, borderBottom: '1px solid rgba(255, 255, 255, 0.15)', textAlign: 'right', fontWeight: 800 }}>Vol. Prata</th>
+                <th style={{ position: 'sticky', top: 0, backgroundColor: 'var(--primary-color)', color: '#ffffff', zIndex: 10, borderBottom: '1px solid rgba(255, 255, 255, 0.15)', fontWeight: 800 }}>Status</th>
+                <th style={{ position: 'sticky', top: 0, backgroundColor: 'var(--primary-color)', color: '#ffffff', zIndex: 10, borderBottom: '1px solid rgba(255, 255, 255, 0.15)', textAlign: 'center', fontWeight: 800 }}>Ações</th>
               </tr>
             </thead>
             <tbody>
               {sortedAndFilteredParceiros.map((p) => {
                 const conc = p.vol_total_mensal > 0 ? (p.vol_prata_mensal / p.vol_total_mensal) * 100 : 0;
                 return (
-                  <tr key={p.id}>
+                  <tr 
+                    key={p.id}
+                    onMouseEnter={e => (e.currentTarget as HTMLTableRowElement).style.backgroundColor = 'rgba(15, 184, 130, 0.08)'}
+                    onMouseLeave={e => (e.currentTarget as HTMLTableRowElement).style.backgroundColor = ''}
+                    style={{ transition: 'background-color 0.2s ease', cursor: 'pointer' }}
+                  >
                     <td>
                       <div style={{ fontWeight: 700, color: 'var(--secondary-color)' }}>{p.nome}</div>
                       <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{p.modelo_atuacao} · {p.area_geografica}</div>
                     </td>
                     <td style={{ fontSize: '0.85rem' }}>{p.cnpj}</td>
                     <td>{p.contato_principal}</td>
-                    <td>{p.whatsapp}</td>
                     <td>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                         <span className={`badge ${p.score_comercial >= 80 ? 'badge-success' : p.score_comercial >= 50 ? 'badge-info' : 'badge-warning'}`} style={{ minWidth: '32px', textAlign: 'center' }}>
@@ -434,8 +433,8 @@ export default function PartnersList({ onSelectPartner }: PartnersListProps) {
             maxWidth: '960px',
             borderRadius: 'var(--radius-lg)',
             boxShadow: 'var(--shadow-lg)',
-            backgroundColor: 'rgba(15, 23, 42, 0.85)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
+            backgroundColor: 'rgba(209, 250, 237, 0.95)',
+            border: '1px solid rgba(15, 184, 130, 0.35)',
             marginBottom: '2rem'
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
@@ -463,14 +462,9 @@ export default function PartnersList({ onSelectPartner }: PartnersListProps) {
                   <input type="text" required placeholder="Ex: Carlos Silva" className="form-input" value={formData.contato_principal} onChange={(e) => setFormData(prev => ({ ...prev, contato_principal: e.target.value }))} />
                 </div>
                 <div className="form-group">
-                  <label className="form-label">WhatsApp *</label>
-                  <input type="text" required placeholder="(00) 00000-0000" className="form-input" value={formData.whatsapp} onChange={(e) => setFormData(prev => ({ ...prev, whatsapp: e.target.value }))} />
+                  <label className="form-label">E-mail Comercial</label>
+                  <input type="email" placeholder="contato@parceiro.com.br" className="form-input" value={formData.email} onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))} />
                 </div>
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">E-mail Comercial</label>
-                <input type="email" placeholder="contato@parceiro.com.br" className="form-input" value={formData.email} onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))} />
               </div>
 
               <div className="form-row">
