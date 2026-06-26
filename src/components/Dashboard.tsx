@@ -45,6 +45,16 @@ export default function Dashboard() {
         const ciclo = await dataService.getCicloAtivacaoHunter();
         const reat = await dataService.getTaxaReativacao();
         
+        // Buscar todas as produções de uma vez em lote (Otimização N+1)
+        const allProds = await dataService.getAllProducao();
+        const prodsMap: { [key: string]: typeof allProds } = {};
+        for (const prod of allProds) {
+          if (!prodsMap[prod.parceiro_id]) {
+            prodsMap[prod.parceiro_id] = [];
+          }
+          prodsMap[prod.parceiro_id].push(prod);
+        }
+        
         setParceiros(pList);
         setSemaforo(sem);
         setCicloAtivacao(ciclo);
@@ -57,7 +67,7 @@ export default function Dashboard() {
         let pixSum = 0;
 
         for (const p of pList) {
-          const prods = await dataService.getProducao(p.id);
+          const prods = prodsMap[p.id] || [];
           const pJun = prods.find(pr => pr.ano === 2026 && pr.mes === 6);
           if (pJun) {
             fgtsSum += pJun.vol_fgts || 0;
@@ -67,9 +77,6 @@ export default function Dashboard() {
           }
         }
         setMixProdutos({ fgts: fgtsSum, clt: cltSum, cgv: cgvSum, pix: pixSum });
-        setSemaforo(sem);
-        setCicloAtivacao(ciclo);
-        setTaxaReativacao(reat);
 
         // Gerar Alertas baseados nas regras do Manual
         const activeAlerts: typeof alertas = [];
@@ -96,7 +103,7 @@ export default function Dashboard() {
           }
 
           // Alerta B: Early Warning (Queda brusca de produção recente no Prata de Junho vs Maio)
-          const producoes = await dataService.getProducao(p.id);
+          const producoes = prodsMap[p.id] || [];
           const prodJun = producoes.find(pr => pr.ano === 2026 && pr.mes === 6);
           const prodMai = producoes.find(pr => pr.ano === 2026 && pr.mes === 5);
           

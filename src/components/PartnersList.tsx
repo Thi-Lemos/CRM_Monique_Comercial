@@ -219,7 +219,7 @@ export default function PartnersList({ onSelectPartner }: PartnersListProps) {
 
   const filteredParceiros = parceiros.filter(p => {
     const matchesSearch = p.nome.toLowerCase().includes(search.toLowerCase()) || 
-                          p.cnpj.includes(search);
+                          (p.cnpj || '').includes(search);
     const matchesStatus = statusFilter ? p.status === statusFilter : true;
     const matchesClass = classFilter ? p.classificacao === classFilter : true;
     return matchesSearch && matchesStatus && matchesClass;
@@ -389,22 +389,22 @@ export default function PartnersList({ onSelectPartner }: PartnersListProps) {
           bottom: 0,
           backgroundColor: 'rgba(7, 12, 20, 0.7)',
           display: 'flex',
-          alignItems: 'center',
+          alignItems: 'flex-start',
           justifyContent: 'center',
           zIndex: 100,
-          padding: '1rem',
+          padding: '3rem 1.5rem',
+          overflowY: 'auto',
           backdropFilter: 'var(--glass-blur)',
           WebkitBackdropFilter: 'var(--glass-blur)'
         }}>
           <div className="card fade-in" style={{
             width: '100%',
-            maxWidth: '720px',
-            maxHeight: '90vh',
-            overflowY: 'auto',
+            maxWidth: '960px',
             borderRadius: 'var(--radius-lg)',
             boxShadow: 'var(--shadow-lg)',
             backgroundColor: 'rgba(15, 23, 42, 0.85)',
-            border: '1px solid rgba(255, 255, 255, 0.1)'
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            marginBottom: '2rem'
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
               <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--secondary-color)' }}>

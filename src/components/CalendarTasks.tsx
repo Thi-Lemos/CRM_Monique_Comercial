@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { dataService } from '../services/dataService';
 import { TaskItem, Parceiro } from '../types';
-import { Calendar as CalendarIcon, CheckCircle2, ChevronRight } from 'lucide-react';
+import { Calendar as CalendarIcon, CheckCircle2, ChevronRight, Trash2 } from 'lucide-react';
 
 interface CalendarTasksProps {
   onStartInteraction: (partnerId: string) => void;
@@ -35,6 +35,17 @@ export default function CalendarTasks({ onStartInteraction }: CalendarTasksProps
     setTasks(prev => 
       prev.map(t => t.id === taskId ? { ...t, done: !t.done } : t)
     );
+  };
+
+  const handleDeleteTask = async (taskId: string) => {
+    if (window.confirm('Tem certeza de que deseja apagar esta tarefa agendada?')) {
+      try {
+        await dataService.deleteTask(taskId);
+        setTasks(prev => prev.filter(t => t.id !== taskId));
+      } catch (err) {
+        alert('Erro ao apagar tarefa.');
+      }
+    }
   };
 
   const getTaskStatus = (taskDate: string) => {
@@ -203,6 +214,22 @@ export default function CalendarTasks({ onStartInteraction }: CalendarTasksProps
                       Realizar Contato <ChevronRight size={14} />
                     </button>
                   )}
+
+                  {/* Botão de Apagar Tarefa */}
+                  <button 
+                    onClick={() => handleDeleteTask(t.id)}
+                    className="btn btn-secondary btn-icon"
+                    title="Apagar compromisso"
+                    style={{ 
+                      padding: '0.5rem', 
+                      borderRadius: 'var(--radius-sm)', 
+                      color: 'var(--danger)', 
+                      borderColor: 'rgba(239, 68, 68, 0.2)',
+                      backgroundColor: 'rgba(239, 68, 68, 0.05)'
+                    }}
+                  >
+                    <Trash2 size={15} />
+                  </button>
                 </div>
               </div>
             );

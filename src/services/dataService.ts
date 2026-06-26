@@ -633,30 +633,54 @@ export const dataService = {
           id: 'task_' + log.id,
           title: log.proxima_acao,
           date: log.data_proxima_acao,
-          done: false, // Pode ser dinâmico ou controlado
+          done: false,
           parceiro_nome: partner ? partner.nome : 'Parceiro Desconhecido',
           parceiro_id: log.parceiro_id
         });
       }
     });
 
-    // Se o calendário da planilha tem tarefas padrões e não registradas no log ainda, adiciona
-    // Vamos adicionar algumas das pendentes do mock
-    const defaultTasks: TaskItem[] = [
-      { id: "dt1", title: "Proposta CGV — acompanhar resposta", date: "2026-06-15", done: false, parceiro_nome: "Silva & Cia Promotora", parceiro_id: "p1" },
-      { id: "dt2", title: "Revisão semanal de produção", date: "2026-06-23", done: false, parceiro_nome: "MaxCrédito Corban", parceiro_id: "p2" },
-      { id: "dt3", title: "Reoferta: cashback + Pix no Cartão", date: "2026-06-14", done: false, parceiro_nome: "Crédito Rápido Ltda", parceiro_id: "p3" },
-      { id: "dt4", title: "Treinamento CGV + proposta", date: "2026-06-17", done: false, parceiro_nome: "Empreend. Financeiros", parceiro_id: "p4" }
-    ];
-
-    // Evita duplicar se já houver
-    defaultTasks.forEach(dt => {
-      if (!tasks.some(t => t.parceiro_id === dt.parceiro_id && t.title === dt.title)) {
-        tasks.push(dt);
-      }
-    });
-
     return tasks.sort((a,b) => a.date.localeCompare(b.date));
+  },
+
+  async deleteTask(taskId: string): Promise<void> {
+    const logId = taskId.replace('task_', '');
+    if (supabase) {
+      try {
+        const { error } = await supabase
+          .from('crm_logs')
+          .update({ proxima_acao: null, data_proxima_acao: null })
+          .eq('id', logId);
+        if (error) throw error;
+      } catch (err) {
+        console.error('Erro ao apagar tarefa no Supabase:', err);
+        throw err;
+      }
+    } else {
+      const db = getLocalDB();
+      const idx = db.logs.findIndex(l => l.id === logId);
+      if (idx !== -1) {
+        db.logs[idx].proxima_acao = '';
+        db.logs[idx].data_proxima_acao = '';
+        saveLocalDB(db);
+      }
+    }
+  },
+
+  async getAllProducao(): Promise<ProducaoMensal[]> {
+    if (supabase) {
+      try {
+        const { data, error } = await supabase
+          .from('producao')
+          .select('*');
+        if (!error && data) {
+          return data as ProducaoMensal[];
+        }
+      } catch (err) {
+        console.warn('Erro ao obter todas as produções do Supabase:', err);
+      }
+    }
+    return getLocalDB().producao;
   },
 
   // --- PRODUÇÃO SEMANAL ---

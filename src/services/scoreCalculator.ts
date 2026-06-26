@@ -92,12 +92,15 @@ export function calculateScoreAndClassification(parceiro: Partial<Parceiro>, con
   const scoreFinal = Math.max(0, Math.min(100, Math.round(score * 10) / 10)); // arredondado a 1 decimal
   
   let classificacao: 'Estratégico' | 'Crescimento' | 'Reativação' | 'Prospecção' = 'Prospecção';
+  const status = parceiro.status || 'Em prospecção';
   
-  if (scoreFinal >= 80) {
-    classificacao = 'Estratégico';
-  } else if (scoreFinal >= 50) {
-    classificacao = 'Crescimento';
-  } else if (scoreFinal >= 20) {
+  if (status === 'Ativo') {
+    if (scoreFinal >= 80) {
+      classificacao = 'Estratégico';
+    } else {
+      classificacao = 'Crescimento';
+    }
+  } else if (status === 'Inativo' || status === 'Em reativação') {
     classificacao = 'Reativação';
   } else {
     classificacao = 'Prospecção';

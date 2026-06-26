@@ -9,7 +9,9 @@ import {
   MessageSquare,
   History,
   Plus,
-  CalendarDays
+  CalendarDays,
+  Edit,
+  X
 } from 'lucide-react';
 
 interface PartnerDetailProps {
@@ -35,6 +37,24 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
     vol_clt: 0,
     vol_cgv: 0,
     vol_pix: 0
+  });
+
+  // Estado para Edição do Parceiro
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editFormData, setEditFormData] = useState({
+    nome: '',
+    cnpj: '',
+    contato_principal: '',
+    whatsapp: '',
+    email: '',
+    modelo_atuacao: 'Físico' as any,
+    area_geografica: 'Local' as any,
+    num_vendedores: 1,
+    vol_total_mensal: 0,
+    vol_prata_mensal: 0,
+    produtos_ativos: [] as string[],
+    propostas_pagas_semana: 0,
+    status: 'Ativo' as any
   });
 
   const loadData = async () => {
@@ -98,9 +118,51 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
       });
       setShowProdForm(false);
       await loadData();
-    } catch (err) {
-      alert('Erro ao salvar produção.');
+    } catch (e) {
+      console.error(e);
     }
+  };
+
+  const openEditModal = () => {
+    setEditFormData({
+      nome: partner.nome,
+      cnpj: partner.cnpj || '',
+      contato_principal: partner.contato_principal,
+      whatsapp: partner.whatsapp,
+      email: partner.email || '',
+      modelo_atuacao: partner.modelo_atuacao,
+      area_geografica: partner.area_geografica,
+      num_vendedores: partner.num_vendedores,
+      vol_total_mensal: partner.vol_total_mensal,
+      vol_prata_mensal: partner.vol_prata_mensal,
+      produtos_ativos: partner.produtos_ativos || [],
+      propostas_pagas_semana: partner.propostas_pagas_semana || 0,
+      status: partner.status
+    });
+    setShowEditModal(true);
+  };
+
+  const handleEditSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await dataService.saveParceiro({ id: partner.id, ...editFormData });
+      setShowEditModal(false);
+      await loadData();
+    } catch (err: any) {
+      alert(err.message || 'Erro ao salvar alterações.');
+    }
+  };
+
+  const handleProductCheckboxChange = (prod: string, checked: boolean) => {
+    setEditFormData(prev => {
+      const current = [...(prev.produtos_ativos || [])];
+      if (checked && !current.includes(prod)) {
+        current.push(prod);
+      } else if (!checked && current.includes(prod)) {
+        return { ...prev, produtos_ativos: current.filter(p => p !== prod) };
+      }
+      return { ...prev, produtos_ativos: current };
+    });
   };
 
   return (
@@ -134,6 +196,9 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
           </div>
           
           <div style={{ display: 'flex', gap: '0.75rem' }}>
+            <button className="btn btn-secondary" onClick={openEditModal} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <Edit size={16} /> Editar Parceiro
+            </button>
             <button className="btn btn-primary" onClick={() => onNewLog(partner.id)}>
               <MessageSquare size={16} /> Registrar Reunião / Contato
             </button>
@@ -216,14 +281,14 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
             </div>
           </h3>
 
-          <div style={{ marginBottom: '1.5rem', padding: '1rem', borderRadius: 'var(--radius-sm)', backgroundColor: '#f8fafc', border: '1px solid var(--border-color)' }}>
+          <div style={{ marginBottom: '1.5rem', padding: '1rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(15, 23, 42, 0.4)', border: '1px solid var(--border-color)' }}>
             <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Classificação Atual:</p>
             <p style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--secondary-color)', display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.15rem' }}>
               {partner.classificacao === 'Estratégico' ? '⭐ Estratégico' : partner.classificacao === 'Crescimento' ? '🔼 Crescimento' : partner.classificacao === 'Reativação' ? '🔄 Reativação' : '🆕 Prospecção'}
             </p>
             <p style={{ fontSize: '0.85rem', fontWeight: 550, color: 'var(--text-main)', marginTop: '0.5rem' }}>
               <strong>Estratégia:</strong> {
-                partner.classificacao === 'Estratégico' ? 'Retenção ativa + expansão de produtos' :
+                partner.classificacao === 'Estratégico' ? 'Retenção active + expansão de produtos' :
                 partner.classificacao === 'Crescimento' ? 'Inclusão de produtos + aumento de concentração' :
                 partner.classificacao === 'Reativação' ? 'Diagnóstico + oferta de produto âncora' :
                 'Qualificação + ativação com produto de entrada'
@@ -242,11 +307,11 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
               { label: 'Modelo de atuação (10%)', note: notes.n6, desc: partner.modelo_atuacao },
               { label: 'Risco de dependência de produto único (5%)', note: notes.n7, desc: `${partner.produtos_ativos.length} prod.` }
             ].map((c, i) => (
-              <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.875rem', paddingBottom: '0.5rem', borderBottom: '1px solid #f1f5f9' }}>
+              <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.875rem', paddingBottom: '0.5rem', borderBottom: '1px solid var(--border-color)' }}>
                 <span style={{ color: 'var(--text-main)', fontWeight: 500 }}>{c.label}</span>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                   <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>({c.desc})</span>
-                  <span style={{ fontWeight: 700, color: 'var(--secondary-color)', backgroundColor: '#f1f5f9', padding: '0.15rem 0.5rem', borderRadius: '4px' }}>
+                  <span style={{ fontWeight: 700, color: 'var(--secondary-color)', backgroundColor: 'rgba(255, 255, 255, 0.05)', padding: '0.15rem 0.5rem', borderRadius: '4px' }}>
                     {c.note}
                   </span>
                 </div>
@@ -434,18 +499,24 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: 'rgba(15, 23, 42, 0.4)',
+          backgroundColor: 'rgba(7, 12, 20, 0.7)',
           display: 'flex',
-          alignItems: 'center',
+          alignItems: 'flex-start',
           justifyContent: 'center',
           zIndex: 100,
-          padding: '1rem'
+          padding: '3rem 1.5rem',
+          overflowY: 'auto',
+          backdropFilter: 'var(--glass-blur)',
+          WebkitBackdropFilter: 'var(--glass-blur)'
         }}>
           <div className="card fade-in" style={{
             width: '100%',
-            maxWidth: '500px',
+            maxWidth: '650px',
             borderRadius: 'var(--radius-md)',
-            boxShadow: 'var(--shadow-lg)'
+            boxShadow: 'var(--shadow-lg)',
+            backgroundColor: 'rgba(15, 23, 42, 0.85)',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            marginBottom: '2rem'
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
               <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--secondary-color)' }}>Registrar Produção Mensal</h3>
@@ -501,11 +572,140 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
           </div>
         </div>
       )}
+
+      {/* Modal de Edição do Parceiro */}
+      {showEditModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(7, 12, 20, 0.7)',
+          display: 'flex',
+          alignItems: 'flex-start',
+          justifyContent: 'center',
+          zIndex: 100,
+          padding: '3rem 1.5rem',
+          overflowY: 'auto',
+          backdropFilter: 'var(--glass-blur)',
+          WebkitBackdropFilter: 'var(--glass-blur)'
+        }}>
+          <div className="card fade-in" style={{
+            width: '100%',
+            maxWidth: '750px',
+            borderRadius: 'var(--radius-md)',
+            boxShadow: 'var(--shadow-lg)',
+            backgroundColor: 'rgba(15, 23, 42, 0.85)',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            marginBottom: '2rem'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--secondary-color)' }}>Editar Informações do Parceiro</h3>
+              <button onClick={() => setShowEditModal(false)} style={{ border: 'none', background: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}><X size={20} /></button>
+            </div>
+
+            <form onSubmit={handleEditSubmit}>
+              <div className="form-row">
+                <div className="form-group">
+                  <label className="form-label">Nome do Parceiro *</label>
+                  <input type="text" required className="form-input" value={editFormData.nome} onChange={(e) => setEditFormData(prev => ({ ...prev, nome: e.target.value }))} />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">CNPJ</label>
+                  <input type="text" className="form-input" value={editFormData.cnpj} onChange={(e) => setEditFormData(prev => ({ ...prev, cnpj: e.target.value }))} />
+                </div>
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label className="form-label">Contato Principal *</label>
+                  <input type="text" required className="form-input" value={editFormData.contato_principal} onChange={(e) => setEditFormData(prev => ({ ...prev, contato_principal: e.target.value }))} />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">WhatsApp *</label>
+                  <input type="text" required className="form-input" value={editFormData.whatsapp} onChange={(e) => setEditFormData(prev => ({ ...prev, whatsapp: e.target.value }))} />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Email</label>
+                  <input type="email" className="form-input" value={editFormData.email} onChange={(e) => setEditFormData(prev => ({ ...prev, email: e.target.value }))} />
+                </div>
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label className="form-label">Modelo de Atuação</label>
+                  <select className="form-input" value={editFormData.modelo_atuacao} onChange={(e) => setEditFormData(prev => ({ ...prev, modelo_atuacao: e.target.value as any }))}>
+                    <option value="Físico">Físico</option>
+                    <option value="Digital">Digital</option>
+                    <option value="Híbrido">Híbrido</option>
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Área Geográfica</label>
+                  <select className="form-input" value={editFormData.area_geografica} onChange={(e) => setEditFormData(prev => ({ ...prev, area_geografica: e.target.value as any }))}>
+                    <option value="Local">Local</option>
+                    <option value="Regional">Regional</option>
+                    <option value="Nacional">Nacional</option>
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Nº Vendedores</label>
+                  <input type="number" min={1} className="form-input" value={editFormData.num_vendedores} onChange={(e) => setEditFormData(prev => ({ ...prev, num_vendedores: parseInt(e.target.value) || 1 }))} />
+                </div>
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label className="form-label">Vol. Total Estimado Mensal (R$)</label>
+                  <input type="number" min={0} className="form-input" value={editFormData.vol_total_mensal} onChange={(e) => setEditFormData(prev => ({ ...prev, vol_total_mensal: parseFloat(e.target.value) || 0 }))} />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Vol. Prata Faturado Mensal (R$)</label>
+                  <input type="number" min={0} className="form-input" value={editFormData.vol_prata_mensal} onChange={(e) => setEditFormData(prev => ({ ...prev, vol_prata_mensal: parseFloat(e.target.value) || 0 }))} />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Propostas Pagas / Semana</label>
+                  <input type="number" min={0} className="form-input" value={editFormData.propostas_pagas_semana} onChange={(e) => setEditFormData(prev => ({ ...prev, propostas_pagas_semana: parseInt(e.target.value) || 0 }))} />
+                </div>
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label className="form-label">Status</label>
+                  <select className="form-input" value={editFormData.status} onChange={(e) => setEditFormData(prev => ({ ...prev, status: e.target.value as any }))}>
+                    <option value="Ativo">Ativo</option>
+                    <option value="Inativo">Inativo</option>
+                    <option value="Em reativação">Em reativação</option>
+                    <option value="Prospecção">Prospecção</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="form-group" style={{ marginTop: '1rem' }}>
+                <label className="form-label" style={{ marginBottom: '0.5rem', display: 'block' }}>Produtos Ativos no Prata</label>
+                <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap' }}>
+                  {['FGTS', 'CLT', 'CGV', 'Pix'].map(prod => (
+                    <label key={prod} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.875rem' }}>
+                      <input 
+                        type="checkbox" 
+                        checked={editFormData.produtos_ativos.includes(prod)}
+                        onChange={(e) => handleProductCheckboxChange(prod, e.target.checked)}
+                      />
+                      {prod}
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end', marginTop: '2rem', borderTop: '1px solid var(--border-color)', paddingTop: '1.25rem' }}>
+                <button type="button" className="btn btn-secondary" onClick={() => setShowEditModal(false)}>Cancelar</button>
+                <button type="submit" className="btn btn-primary">Salvar Alterações</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
-
-// Pequeno helper para renderizar fechar o modal
-const X = ({ size }: { size: number }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-x"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-);
