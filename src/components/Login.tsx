@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { dataService } from '../services/dataService';
-import { KeyRound, Mail, Sparkles } from 'lucide-react';
+import { KeyRound, Mail } from 'lucide-react';
+import logoImg from '../assets/logo.png';
 
 interface LoginProps {
   onLoginSuccess: (user: any) => void;
@@ -52,48 +53,18 @@ export default function Login({ onLoginSuccess }: LoginProps) {
       }}>
         {/* Logo/Marca */}
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <div style={{
-            display: 'inline-flex',
-            padding: '1rem',
-            borderRadius: '50%',
-            backgroundColor: '#ecfdf5',
-            color: 'var(--primary-color)',
-            marginBottom: '1rem'
-          }}>
-            <Sparkles size={32} />
-          </div>
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--secondary-color)' }}>
-            Prata Digital
-          </h2>
+          <img 
+            src={logoImg} 
+            alt="Logo Prata Digital" 
+            style={{
+              maxWidth: '220px',
+              height: 'auto',
+              marginBottom: '1rem'
+            }}
+          />
           <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
             CRM Comercial · Monique
           </p>
-        </div>
-
-        {/* Alerta de Modo de Operação */}
-        <div style={{
-          padding: '0.75rem 1rem',
-          borderRadius: 'var(--radius-sm)',
-          fontSize: '0.8rem',
-          fontWeight: 500,
-          marginBottom: '1.5rem',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          gap: '0.5rem',
-          backgroundColor: isSupabase ? '#ecfdf5' : '#eff6ff',
-          color: isSupabase ? '#065f46' : '#1e40af',
-          border: `1px solid ${isSupabase ? '#a7f3d0' : '#bfdbfe'}`
-        }}>
-          <div style={{
-            width: '8px',
-            height: '8px',
-            borderRadius: '50%',
-            backgroundColor: isSupabase ? 'var(--success)' : 'var(--info)'
-          }}></div>
-          {isSupabase 
-            ? 'Conectado ao Supabase (Produção Real)' 
-            : 'Modo Local (Bypass Supabase Ativo)'}
         </div>
 
         {/* Mensagem de Erro */}

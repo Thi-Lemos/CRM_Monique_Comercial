@@ -5,14 +5,11 @@ import {
   Calendar, 
   Sliders, 
   LogOut, 
-  Sparkles,
-  Cloud,
-  CloudOff,
   ClipboardList,
   ChevronLeft,
   ChevronRight
 } from 'lucide-react';
-import { dataService } from '../services/dataService';
+import logoImg from '../assets/logo.png';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -23,8 +20,7 @@ interface LayoutProps {
 }
 
 export default function Layout({ children, activeTab, setActiveTab, onLogout, userEmail }: LayoutProps) {
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  const isSupabase = dataService.isSupabaseEnabled();
+  const [isCollapsed, setIsCollapsed] = useState(true);
 
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard size={20} /> },
@@ -39,7 +35,7 @@ export default function Layout({ children, activeTab, setActiveTab, onLogout, us
       {/* Sidebar Barra Lateral */}
       <aside style={{
         width: isCollapsed ? '80px' : '260px',
-        backgroundColor: 'rgba(15, 23, 42, 0.65)',
+        backgroundColor: 'rgba(255, 255, 255, 0.75)',
         backdropFilter: 'var(--glass-blur)',
         WebkitBackdropFilter: 'var(--glass-blur)',
         borderRight: '1px solid var(--border-color)',
@@ -60,29 +56,19 @@ export default function Layout({ children, activeTab, setActiveTab, onLogout, us
           gap: '0.75rem',
           justifyContent: isCollapsed ? 'center' : 'space-between',
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: '0.5rem',
-              borderRadius: 'var(--radius-sm)',
-              backgroundColor: 'rgba(15, 184, 130, 0.15)',
-              color: 'var(--primary-color)',
-              flexShrink: 0
-            }}>
-              <Sparkles size={20} />
-            </div>
-            {!isCollapsed && (
-              <div>
-                <h1 style={{ fontSize: '1.1rem', fontWeight: 800, color: 'var(--secondary-color)', lineHeight: 1.2 }}>
-                  Prata Digital
-                </h1>
-                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 500 }}>
-                  CRM Comercial v1.0
-                </span>
-              </div>
-            )}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+            <img 
+              src={logoImg} 
+              alt="Logo Prata Digital" 
+              style={{
+                width: isCollapsed ? '36px' : '150px',
+                height: isCollapsed ? '36px' : 'auto',
+                objectFit: isCollapsed ? 'cover' : 'contain',
+                objectPosition: 'left',
+                transition: 'all 0.3s ease',
+                borderRadius: isCollapsed ? '50%' : '0'
+              }}
+            />
           </div>
           
           {/* Botão de Toggle */}
@@ -147,34 +133,12 @@ export default function Layout({ children, activeTab, setActiveTab, onLogout, us
         <div style={{
           padding: isCollapsed ? '1rem 0.5rem' : '1rem 1.5rem',
           borderTop: '1px solid var(--border-color)',
-          backgroundColor: 'rgba(7, 12, 20, 0.45)',
+          backgroundColor: 'rgba(0, 0, 0, 0.02)',
           display: 'flex',
           flexDirection: 'column',
           alignItems: isCollapsed ? 'center' : 'stretch',
           gap: '0.75rem'
         }}>
-          {/* Conexão */}
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: isCollapsed ? 'center' : 'flex-start',
-            gap: '0.5rem',
-            fontSize: '0.75rem',
-            color: 'var(--text-muted)',
-            fontWeight: 500
-          }}>
-            {isSupabase ? (
-              <>
-                <Cloud size={14} style={{ color: 'var(--success)', flexShrink: 0 }} />
-                {!isCollapsed && <span>Supabase Conectado</span>}
-              </>
-            ) : (
-              <>
-                <CloudOff size={14} style={{ color: 'var(--info)', flexShrink: 0 }} />
-                {!isCollapsed && <span>Banco de Dados Local</span>}
-              </>
-            )}
-          </div>
 
           {/* Monique info */}
           <div style={{ 

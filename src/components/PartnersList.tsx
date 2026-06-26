@@ -105,7 +105,7 @@ export default function PartnersList({ onSelectPartner }: PartnersListProps) {
       propostas_pagas_semana: 0,
       produtos_ativos: [],
       concorrentes: '',
-      status: 'Em prospecção'
+      status: 'Onboarding'
     });
     setShowModal(true);
   };
@@ -202,7 +202,7 @@ export default function PartnersList({ onSelectPartner }: PartnersListProps) {
               vol_prata_mensal: volPrata,
               produtos_ativos: produtos,
               propostas_pagas_semana: propostasPagas,
-              status: 'Em prospecção'
+              status: 'Onboarding'
             });
             importados++;
           }
@@ -287,9 +287,8 @@ export default function PartnersList({ onSelectPartner }: PartnersListProps) {
           >
             <option value="">Todos Status</option>
             <option value="Ativo">Ativo</option>
-            <option value="Inativo">Inativo</option>
-            <option value="Em prospecção">Em prospecção</option>
-            <option value="Em reativação">Em reativação</option>
+            <option value="Onboarding">Onboarding</option>
+            <option value="Reativação">Reativação</option>
           </select>
         </div>
 
@@ -302,8 +301,7 @@ export default function PartnersList({ onSelectPartner }: PartnersListProps) {
             <option value="">Todas Classificações</option>
             <option value="Estratégico">⭐ Estratégico</option>
             <option value="Crescimento">🔼 Crescimento</option>
-            <option value="Reativação">🔄 Reativação</option>
-            <option value="Prospecção">🆕 Prospecção</option>
+            <option value="Desenvolvimento">🛠️ Desenvolvimento</option>
           </select>
         </div>
 
@@ -387,8 +385,7 @@ export default function PartnersList({ onSelectPartner }: PartnersListProps) {
                     <td>
                       <span className={`badge ${
                         p.status === 'Ativo' ? 'badge-success' : 
-                        p.status === 'Inativo' ? 'badge-danger' : 
-                        p.status === 'Em reativação' ? 'badge-warning' : 'badge-info'
+                        p.status === 'Reativação' ? 'badge-danger' : 'badge-info'
                       }`}>
                         {p.status}
                       </span>

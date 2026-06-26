@@ -1,31 +1,31 @@
 :root {
   --primary-color: #0fb882; /* Verde Esmeralda Prata Digital */
-  --primary-hover: #0ed99a; /* Verde mais brilhante para hovers no tema escuro */
-  --secondary-color: #f8fafc; /* Agora secondary-color é cor de destaque clara */
-  --bg-color: #070c14; /* Fundo escuro azulado marinho */
-  --card-bg: rgba(15, 23, 42, 0.45); /* Vidro translúcido escuro */
-  --border-color: rgba(255, 255, 255, 0.08); /* Borda ultra sutil */
-  --text-main: #cbd5e1; /* Cinza claro para textos */
-  --text-muted: #94a3b8; /* Cinza médio/claro para textos de apoio */
+  --primary-hover: #0da372; /* Verde um pouco mais escuro para hover no tema claro */
+  --secondary-color: #0f172a; /* Slate escuro para excelente contraste */
+  --bg-color: #f4fbf7; /* Fundo suave levemente esmeralda */
+  --card-bg: rgba(255, 255, 255, 0.75); /* Vidro translúcido claro */
+  --border-color: rgba(15, 184, 130, 0.12); /* Borda esmeralda translúcida sutil */
+  --text-main: #334155; /* Slate médio-escuro para excelente leitura */
+  --text-muted: #64748b; /* Slate médio para textos secundários */
   --success: #10b981;
-  --success-bg: rgba(16, 185, 129, 0.12); /* Verde translúcido */
+  --success-bg: rgba(16, 185, 129, 0.12);
   --danger: #ef4444;
-  --danger-bg: rgba(239, 68, 68, 0.12); /* Vermelho translúcido */
-  --warning: #f59e0b;
-  --warning-bg: rgba(245, 158, 11, 0.12); /* Amarelo translúcido */
-  --info: #3b82f6;
-  --info-bg: rgba(59, 130, 246, 0.12); /* Azul translúcido */
-  --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
-  --shadow-md: 0 8px 16px -2px rgba(0, 0, 0, 0.3), 0 4px 8px -2px rgba(0, 0, 0, 0.3);
-  --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
+  --danger-bg: rgba(239, 68, 68, 0.12);
+  --warning: #d97706; /* Amarelo escurecido para contraste em tema claro */
+  --warning-bg: rgba(217, 119, 6, 0.1);
+  --info: #2563eb; /* Azul escurecido para contraste em tema claro */
+  --info-bg: rgba(37, 99, 235, 0.08);
+  --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 10px 10px -5px rgba(0, 0, 0, 0.03);
   --radius-sm: 8px;
   --radius-md: 14px;
   --radius-lg: 20px;
   --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 
   /* Gradiente especial para o fundo geral */
-  --bg-gradient: linear-gradient(135deg, #070c14 0%, #061113 50%, #08211b 100%);
-  --glass-blur: blur(16px);
+  --bg-gradient: linear-gradient(135deg, #f4fbf7 0%, #edf4f0 50%, #e2ece6 100%);
+  --glass-blur: blur(20px);
 }
 
 * {
@@ -60,14 +60,14 @@ a {
   height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: rgba(7, 12, 20, 0.5);
+  background: rgba(0, 0, 0, 0.02);
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.1);
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.2);
 }
 
 /* --- CLASSE DE LAYOUT --- */
@@ -148,21 +148,21 @@ a {
 
 .btn-primary {
   background-color: var(--primary-color);
-  color: #070c14;
+  color: #ffffff;
 }
 .btn-primary:hover {
   background-color: var(--primary-hover);
-  box-shadow: 0 4px 14px rgba(15, 184, 130, 0.3);
+  box-shadow: 0 4px 14px rgba(15, 184, 130, 0.2);
 }
 
 .btn-secondary {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: rgba(255, 255, 255, 0.85);
   border-color: var(--border-color);
   color: var(--text-main);
 }
 .btn-secondary:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.2);
+  background-color: rgba(0, 0, 0, 0.04);
+  border-color: rgba(0, 0, 0, 0.12);
 }
 
 .btn-danger {
@@ -171,7 +171,7 @@ a {
 }
 .btn-danger:hover {
   background-color: #dc2626;
-  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);
 }
 
 .btn-icon {
@@ -198,8 +198,8 @@ a {
   padding: 0.625rem 0.875rem;
   font-size: 0.9rem;
   border-radius: var(--radius-sm);
-  border: 1px solid var(--border-color);
-  background-color: rgba(15, 23, 42, 0.4);
+  border: 1px solid rgba(15, 184, 130, 0.2);
+  background-color: rgba(255, 255, 255, 0.85);
   color: var(--text-main);
   transition: var(--transition);
 }
@@ -207,7 +207,7 @@ a {
 .form-input:focus {
   outline: none;
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(15, 184, 130, 0.15);
+  box-shadow: 0 0 0 3px rgba(15, 184, 130, 0.12);
 }
 
 .form-row {
@@ -236,7 +236,7 @@ a {
 }
 
 .table th {
-  background-color: rgba(15, 23, 42, 0.6);
+  background-color: rgba(15, 184, 130, 0.05);
   color: var(--text-muted);
   font-weight: 600;
   padding: 1rem;
@@ -258,7 +258,7 @@ a {
 }
 
 .table tr:hover td {
-  background-color: rgba(255, 255, 255, 0.03);
+  background-color: rgba(15, 184, 130, 0.04);
 }
 
 /* Badges / Etiquetas */

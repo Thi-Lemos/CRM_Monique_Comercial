@@ -66,7 +66,7 @@ export function calculateCriteriaNotes(parceiro: Partial<Parceiro>) {
 
 export function calculateScoreAndClassification(parceiro: Partial<Parceiro>, config?: any): {
   score: number;
-  classificacao: 'Estratégico' | 'Crescimento' | 'Reativação' | 'Prospecção';
+  classificacao: 'Estratégico' | 'Crescimento' | 'Desenvolvimento';
 } {
   const { n1, n2, n3, n4, n5, n6, n7 } = calculateCriteriaNotes(parceiro);
 
@@ -91,19 +91,14 @@ export function calculateScoreAndClassification(parceiro: Partial<Parceiro>, con
   // Garantir limites
   const scoreFinal = Math.max(0, Math.min(100, Math.round(score * 10) / 10)); // arredondado a 1 decimal
   
-  let classificacao: 'Estratégico' | 'Crescimento' | 'Reativação' | 'Prospecção' = 'Prospecção';
-  const status = parceiro.status || 'Em prospecção';
+  let classificacao: 'Estratégico' | 'Crescimento' | 'Desenvolvimento' = 'Desenvolvimento';
   
-  if (status === 'Ativo') {
-    if (scoreFinal >= 80) {
-      classificacao = 'Estratégico';
-    } else {
-      classificacao = 'Crescimento';
-    }
-  } else if (status === 'Inativo' || status === 'Em reativação') {
-    classificacao = 'Reativação';
+  if (scoreFinal >= 70) {
+    classificacao = 'Estratégico';
+  } else if (scoreFinal >= 40) {
+    classificacao = 'Crescimento';
   } else {
-    classificacao = 'Prospecção';
+    classificacao = 'Desenvolvimento';
   }
 
   return {

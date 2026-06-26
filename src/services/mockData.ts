@@ -51,9 +51,9 @@ export const initialParceiros: Parceiro[] = [
     vol_total_mensal: 50000,
     vol_prata_mensal: 0,
     concorrentes: "Novo Saque, Hub",
-    status: "Inativo",
+    status: "Reativação",
     score_comercial: 25.5,
-    classificacao: "Reativação"
+    classificacao: "Desenvolvimento"
   },
   {
     id: "p4",
@@ -89,7 +89,7 @@ export const initialParceiros: Parceiro[] = [
     concorrentes: "V8, VcTech",
     status: "Ativo",
     score_comercial: 41,
-    classificacao: "Reativação"
+    classificacao: "Crescimento"
   },
   {
     id: "p6",
@@ -125,7 +125,7 @@ export const initialParceiros: Parceiro[] = [
     concorrentes: "Happy, Nossa Fintech",
     status: "Ativo",
     score_comercial: 28.5,
-    classificacao: "Reativação"
+    classificacao: "Desenvolvimento"
   },
   {
     id: "p8",
@@ -164,7 +164,7 @@ export const initialProducao: ProducaoMensal[] = [
   { parceiro_id: "p2", ano: 2026, mes: 5, vol_fgts: 83000, vol_clt: 72000, vol_cgv: 11000, vol_pix: 6000 },
   { parceiro_id: "p2", ano: 2026, mes: 6, vol_fgts: 85000, vol_clt: 70000, vol_cgv: 12000, vol_pix: 5000 },
 
-  // Crédito Rápido (Zerado há 90+ dias, inativo)
+  // Crédito Rápido (Zerado há 60+ dias, Reativação)
   { parceiro_id: "p3", ano: 2026, mes: 1, vol_fgts: 12000, vol_clt: 0, vol_cgv: 0, vol_pix: 0 },
   { parceiro_id: "p3", ano: 2026, mes: 2, vol_fgts: 8000, vol_clt: 0, vol_cgv: 0, vol_pix: 0 },
   { parceiro_id: "p3", ano: 2026, mes: 3, vol_fgts: 0, vol_clt: 0, vol_cgv: 0, vol_pix: 0 },
@@ -232,10 +232,10 @@ export const initialLogs: CrmLog[] = [
     data_contato: "2026-06-05T16:00:00Z",
     canal: "Ligação",
     processo: "Win-back",
-    resumo: "Parceiro inativo há 90+ dias. Diagnóstico de inatividade: migrou operações para concorrentes devido a comissão.",
+    resumo: "Parceiro em reativação há 60+ dias. Diagnóstico de inatividade: migrou operações para concorrentes devido a comissão.",
     proxima_acao: "Apresentar cashback do Prata + diferencial Pix no Cartão",
     data_proxima_acao: "2026-06-07",
-    classificacao_pos_contato: "Reativação",
+    classificacao_pos_contato: "Desenvolvimento",
     crm_atualizado: true,
     score_no_momento: 25.5,
     diagnostico_causa: "Opera com concorrente (comissão maior)",
@@ -289,7 +289,7 @@ export const initialLogs: CrmLog[] = [
     resumo: "Parceiro de menor porte, opera apenas FGTS física local. Quer conhecer novas opções.",
     proxima_acao: "Apresentar Pix no Cartão como 2º produto",
     data_proxima_acao: "2026-06-02",
-    classificacao_pos_contato: "Crescimento",
+    classificacao_pos_contato: "Desenvolvimento",
     crm_atualizado: true
   },
   {

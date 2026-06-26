@@ -14,7 +14,7 @@ const DEFAULT_CRITERIOS: CriteriosConfig = {
     farmer_concentracao_minima: 30
   },
   limites: {
-    dias_inatividade_winback: 90,
+    dias_inatividade_winback: 60,
     dias_conversao_hunter: 7
   },
   pesos_score: {
@@ -231,7 +231,7 @@ export const dataService = {
       const sortedProds = [...prods].sort((a, b) => (b.ano !== a.ano ? b.ano - a.ano : b.mes - a.mes));
       const ultimaProd = sortedProds[0];
       
-      let statusCalculado: Parceiro['status'] = 'Em prospecção';
+      let statusCalculado: Parceiro['status'] = 'Onboarding';
       let temProducaoRecente = false;
 
       if (ultimaProd) {
@@ -242,7 +242,7 @@ export const dataService = {
           const diasSemProd = (hoje.getTime() - dataUltimaProd.getTime()) / (1000 * 60 * 60 * 24);
 
           if (diasSemProd > diasLimites.dias_inatividade_winback) {
-            statusCalculado = 'Inativo';
+            statusCalculado = 'Reativação';
           } else {
             statusCalculado = 'Ativo';
           }
@@ -251,9 +251,9 @@ export const dataService = {
 
       if (!temProducaoRecente) {
         if (diferencaCriacaoDias <= diasLimites.dias_conversao_hunter) {
-          statusCalculado = 'Em prospecção';
+          statusCalculado = 'Onboarding';
         } else {
-          statusCalculado = 'Inativo';
+          statusCalculado = 'Reativação';
         }
       }
 
@@ -262,8 +262,8 @@ export const dataService = {
         p.status = statusCalculado;
 
         if (statusCalculado === 'Ativo') {
-          const processo = statusAnterior === 'Em prospecção' ? 'Hunter' : 'Win-back';
-          const resumo = statusAnterior === 'Em prospecção'
+          const processo = statusAnterior === 'Onboarding' ? 'Hunter' : 'Win-back';
+          const resumo = statusAnterior === 'Onboarding'
             ? `Ativação automática: Novo parceiro ativado após registrar produção ativa de ${fmtCur(p.vol_prata_mensal)}.`
             : `Reativação automática: Parceiro reativado após registrar nova produção de ${fmtCur(p.vol_prata_mensal)}.`;
 

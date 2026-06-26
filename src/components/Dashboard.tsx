@@ -148,8 +148,8 @@ export default function Dashboard() {
             }
           }
 
-          // Regra 2: Novo parceiro (Prospecção) sem nenhuma operação/volume em 7 dias após criação
-          if (p.status === 'Em prospecção') {
+          // Regra 2: Novo parceiro (Onboarding) sem nenhuma operação/volume em 7 dias após criação
+          if (p.status === 'Onboarding') {
             const dataCriacao = p.created_at ? new Date(p.created_at) : new Date();
             if ((hoje.getTime() - dataCriacao.getTime()) > (7 * 24 * 60 * 60 * 1000) && p.vol_prata_mensal === 0) {
               activeAlerts.push({
@@ -163,13 +163,13 @@ export default function Dashboard() {
             }
           }
 
-          // Regra 3: Parceiro ativo com queda brusca de produção (Volume Prata = 0 ou Inativo)
-          if (p.status === 'Inativo' && p.vol_total_mensal > 0) {
+          // Regra 3: Parceiro com queda brusca de produção (Volume Prata = 0 ou em Reativação)
+          if (p.status === 'Reativação' && p.vol_total_mensal > 0) {
             activeAlerts.push({
               id: 'alert_inactive_' + p.id,
               parceiro: p.nome,
               parceiroId: p.id,
-              mensagem: 'Produção zerada há 90+ dias — processo Win-back deve ser iniciado.',
+              mensagem: 'Produção zerada há 60+ dias — processo Win-back deve ser iniciado.',
               prioridade: 'Alta',
               ultimaInteracao: dataUltima ? dataUltima.toLocaleDateString('pt-BR') : 'Sem registro'
             });
@@ -225,7 +225,7 @@ export default function Dashboard() {
     ? (totalVolumePrata / totalVolumeMercado) * 100
     : 0;
 
-  const inativos = parceiros.filter(p => p.status === 'Inativo').length;
+  const inativos = parceiros.filter(p => p.status === 'Reativação').length;
   const churnRate = parceiros.length > 0 ? (inativos / parceiros.length) * 100 : 0;
 
   const totalProdutos = parceiros.reduce((sum, p) => sum + p.produtos_ativos.length, 0);
@@ -594,22 +594,19 @@ export default function Dashboard() {
           {(() => {
             const strat = parceiros.filter(p => p.classificacao === 'Estratégico').length;
             const cresc = parceiros.filter(p => p.classificacao === 'Crescimento').length;
-            const reat = parceiros.filter(p => p.classificacao === 'Reativação').length;
-            const prosp = parceiros.filter(p => p.classificacao === 'Prospecção').length;
+            const desenv = parceiros.filter(p => p.classificacao === 'Desenvolvimento').length;
             const total = parceiros.length || 1;
 
             const pStrat = (strat / total) * 100;
             const pCresc = (cresc / total) * 100;
-            const pReat = (reat / total) * 100;
-            const pProsp = (prosp / total) * 100;
+            const pDesenv = (desenv / total) * 100;
 
             const radius = 50;
             const circumference = 2 * Math.PI * radius; // ~314.159
             
             const strokeStrat = (pStrat / 100) * circumference;
             const strokeCresc = (pCresc / 100) * circumference;
-            const strokeReat = (pReat / 100) * circumference;
-            const strokeProsp = (pProsp / 100) * circumference;
+            const strokeDesenv = (pDesenv / 100) * circumference;
 
             return (
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around', flex: 1, gap: '1rem', marginTop: '0.5rem' }}>
@@ -632,24 +629,17 @@ export default function Dashboard() {
                       strokeDashoffset={-strokeStrat}
                     />
                   )}
-                  {/* Segmento Reativação (Laranja Warning) */}
-                  {pReat > 0 && (
+                  {/* Segmento Desenvolvimento (Roxo) */}
+                  {pDesenv > 0 && (
                     <circle cx="60" cy="60" r={radius} fill="transparent" 
-                      stroke="#f59e0b" strokeWidth="16" 
-                      strokeDasharray={`${strokeReat} ${circumference}`}
+                      stroke="#8b5cf6" strokeWidth="16" 
+                      strokeDasharray={`${strokeDesenv} ${circumference}`}
                       strokeDashoffset={-(strokeStrat + strokeCresc)}
                     />
                   )}
-                  {/* Segmento Prospecção (Cinza Muted) */}
-                  {pProsp > 0 && (
-                    <circle cx="60" cy="60" r={radius} fill="transparent" 
-                      stroke="#64748b" strokeWidth="16" 
-                      strokeDasharray={`${strokeProsp} ${circumference}`}
-                      strokeDashoffset={-(strokeStrat + strokeCresc + strokeReat)}
-                    />
-                  )}
+                  
                   {/* Círculo Central para efeito Donut */}
-                  <circle cx="60" cy="60" r="38" fill="#ffffff" />
+                  <circle cx="60" cy="60" r="38" fill="var(--card-bg)" />
                   
                   <g style={{ transform: 'rotate(90deg) translate(50px, -65px)', transformOrigin: 'center' }}>
                     <text x="10" y="-10" textAnchor="middle" style={{ fontSize: '10px', fontWeight: 800, fill: 'var(--secondary-color)' }}>{parceiros.length}</text>
@@ -668,12 +658,8 @@ export default function Dashboard() {
                     <span style={{ fontWeight: 550, color: 'var(--text-main)' }}>Crescimento: <strong>{cresc}</strong> ({pCresc.toFixed(0)}%)</span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem' }}>
-                    <span style={{ width: '12px', height: '12px', borderRadius: '3px', backgroundColor: '#f59e0b' }}></span>
-                    <span style={{ fontWeight: 550, color: 'var(--text-main)' }}>Reativação: <strong>{reat}</strong> ({pReat.toFixed(0)}%)</span>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem' }}>
-                    <span style={{ width: '12px', height: '12px', borderRadius: '3px', backgroundColor: '#64748b' }}></span>
-                    <span style={{ fontWeight: 550, color: 'var(--text-main)' }}>Prospecção: <strong>{prosp}</strong> ({pProsp.toFixed(0)}%)</span>
+                    <span style={{ width: '12px', height: '12px', borderRadius: '3px', backgroundColor: '#8b5cf6' }}></span>
+                    <span style={{ fontWeight: 550, color: 'var(--text-main)' }}>Desenvolvimento: <strong>{desenv}</strong> ({pDesenv.toFixed(0)}%)</span>
                   </div>
                 </div>
               </div>
@@ -874,7 +860,7 @@ export default function Dashboard() {
                   }
                 }
 
-                if (p.status === 'Em prospecção') {
+                if (p.status === 'Onboarding') {
                   const dataCriacao = p.created_at ? new Date(p.created_at) : new Date();
                   if ((hoje.getTime() - dataCriacao.getTime()) > (7 * 24 * 60 * 60 * 1000) && p.vol_prata_mensal === 0) {
                     activeAlerts.push({
@@ -888,12 +874,12 @@ export default function Dashboard() {
                   }
                 }
 
-                if (p.status === 'Inativo' && p.vol_total_mensal > 0) {
+                if (p.status === 'Reativação' && p.vol_total_mensal > 0) {
                   activeAlerts.push({
                     id: 'alert_inactive_' + p.id,
                     parceiro: p.nome,
                     parceiroId: p.id,
-                    mensagem: 'Produção zerada há 90+ dias — processo Win-back deve ser iniciado.',
+                    mensagem: 'Produção zerada há 60+ dias — processo Win-back deve ser iniciado.',
                     prioridade: 'Alta',
                     ultimaInteracao: dataUltima ? dataUltima.toLocaleDateString('pt-BR') : 'Sem registro'
                   });
@@ -1051,7 +1037,7 @@ function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs }: 
             <tr key={p.id}>
               <td style={{ fontWeight: 600 }}>{p.nome}</td>
               <td>
-                <span className={`badge ${p.status === 'Ativo' ? 'badge-success' : p.status === 'Inativo' ? 'badge-danger' : 'badge-info'}`}>
+                <span className={`badge ${p.status === 'Ativo' ? 'badge-success' : p.status === 'Reativação' ? 'badge-danger' : 'badge-info'}`}>
                   {p.status}
                 </span>
               </td>
@@ -1084,7 +1070,7 @@ function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs }: 
               <tr key={p.id}>
                 <td style={{ fontWeight: 600 }}>{p.nome}</td>
                 <td>
-                  <span className={`badge ${p.status === 'Ativo' ? 'badge-success' : p.status === 'Inativo' ? 'badge-danger' : 'badge-info'}`}>
+                  <span className={`badge ${p.status === 'Ativo' ? 'badge-success' : p.status === 'Reativação' ? 'badge-danger' : 'badge-info'}`}>
                     {p.status}
                   </span>
                 </td>
@@ -1170,22 +1156,18 @@ function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs }: 
     const rows = [...parceiros].sort((a, b) => a.status.localeCompare(b.status));
     content = (
       <div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem', marginBottom: '1.5rem', textAlign: 'center' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginBottom: '1.5rem', textAlign: 'center' }}>
           <div style={{ padding: '0.75rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(16, 185, 129, 0.1)' }}>
             <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>ATIVOS</span>
             <div style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--success)' }}>{statusCounts['Ativo'] || 0}</div>
           </div>
-          <div style={{ padding: '0.75rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(239, 68, 68, 0.1)' }}>
-            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>INATIVOS</span>
-            <div style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--danger)' }}>{statusCounts['Inativo'] || 0}</div>
-          </div>
           <div style={{ padding: '0.75rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(59, 130, 246, 0.1)' }}>
-            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>EM PROSPECÇÃO</span>
-            <div style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--info)' }}>{statusCounts['Em prospecção'] || 0}</div>
+            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>ONBOARDING</span>
+            <div style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--info)' }}>{statusCounts['Onboarding'] || 0}</div>
           </div>
-          <div style={{ padding: '0.75rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(245, 158, 11, 0.1)' }}>
-            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>EM REATIVAÇÃO</span>
-            <div style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--warning)' }}>{statusCounts['Em reativação'] || 0}</div>
+          <div style={{ padding: '0.75rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(239, 68, 68, 0.1)' }}>
+            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>REATIVAÇÃO</span>
+            <div style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--danger)' }}>{statusCounts['Reativação'] || 0}</div>
           </div>
         </div>
         <table className="table">
@@ -1204,8 +1186,7 @@ function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs }: 
                 <td>
                   <span className={`badge ${
                     p.status === 'Ativo' ? 'badge-success' : 
-                    p.status === 'Inativo' ? 'badge-danger' : 
-                    p.status === 'Em prospecção' ? 'badge-info' : 'badge-warning'
+                    p.status === 'Reativação' ? 'badge-danger' : 'badge-info'
                   }`}>
                     {p.status}
                   </span>
@@ -1219,8 +1200,8 @@ function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs }: 
       </div>
     );
   } else if (kpiType === 'churn') {
-    title = 'Churn da Carteira (Parceiros Inativos)';
-    const rows = parceiros.filter(p => p.status === 'Inativo').sort((a,b) => b.vol_total_mensal - a.vol_total_mensal);
+    title = 'Churn da Carteira (Parceiros em Reativação)';
+    const rows = parceiros.filter(p => p.status === 'Reativação').sort((a,b) => b.vol_total_mensal - a.vol_total_mensal);
     content = (
       <table className="table">
         <thead>
@@ -1325,7 +1306,7 @@ function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs }: 
               <td>{p.inicioWinback}</td>
               <td>
                 <span className={`badge ${p.status === 'Ativo' ? 'badge-success' : 'badge-danger'}`}>
-                  {p.status === 'Ativo' ? 'Reativado' : 'Ainda Inativo'}
+                  {p.status === 'Ativo' ? 'Reativado' : 'Pendente de Reativação'}
                 </span>
               </td>
               <td>{p.classificacao}</td>

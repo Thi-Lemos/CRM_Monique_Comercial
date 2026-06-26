@@ -94,8 +94,8 @@ export default function InteractionForm({ initialPartnerId, onSave, onCancel }: 
 
     // Derivar Processo Comercial
     const processoDerivado: CrmLog['processo'] = 
-      selected.classificacao === 'Prospecção' ? 'Hunter' :
-      selected.classificacao === 'Reativação' ? 'Win-back' : 'Farmer';
+      selected.status === 'Onboarding' ? 'Hunter' :
+      selected.status === 'Reativação' ? 'Win-back' : 'Farmer';
 
     try {
       const logToSave: CrmLog = {
@@ -266,10 +266,10 @@ export default function InteractionForm({ initialPartnerId, onSave, onCancel }: 
           border: '1px solid var(--border-color)',
           borderRadius: 'var(--radius-sm)',
           padding: '1rem',
-          backgroundColor: '#f8fafc',
+          backgroundColor: 'rgba(0, 0, 0, 0.02)',
           marginBottom: '1.5rem'
         }}>
-          <summary style={{ fontWeight: 700, fontSize: '0.95rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', outline: 'none' }}>
+          <summary style={{ fontWeight: 700, fontSize: '0.95rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', outline: 'none', color: 'var(--secondary-color)' }}>
             <ClipboardList size={18} /> Questionário Pós-Reunião / Diagnóstico Comercial (Expandir)
           </summary>
           

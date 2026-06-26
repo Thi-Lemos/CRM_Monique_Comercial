@@ -78,7 +78,7 @@ export default function WorkRoutine() {
       isDynamic: true
     });
     // Hunter novos leads
-    const novosLeads = pList.filter(p => p.status === 'Em prospecção');
+    const novosLeads = pList.filter(p => p.status === 'Onboarding');
     novosLeads.slice(0, 3).forEach(p => {
       const id = `dyn_hunter_new_${p.id}`;
       dynamicTasks.push({
@@ -112,12 +112,12 @@ export default function WorkRoutine() {
     });
 
     // Win-back: inativos pendentes de diagnóstico
-    const inativosWinback = pList.filter(p => p.status === 'Inativo');
+    const inativosWinback = pList.filter(p => p.status === 'Reativação');
     inativosWinback.slice(0, 3).forEach(p => {
       const id = `dyn_winback_diag_${p.id}`;
       dynamicTasks.push({
         id,
-        title: `Win-back: Contato diagnóstico com o inativo ${p.nome} para apurar causa real`,
+        title: `Win-back: Contato diagnóstico com ${p.nome} (em Reativação) para apurar causa real`,
         dayOfWeek: 'Terça',
         done: dynamicDoneStates.includes(id),
         isDynamic: true,
@@ -157,12 +157,12 @@ export default function WorkRoutine() {
 
     // QUINTA-FEIRA
     // Onboarding Hunter travado (novos sem produção com mais de 7 dias)
-    const onboardingTravado = pList.filter(p => p.status === 'Em prospecção');
+    const onboardingTravado = pList.filter(p => p.status === 'Reativação');
     onboardingTravado.forEach(p => {
       const dataCriacao = p.created_at ? new Date(p.created_at) : hoje;
       const diasSemProd = (hoje.getTime() - dataCriacao.getTime()) / (1000 * 60 * 60 * 24);
       
-      if (diasSemProd > 7 && p.vol_prata_mensal === 0) {
+      if (diasSemProd > 7 && diasSemProd <= 30 && p.vol_prata_mensal === 0) {
         const id = `dyn_hunter_onboard_support_${p.id}`;
         dynamicTasks.push({
           id,
@@ -185,7 +185,7 @@ export default function WorkRoutine() {
     });
     dynamicTasks.push({
       id: 'dyn_winback_decision',
-      title: 'Decisão Win-back: Revisar inativos sem resposta por 15+ dias para inativação temporária',
+      title: 'Decisão Win-back: Revisar parceiros em Reativação sem resposta por 15+ dias para arquivamento temporário',
       dayOfWeek: 'Sexta',
       done: dynamicDoneStates.includes('dyn_winback_decision'),
       isDynamic: true

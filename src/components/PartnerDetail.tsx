@@ -184,8 +184,7 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
               <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--secondary-color)' }}>{partner.nome}</h2>
               <span className={`badge ${
                 partner.status === 'Ativo' ? 'badge-success' : 
-                partner.status === 'Inativo' ? 'badge-danger' : 
-                partner.status === 'Em reativação' ? 'badge-warning' : 'badge-info'
+                partner.status === 'Reativação' ? 'badge-danger' : 'badge-info'
               }`} style={{ fontSize: '0.7rem' }}>
                 {partner.status}
               </span>
@@ -284,14 +283,13 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
           <div style={{ marginBottom: '1.5rem', padding: '1rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(15, 23, 42, 0.4)', border: '1px solid var(--border-color)' }}>
             <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Classificação Atual:</p>
             <p style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--secondary-color)', display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.15rem' }}>
-              {partner.classificacao === 'Estratégico' ? '⭐ Estratégico' : partner.classificacao === 'Crescimento' ? '🔼 Crescimento' : partner.classificacao === 'Reativação' ? '🔄 Reativação' : '🆕 Prospecção'}
+              {partner.classificacao === 'Estratégico' ? '⭐ Estratégico' : partner.classificacao === 'Crescimento' ? '🔼 Crescimento' : '🛠️ Desenvolvimento'}
             </p>
             <p style={{ fontSize: '0.85rem', fontWeight: 550, color: 'var(--text-main)', marginTop: '0.5rem' }}>
               <strong>Estratégia:</strong> {
-                partner.classificacao === 'Estratégico' ? 'Retenção active + expansão de produtos' :
+                partner.classificacao === 'Estratégico' ? 'Retenção ativa + expansão de produtos' :
                 partner.classificacao === 'Crescimento' ? 'Inclusão de produtos + aumento de concentração' :
-                partner.classificacao === 'Reativação' ? 'Diagnóstico + oferta de produto âncora' :
-                'Qualificação + ativação com produto de entrada'
+                'Diagnóstico + plano de aceleração e desenvolvimento de equipe'
               }
             </p>
           </div>
@@ -350,7 +348,13 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
                   </tr>
                 ) : (
                   producao.map(p => {
-                    const conc = partner.vol_total_mensal > 0 ? (p.vol_total! / partner.vol_total_mensal) * 100 : 0;
+                    const totalDeclarado = partner.vol_total_mensal;
+                    let conc = 0;
+                    if (totalDeclarado > 0) {
+                      conc = Math.min(100, (p.vol_total! / totalDeclarado) * 100);
+                    } else if (p.vol_total! > 0) {
+                      conc = 100;
+                    }
                     return (
                       <tr key={p.id}>
                         <td style={{ fontWeight: 650 }}>{p.mes.toString().padStart(2, '0')}/{p.ano}</td>
@@ -675,9 +679,8 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
                   <label className="form-label">Status</label>
                   <select className="form-input" value={editFormData.status} onChange={(e) => setEditFormData(prev => ({ ...prev, status: e.target.value as any }))}>
                     <option value="Ativo">Ativo</option>
-                    <option value="Inativo">Inativo</option>
-                    <option value="Em reativação">Em reativação</option>
-                    <option value="Prospecção">Prospecção</option>
+                    <option value="Onboarding">Onboarding</option>
+                    <option value="Reativação">Reativação</option>
                   </select>
                 </div>
               </div>

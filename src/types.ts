@@ -12,9 +12,9 @@ export interface Parceiro {
   vol_total_mensal: number;
   vol_prata_mensal: number;
   concorrentes?: string;
-  status: 'Ativo' | 'Inativo' | 'Em prospecção' | 'Em reativação';
+  status: 'Ativo' | 'Onboarding' | 'Reativação';
   score_comercial: number; // 0 - 100
-  classificacao: 'Estratégico' | 'Crescimento' | 'Reativação' | 'Prospecção';
+  classificacao: 'Estratégico' | 'Crescimento' | 'Desenvolvimento';
   propostas_pagas_semana?: number;
   created_at?: string;
   updated_at?: string;
@@ -42,7 +42,7 @@ export interface CrmLog {
   resumo: string; // máx 500 caracteres
   proxima_acao: string;
   data_proxima_acao: string;
-  classificacao_pos_contato: 'Estratégico' | 'Crescimento' | 'Reativação' | 'Prospecção';
+  classificacao_pos_contato: 'Estratégico' | 'Crescimento' | 'Desenvolvimento';
   crm_atualizado: boolean;
   score_no_momento?: number;
   
