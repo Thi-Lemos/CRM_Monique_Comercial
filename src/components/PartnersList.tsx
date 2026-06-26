@@ -13,6 +13,7 @@ export default function PartnersList({ onSelectPartner }: PartnersListProps) {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [classFilter, setClassFilter] = useState('');
+  const [ascendingOrder, setAscendingOrder] = useState(false);
   
   // Controle de Modal e Edição
   const [showModal, setShowModal] = useState(false);
@@ -225,6 +226,12 @@ export default function PartnersList({ onSelectPartner }: PartnersListProps) {
     return matchesSearch && matchesStatus && matchesClass;
   });
 
+  const sortedAndFilteredParceiros = [...filteredParceiros].sort((a, b) => {
+    const volA = a.vol_prata_mensal || 0;
+    const volB = b.vol_prata_mensal || 0;
+    return ascendingOrder ? volA - volB : volB - volA;
+  });
+
   const formatCurrency = (val: number) => {
     return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(val);
   };
@@ -299,32 +306,60 @@ export default function PartnersList({ onSelectPartner }: PartnersListProps) {
             <option value="Prospecção">🆕 Prospecção</option>
           </select>
         </div>
+
+        {/* Checkbox de Ordenação Crescente */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem' }}>
+          <input 
+            type="checkbox"
+            id="ascendingOrder"
+            checked={ascendingOrder}
+            onChange={(e) => setAscendingOrder(e.target.checked)}
+            style={{
+              width: '16px',
+              height: '16px',
+              cursor: 'pointer',
+              accentColor: 'var(--primary-color)'
+            }}
+          />
+          <label 
+            htmlFor="ascendingOrder" 
+            style={{ 
+              fontSize: '0.85rem', 
+              fontWeight: 600, 
+              color: 'var(--text-main)', 
+              cursor: 'pointer',
+              userSelect: 'none'
+            }}
+          >
+            Ordem Crescente (Volume Prata)
+          </label>
+        </div>
       </div>
 
       {/* Tabela de Parceiros */}
       {loading ? (
         <div style={{ padding: '3rem', textAlign: 'center', fontSize: '1.1rem', fontWeight: 550 }}>Carregando carteira de parceiros...</div>
-      ) : filteredParceiros.length === 0 ? (
+      ) : sortedAndFilteredParceiros.length === 0 ? (
         <div className="card" style={{ padding: '4rem', textAlign: 'center', color: 'var(--text-muted)' }}>
           Nenhum parceiro encontrado com os filtros selecionados.
         </div>
       ) : (
-        <div className="table-container">
-          <table className="table">
+        <div className="table-container" style={{ maxHeight: '600px', overflowY: 'auto' }}>
+          <table className="table" style={{ borderCollapse: 'separate', borderSpacing: 0 }}>
             <thead>
               <tr>
-                <th>Parceiro / Razão Social</th>
-                <th>CNPJ</th>
-                <th>Contato</th>
-                <th>WhatsApp</th>
-                <th>Score / Classificação</th>
-                <th style={{ textAlign: 'right' }}>Vol. Prata</th>
-                <th>Status</th>
-                <th style={{ textAlign: 'center' }}>Ações</th>
+                <th style={{ position: 'sticky', top: 0, backgroundColor: 'var(--primary-color)', color: '#070c14', zIndex: 10, borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>Parceiro / Razão Social</th>
+                <th style={{ position: 'sticky', top: 0, backgroundColor: 'var(--primary-color)', color: '#070c14', zIndex: 10, borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>CNPJ</th>
+                <th style={{ position: 'sticky', top: 0, backgroundColor: 'var(--primary-color)', color: '#070c14', zIndex: 10, borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>Contato</th>
+                <th style={{ position: 'sticky', top: 0, backgroundColor: 'var(--primary-color)', color: '#070c14', zIndex: 10, borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>WhatsApp</th>
+                <th style={{ position: 'sticky', top: 0, backgroundColor: 'var(--primary-color)', color: '#070c14', zIndex: 10, borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>Score / Classificação</th>
+                <th style={{ position: 'sticky', top: 0, backgroundColor: 'var(--primary-color)', color: '#070c14', zIndex: 10, borderBottom: '1px solid rgba(255, 255, 255, 0.15)', textAlign: 'right' }}>Vol. Prata</th>
+                <th style={{ position: 'sticky', top: 0, backgroundColor: 'var(--primary-color)', color: '#070c14', zIndex: 10, borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>Status</th>
+                <th style={{ position: 'sticky', top: 0, backgroundColor: 'var(--primary-color)', color: '#070c14', zIndex: 10, borderBottom: '1px solid rgba(255, 255, 255, 0.15)', textAlign: 'center' }}>Ações</th>
               </tr>
             </thead>
             <tbody>
-              {filteredParceiros.map((p) => {
+              {sortedAndFilteredParceiros.map((p) => {
                 const conc = p.vol_total_mensal > 0 ? (p.vol_prata_mensal / p.vol_total_mensal) * 100 : 0;
                 return (
                   <tr key={p.id}>

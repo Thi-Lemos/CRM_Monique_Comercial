@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { dataService } from '../services/dataService';
-import { Parceiro, SemafaroStatus } from '../types';
+import { Parceiro, SemafaroStatus, CrmLog, ProducaoMensal } from '../types';
 import ExcelImporter from './ExcelImporter';
 import { 
   TrendingUp, 
@@ -17,6 +17,8 @@ import {
 
 export default function Dashboard() {
   const [parceiros, setParceiros] = useState<Parceiro[]>([]);
+  const [logs, setLogs] = useState<CrmLog[]>([]);
+  const [allProducoes, setAllProducoes] = useState<ProducaoMensal[]>([]);
   const [semaforo, setSemaforo] = useState<SemafaroStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [showImporter, setShowImporter] = useState(false);
@@ -39,23 +41,21 @@ export default function Dashboard() {
     async function loadDashboardData() {
       try {
         setLoading(true);
-        const pList = await dataService.getParceiros();
-        const lList = await dataService.getLogs();
-        const sem = await dataService.getSemafaroStatus();
-        const ciclo = await dataService.getCicloAtivacaoHunter();
-        const reat = await dataService.getTaxaReativacao();
-        
-        // Buscar todas as produções de uma vez em lote (Otimização N+1)
-        const allProds = await dataService.getAllProducao();
-        const prodsMap: { [key: string]: typeof allProds } = {};
-        for (const prod of allProds) {
-          if (!prodsMap[prod.parceiro_id]) {
-            prodsMap[prod.parceiro_id] = [];
-          }
-          prodsMap[prod.parceiro_id].push(prod);
-        }
+        // Carrega os dados base de uma só vez em lote (paralelo)
+        const [pList, lList, allProds] = await Promise.all([
+          dataService.getParceiros(),
+          dataService.getLogs(),
+          dataService.getAllProducao()
+        ]);
+
+        // Evita chamadas redundantes N+1 passando os dados carregados em memória
+        const sem = await dataService.getSemafaroStatus(pList, lList);
+        const ciclo = await dataService.getCicloAtivacaoHunter(pList, allProds);
+        const reat = await dataService.getTaxaReativacao(pList, lList);
         
         setParceiros(pList);
+        setLogs(lList);
+        setAllProducoes(allProds);
         setSemaforo(sem);
         setCicloAtivacao(ciclo);
         setTaxaReativacao(reat);
@@ -65,6 +65,14 @@ export default function Dashboard() {
         let cltSum = 0;
         let cgvSum = 0;
         let pixSum = 0;
+
+        const prodsMap: { [key: string]: typeof allProds } = {};
+        for (const prod of allProds) {
+          if (!prodsMap[prod.parceiro_id]) {
+            prodsMap[prod.parceiro_id] = [];
+          }
+          prodsMap[prod.parceiro_id].push(prod);
+        }
 
         for (const p of pList) {
           const prods = prodsMap[p.id] || [];
@@ -289,7 +297,7 @@ export default function Dashboard() {
           <div>
             <span className="kpi-label">Concentração Média Prata</span>
             <div className="kpi-value">{concentracaoGlobal.toFixed(1)}%</div>
-            <span className="kpi-meta danger">Meta: &ge; 30%</span>
+            <span className={`kpi-meta ${concentracaoGlobal >= 30 ? 'success' : 'danger'}`}>Meta: &ge; 30%</span>
           </div>
           <div className="kpi-icon-container">
             <Layers size={24} />
@@ -318,7 +326,7 @@ export default function Dashboard() {
           <div>
             <span className="kpi-label">Taxa de Parceiros Ativos</span>
             <div className="kpi-value">{taxaAtivos.toFixed(1)}%</div>
-            <span className="kpi-meta success">Meta: &ge; 70%</span>
+            <span className={`kpi-meta ${taxaAtivos >= 70 ? 'success' : 'danger'}`}>Meta: &ge; 70%</span>
           </div>
           <div className="kpi-icon-container">
             <Percent size={24} />
@@ -332,7 +340,7 @@ export default function Dashboard() {
           <div>
             <span className="kpi-label">Churn da Carteira</span>
             <div className="kpi-value" style={{ color: churnRate >= 10 ? 'var(--danger)' : 'inherit' }}>{churnRate.toFixed(1)}%</div>
-            <span className="kpi-meta success">Meta: &lt; 10%</span>
+            <span className={`kpi-meta ${churnRate < 10 ? 'success' : 'danger'}`}>Meta: &lt; 10%</span>
           </div>
           <div className="kpi-icon-container" style={{ color: 'var(--danger)', backgroundColor: 'rgba(239, 68, 68, 0.15)' }}>
             <AlertCircle size={24} />
@@ -347,7 +355,7 @@ export default function Dashboard() {
           <div style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--secondary-color)', margin: '0.2rem 0' }}>
             {mediaProdutos.toFixed(1)}
           </div>
-          <span style={{ fontSize: '0.7rem', color: 'var(--success)', fontWeight: 500 }}>Meta: &ge; 2 / parc.</span>
+          <span style={{ fontSize: '0.7rem', color: mediaProdutos >= 2 ? 'var(--success)' : 'var(--danger)', fontWeight: 500 }}>Meta: &ge; 2 / parc.</span>
         </div>
 
         <div className="card kpi-card" style={{ padding: '1rem 1.25rem' }} onClick={() => setSelectedKpi('ciclo-ativacao')}>
@@ -355,7 +363,7 @@ export default function Dashboard() {
           <div style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--secondary-color)', margin: '0.2rem 0' }}>
             {cicloAtivacao} dias
           </div>
-          <span style={{ fontSize: '0.7rem', color: 'var(--success)', fontWeight: 500 }}>Meta: &le; 7 dias</span>
+          <span style={{ fontSize: '0.7rem', color: cicloAtivacao <= 7 ? 'var(--success)' : 'var(--danger)', fontWeight: 500 }}>Meta: &le; 7 dias</span>
         </div>
 
         <div className="card kpi-card" style={{ padding: '1rem 1.25rem' }} onClick={() => setSelectedKpi('taxa-reativacao')}>
@@ -363,7 +371,7 @@ export default function Dashboard() {
           <div style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--secondary-color)', margin: '0.2rem 0' }}>
             {taxaReativacao.toFixed(1)}%
           </div>
-          <span style={{ fontSize: '0.7rem', color: 'var(--success)', fontWeight: 500 }}>Meta: &ge; 25%</span>
+          <span style={{ fontSize: '0.7rem', color: taxaReativacao >= 25 ? 'var(--success)' : 'var(--danger)', fontWeight: 500 }}>Meta: &ge; 25%</span>
         </div>
       </div>
 
@@ -765,14 +773,20 @@ export default function Dashboard() {
           onClose={() => setShowImporter(false)}
           onImportSuccess={async () => {
             try {
-              // Recarregar os dados do Dashboard após importação
-              const pList = await dataService.getParceiros();
-              const lList = await dataService.getLogs();
-              const sem = await dataService.getSemafaroStatus();
-              const ciclo = await dataService.getCicloAtivacaoHunter();
-              const reat = await dataService.getTaxaReativacao();
+              // Recarregar os dados do Dashboard após importação em lote
+              const [pList, lList, allProds] = await Promise.all([
+                dataService.getParceiros(),
+                dataService.getLogs(),
+                dataService.getAllProducao()
+              ]);
+
+              const sem = await dataService.getSemafaroStatus(pList, lList);
+              const ciclo = await dataService.getCicloAtivacaoHunter(pList, allProds);
+              const reat = await dataService.getTaxaReativacao(pList, lList);
               
               setParceiros(pList);
+              setLogs(lList);
+              setAllProducoes(allProds);
               setCicloAtivacao(ciclo);
               setTaxaReativacao(reat);
               setSemaforo(sem);
@@ -783,8 +797,16 @@ export default function Dashboard() {
               let cgvSum = 0;
               let pixSum = 0;
 
+              const prodsMap: { [key: string]: typeof allProds } = {};
+              for (const prod of allProds) {
+                if (!prodsMap[prod.parceiro_id]) {
+                  prodsMap[prod.parceiro_id] = [];
+                }
+                prodsMap[prod.parceiro_id].push(prod);
+              }
+
               for (const p of pList) {
-                const prods = await dataService.getProducao(p.id);
+                const prods = prodsMap[p.id] || [];
                 const pJun = prods.find(pr => pr.ano === 2026 && pr.mes === 6);
                 if (pJun) {
                   fgtsSum += pJun.vol_fgts || 0;
@@ -816,7 +838,7 @@ export default function Dashboard() {
                   });
                 }
 
-                const producoes = await dataService.getProducao(p.id);
+                const producoes = prodsMap[p.id] || [];
                 const prodJun = producoes.find(pr => pr.ano === 2026 && pr.mes === 6);
                 const prodMai = producoes.find(pr => pr.ano === 2026 && pr.mes === 5);
                 
@@ -913,6 +935,8 @@ export default function Dashboard() {
           kpiType={selectedKpi}
           onClose={() => setSelectedKpi(null)}
           parceiros={parceiros}
+          allProducoes={allProducoes}
+          allLogs={logs}
         />
       )}
     </div>
@@ -920,7 +944,7 @@ export default function Dashboard() {
 }
 
 // Modal de auditoria da origem de dados de cada KPI comercial
-function KpiOriginModal({ kpiType, onClose, parceiros }: { kpiType: string; onClose: () => void; parceiros: Parceiro[] }) {
+function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs }: { kpiType: string; onClose: () => void; parceiros: Parceiro[]; allProducoes: ProducaoMensal[]; allLogs: CrmLog[] }) {
   const [loading, setLoading] = useState(false);
   const [details, setDetails] = useState<any[]>([]);
 
@@ -930,8 +954,16 @@ function KpiOriginModal({ kpiType, onClose, parceiros }: { kpiType: string; onCl
       async function calc() {
         try {
           const list: any[] = [];
+          const prodsMap: { [key: string]: ProducaoMensal[] } = {};
+          for (const pr of allProducoes) {
+            if (!prodsMap[pr.parceiro_id]) {
+              prodsMap[pr.parceiro_id] = [];
+            }
+            prodsMap[pr.parceiro_id].push(pr);
+          }
+
           for (const p of parceiros) {
-            const prods = await dataService.getProducao(p.id);
+            const prods = prodsMap[p.id] || [];
             const comProd = prods.filter(pr => ((pr.vol_fgts || 0) + (pr.vol_clt || 0) + (pr.vol_cgv || 0) + (pr.vol_pix || 0)) > 0);
             if (comProd.length > 0) {
               const sorted = [...comProd].sort((a,b) => (a.ano !== b.ano ? a.ano - b.ano : a.mes - b.mes));
@@ -961,10 +993,9 @@ function KpiOriginModal({ kpiType, onClose, parceiros }: { kpiType: string; onCl
       setLoading(true);
       async function calc() {
         try {
-          const logs = await dataService.getLogs();
           const winbackSet = new Set<string>();
           const datasInicio: Record<string, string> = {};
-          logs.forEach(log => {
+          allLogs.forEach(log => {
             if (log.processo === 'Win-back') {
               winbackSet.add(log.parceiro_id);
               if (!datasInicio[log.parceiro_id]) {
@@ -991,7 +1022,7 @@ function KpiOriginModal({ kpiType, onClose, parceiros }: { kpiType: string; onCl
       }
       calc();
     }
-  }, [kpiType, parceiros]);
+  }, [kpiType, parceiros, allProducoes, allLogs]);
 
   // Formatar Moeda
   const formatCurrency = (val: number) => {

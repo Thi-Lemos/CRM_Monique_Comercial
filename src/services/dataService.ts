@@ -553,8 +553,8 @@ export const dataService = {
   },
 
   // --- SEMÁFORO & METAS ---
-  async getSemafaroStatus(): Promise<SemafaroStatus> {
-    const parceiros = await this.getParceiros();
+  async getSemafaroStatus(preloadedParceiros?: Parceiro[], preloadedLogs?: CrmLog[]): Promise<SemafaroStatus> {
+    const parceiros = preloadedParceiros || await this.getParceiros();
     const config = await this.getCriterios();
     
     // Farmer: propostas pagas na semana de toda a carteira ativa comparado à meta
@@ -562,7 +562,7 @@ export const dataService = {
     const propostasPagasTotal = ativos.reduce((sum, p) => sum + (p.propostas_pagas_semana || 0), 0);
     
     // Hunter: contagem de ativações/reativações nos últimos 7 dias
-    const logs = await this.getLogs();
+    const logs = preloadedLogs || await this.getLogs();
     const hoje = new Date();
     const umaSemanaAtras = new Date(hoje.getTime() - (7 * 24 * 60 * 60 * 1000));
     
@@ -894,13 +894,24 @@ export const dataService = {
     }
   },
 
-  async getCicloAtivacaoHunter(): Promise<number> {
-    const parceiros = await this.getParceiros();
+  async getCicloAtivacaoHunter(preloadedParceiros?: Parceiro[], preloadedProducoes?: ProducaoMensal[]): Promise<number> {
+    const parceiros = preloadedParceiros || await this.getParceiros();
     let totalDias = 0;
     let totalContasAtivas = 0;
 
+    // Criar mapa de produções por parceiro para evitar consultas repetidas
+    const prodsMap: { [key: string]: ProducaoMensal[] } = {};
+    if (preloadedProducoes) {
+      for (const pr of preloadedProducoes) {
+        if (!prodsMap[pr.parceiro_id]) {
+          prodsMap[pr.parceiro_id] = [];
+        }
+        prodsMap[pr.parceiro_id].push(pr);
+      }
+    }
+
     for (const p of parceiros) {
-      const producoes = await this.getProducao(p.id);
+      const producoes = preloadedProducoes ? (prodsMap[p.id] || []) : await this.getProducao(p.id);
       const comProd = producoes.filter(pr => ((pr.vol_fgts || 0) + (pr.vol_clt || 0) + (pr.vol_cgv || 0) + (pr.vol_pix || 0)) > 0);
       
       if (comProd.length > 0) {
@@ -922,9 +933,9 @@ export const dataService = {
     return Math.round(totalDias / totalContasAtivas);
   },
 
-  async getTaxaReativacao(): Promise<number> {
-    const logs = await this.getLogs();
-    const parceiros = await this.getParceiros();
+  async getTaxaReativacao(preloadedParceiros?: Parceiro[], preloadedLogs?: CrmLog[]): Promise<number> {
+    const logs = preloadedLogs || await this.getLogs();
+    const parceiros = preloadedParceiros || await this.getParceiros();
     
     const winbackPartners = new Set<string>();
     logs.forEach(log => {
