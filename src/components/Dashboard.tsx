@@ -245,12 +245,6 @@ export default function Dashboard() {
     criterios?.limites
   );
 
-  let totalVolPrataAcumulado = 0;
-  let fgtsSum = 0;
-  let cltSum = 0;
-  let cgvSum = 0;
-  let pixSum = 0;
-
   // Mapa de relacionamento parceiro_id -> faturamentos acumulados no período selecionado
   const parceiroProdMap: Record<string, { fgts: number; clt: number; cgv: number; pix: number; total: number }> = {};
 
@@ -258,11 +252,6 @@ export default function Dashboard() {
     const match = activeMonths.some(m => m.ano === prod.ano && m.mes === prod.mes);
     if (match) {
       const vol = (prod.vol_fgts || 0) + (prod.vol_clt || 0) + (prod.vol_cgv || 0) + (prod.vol_pix || 0);
-      totalVolPrataAcumulado += vol;
-      fgtsSum += prod.vol_fgts || 0;
-      cltSum += prod.vol_clt || 0;
-      cgvSum += prod.vol_cgv || 0;
-      pixSum += prod.vol_pix || 0;
 
       if (!parceiroProdMap[prod.parceiro_id]) {
         parceiroProdMap[prod.parceiro_id] = { fgts: 0, clt: 0, cgv: 0, pix: 0, total: 0 };
@@ -275,20 +264,14 @@ export default function Dashboard() {
     }
   });
 
-  const totalVolumePrata = totalVolPrataAcumulado / numMonths;
-  const mixProdutos = {
-    fgts: fgtsSum / numMonths,
-    clt: cltSum / numMonths,
-    cgv: cgvSum / numMonths,
-    pix: pixSum / numMonths
-  };
-
   // Cálculo de KPIs Médios (se o período tiver múltiplos meses, calculamos a média de cada mês)
   let parceirosAtivos = 0;
   let taxaAtivos = 0;
   let inativos = 0;
   let churnRate = 0;
   let totalVolumeMercado = 0;
+  let totalVolumePrata = 0;
+  let mixProdutos = { fgts: 0, clt: 0, cgv: 0, pix: 0 };
 
   if (numMonths > 1) {
     let somaAtivos = 0;
@@ -296,25 +279,55 @@ export default function Dashboard() {
     let somaInativos = 0;
     let somaChurnRate = 0;
     let somaVolumeMercado = 0;
+    let somaVolumePrata = 0;
+    let somaFgts = 0;
+    let somaClt = 0;
+    let somaCgv = 0;
+    let somaPix = 0;
 
     activeMonths.forEach(m => {
       const mesPeriodStr = `${m.mes === 1 ? 'janeiro' : m.mes === 2 ? 'fevereiro' : m.mes === 3 ? 'marco' : m.mes === 4 ? 'abril' : m.mes === 5 ? 'maio' : 'junho'}_${m.ano}`;
       const pNoMes = dataService.getParceirosComStatusNoPeriodo(parceiros, allProducoes, mesPeriodStr, criterios?.limites);
       
-      const ativosNoMes = pNoMes.filter(p => p.status === 'Ativo').length;
-      const taxaAtivosNoMes = pNoMes.length > 0 ? (ativosNoMes / pNoMes.length) * 100 : 0;
-      const inativosNoMes = pNoMes.filter(p => p.status === 'Reativação').length;
-      const churnRateNoMes = pNoMes.length > 0 ? (inativosNoMes / pNoMes.length) * 100 : 0;
-      
-      const parceirosAtivosNoMes = pNoMes.filter(p => p.status === 'Ativo');
-      const somaVolMercadoAtivosNoMes = parceirosAtivosNoMes.reduce((sum, p) => sum + p.vol_total_mensal, 0);
-      const volMercadoNoMes = parceirosAtivosNoMes.length > 0 ? (somaVolMercadoAtivosNoMes / parceirosAtivosNoMes.length) : 0;
+      const ativosNoMes = pNoMes.filter(p => p.status === 'Ativo');
+      const qtdAtivosNoMes = ativosNoMes.length;
 
-      somaAtivos += ativosNoMes;
-      somaTaxaAtivos += taxaAtivosNoMes;
-      somaInativos += inativosNoMes;
-      somaChurnRate += churnRateNoMes;
+      let fgtsAtivosNoMes = 0;
+      let cltAtivosNoMes = 0;
+      let cgvAtivosNoMes = 0;
+      let pixAtivosNoMes = 0;
+      let prataAtivosNoMes = 0;
+
+      ativosNoMes.forEach(p => {
+        const prod = allProducoes.find(pr => pr.parceiro_id === p.id && pr.ano === m.ano && pr.mes === m.mes);
+        if (prod) {
+          fgtsAtivosNoMes += prod.vol_fgts || 0;
+          cltAtivosNoMes += prod.vol_clt || 0;
+          cgvAtivosNoMes += prod.vol_cgv || 0;
+          pixAtivosNoMes += prod.vol_pix || 0;
+          prataAtivosNoMes += (prod.vol_fgts || 0) + (prod.vol_clt || 0) + (prod.vol_cgv || 0) + (prod.vol_pix || 0);
+        }
+      });
+
+      const fgtsMedioNoMes = qtdAtivosNoMes > 0 ? fgtsAtivosNoMes / qtdAtivosNoMes : 0;
+      const cltMedioNoMes = qtdAtivosNoMes > 0 ? cltAtivosNoMes / qtdAtivosNoMes : 0;
+      const cgvMedioNoMes = qtdAtivosNoMes > 0 ? cgvAtivosNoMes / qtdAtivosNoMes : 0;
+      const pixMedioNoMes = qtdAtivosNoMes > 0 ? pixAtivosNoMes / qtdAtivosNoMes : 0;
+      const prataMedioNoMes = qtdAtivosNoMes > 0 ? prataAtivosNoMes / qtdAtivosNoMes : 0;
+
+      const somaVolMercadoAtivosNoMes = ativosNoMes.reduce((sum, p) => sum + p.vol_total_mensal, 0);
+      const volMercadoNoMes = qtdAtivosNoMes > 0 ? (somaVolMercadoAtivosNoMes / qtdAtivosNoMes) : 0;
+
+      somaAtivos += qtdAtivosNoMes;
+      somaTaxaAtivos += pNoMes.length > 0 ? (qtdAtivosNoMes / pNoMes.length) * 100 : 0;
+      somaInativos += pNoMes.filter(p => p.status === 'Reativação').length;
+      somaChurnRate += pNoMes.length > 0 ? (pNoMes.filter(p => p.status === 'Reativação').length / pNoMes.length) * 100 : 0;
       somaVolumeMercado += volMercadoNoMes;
+      somaVolumePrata += prataMedioNoMes;
+      somaFgts += fgtsMedioNoMes;
+      somaClt += cltMedioNoMes;
+      somaCgv += cgvMedioNoMes;
+      somaPix += pixMedioNoMes;
     });
 
     parceirosAtivos = somaAtivos / numMonths;
@@ -322,15 +335,50 @@ export default function Dashboard() {
     inativos = somaInativos / numMonths;
     churnRate = somaChurnRate / numMonths;
     totalVolumeMercado = somaVolumeMercado / numMonths;
+    totalVolumePrata = somaVolumePrata / numMonths;
+    mixProdutos = {
+      fgts: somaFgts / numMonths,
+      clt: somaClt / numMonths,
+      cgv: somaCgv / numMonths,
+      pix: somaPix / numMonths
+    };
   } else {
-    parceirosAtivos = parceirosNoPeriodo.filter(p => p.status === 'Ativo').length;
+    const ativosNoPeriodo = parceirosNoPeriodo.filter(p => p.status === 'Ativo');
+    const qtdAtivos = ativosNoPeriodo.length;
+
+    parceirosAtivos = qtdAtivos;
     taxaAtivos = parceirosNoPeriodo.length > 0 ? (parceirosAtivos / parceirosNoPeriodo.length) * 100 : 0;
     inativos = parceirosNoPeriodo.filter(p => p.status === 'Reativação').length;
     churnRate = parceirosNoPeriodo.length > 0 ? (inativos / parceirosNoPeriodo.length) * 100 : 0;
     
-    const parceirosAtivosNoPeriodo = parceirosNoPeriodo.filter(p => p.status === 'Ativo');
-    const somaVolMercadoAtivos = parceirosAtivosNoPeriodo.reduce((sum, p) => sum + p.vol_total_mensal, 0);
-    totalVolumeMercado = parceirosAtivosNoPeriodo.length > 0 ? (somaVolMercadoAtivos / parceirosAtivosNoPeriodo.length) : 0;
+    const somaVolMercadoAtivos = ativosNoPeriodo.reduce((sum, p) => sum + p.vol_total_mensal, 0);
+    totalVolumeMercado = qtdAtivos > 0 ? (somaVolMercadoAtivos / qtdAtivos) : 0;
+
+    let fgtsAtivos = 0;
+    let cltAtivos = 0;
+    let cgvAtivos = 0;
+    let pixAtivos = 0;
+    let prataAtivos = 0;
+
+    ativosNoPeriodo.forEach(p => {
+      const m = activeMonths[0];
+      const prod = allProducoes.find(pr => pr.parceiro_id === p.id && pr.ano === m.ano && pr.mes === m.mes);
+      if (prod) {
+        fgtsAtivos += prod.vol_fgts || 0;
+        cltAtivos += prod.vol_clt || 0;
+        cgvAtivos += prod.vol_cgv || 0;
+        pixAtivos += prod.vol_pix || 0;
+        prataAtivos += (prod.vol_fgts || 0) + (prod.vol_clt || 0) + (prod.vol_cgv || 0) + (prod.vol_pix || 0);
+      }
+    });
+
+    totalVolumePrata = qtdAtivos > 0 ? prataAtivos / qtdAtivos : 0;
+    mixProdutos = {
+      fgts: qtdAtivos > 0 ? fgtsAtivos / qtdAtivos : 0,
+      clt: qtdAtivos > 0 ? cltAtivos / qtdAtivos : 0,
+      cgv: qtdAtivos > 0 ? cgvAtivos / qtdAtivos : 0,
+      pix: qtdAtivos > 0 ? pixAtivos / qtdAtivos : 0
+    };
   }
 
   // Taxa de Reativação Dinâmica
@@ -1146,19 +1194,20 @@ function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs, se
       </table>
     );
   } else if (kpiType === 'total-prata') {
-    title = `Detalhamento do Volume Produzido Prata (${getPeriodLabel(selectedPeriod)})`;
+    title = `Detalhamento do Volume Produzido Prata (Média por Parceiro Ativo - ${getPeriodLabel(selectedPeriod)})`;
     const rows = parceiros
+      .filter(p => p.status === 'Ativo')
       .map(p => ({
         ...p,
         volPrataPeriodo: (parceiroProdMap[p.id]?.total || 0) / numMonths
       }))
       .sort((a, b) => b.volPrataPeriodo - a.volPrataPeriodo);
-    const totalPrata = rows.reduce((sum, p) => sum + p.volPrataPeriodo, 0) || 1;
+    const totalPrata = rows.reduce((sum, p) => sum + p.volPrataPeriodo, 0);
     content = (
       <table className="table">
         <thead>
           <tr>
-            <th>Parceiro</th>
+            <th>Parceiro (Ativo)</th>
             <th>Status</th>
             <th>Classificação</th>
             <th style={{ textAlign: 'right' }}>Volume Prata</th>
@@ -1167,7 +1216,7 @@ function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs, se
         </thead>
         <tbody>
           {rows.map(p => {
-            const share = (p.volPrataPeriodo / totalPrata) * 100;
+            const share = totalPrata > 0 ? (p.volPrataPeriodo / totalPrata) * 100 : 0;
             return (
               <tr key={p.id}>
                 <td style={{ fontWeight: 600 }}>{p.nome}</td>
@@ -1183,6 +1232,15 @@ function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs, se
             );
           })}
         </tbody>
+        <tfoot>
+          <tr style={{ fontWeight: 800, backgroundColor: 'rgba(0, 0, 0, 0.05)' }}>
+            <td colSpan={3}>Média por Parceiro Ativo</td>
+            <td style={{ textAlign: 'right', color: 'var(--primary-color)' }}>
+              {formatCurrency(rows.length > 0 ? totalPrata / rows.length : 0)}
+            </td>
+            <td></td>
+          </tr>
+        </tfoot>
       </table>
     );
   } else if (kpiType === 'concentracao') {
