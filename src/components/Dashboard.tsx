@@ -179,7 +179,6 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [showImporter, setShowImporter] = useState(false);
   const [cicloAtivacao, setCicloAtivacao] = useState(6);
-  const [taxaReativacao, setTaxaReativacao] = useState(25.0);
   const [selectedKpi, setSelectedKpi] = useState<string | null>(null);
   const [lastWeeklyUploadDate, setLastWeeklyUploadDate] = useState<string>('');
   const [selectedPeriod, setSelectedPeriod] = useState<string>('maio_2026');
@@ -208,7 +207,6 @@ export default function Dashboard() {
 
         const sem = await dataService.getSemafaroStatus(pList, lList);
         const ciclo = await dataService.getCicloAtivacaoHunter(pList, allProds);
-        const reat = await dataService.getTaxaReativacao(pList, lList);
         const uploadDate = dataService.getLastWeeklyUploadDate();
         
         setParceiros(pList);
@@ -216,7 +214,6 @@ export default function Dashboard() {
         setAllProducoes(allProds);
         setSemaforo(sem);
         setCicloAtivacao(ciclo);
-        setTaxaReativacao(reat);
         setLastWeeklyUploadDate(uploadDate);
         setCriterios(config);
 
@@ -286,7 +283,57 @@ export default function Dashboard() {
     pix: pixSum / numMonths
   };
 
-  const totalVolumeMercado = parceirosNoPeriodo.reduce((sum, p) => sum + p.vol_total_mensal, 0);
+  // Cálculo de KPIs Médios (se o período tiver múltiplos meses, calculamos a média de cada mês)
+  let parceirosAtivos = 0;
+  let taxaAtivos = 0;
+  let inativos = 0;
+  let churnRate = 0;
+  let totalVolumeMercado = 0;
+
+  if (numMonths > 1) {
+    let somaAtivos = 0;
+    let somaTaxaAtivos = 0;
+    let somaInativos = 0;
+    let somaChurnRate = 0;
+    let somaVolumeMercado = 0;
+
+    activeMonths.forEach(m => {
+      const mesPeriodStr = `${m.mes === 1 ? 'janeiro' : m.mes === 2 ? 'fevereiro' : m.mes === 3 ? 'marco' : m.mes === 4 ? 'abril' : m.mes === 5 ? 'maio' : 'junho'}_${m.ano}`;
+      const pNoMes = dataService.getParceirosComStatusNoPeriodo(parceiros, allProducoes, mesPeriodStr, criterios?.limites);
+      
+      const ativosNoMes = pNoMes.filter(p => p.status === 'Ativo').length;
+      const taxaAtivosNoMes = pNoMes.length > 0 ? (ativosNoMes / pNoMes.length) * 100 : 0;
+      const inativosNoMes = pNoMes.filter(p => p.status === 'Reativação').length;
+      const churnRateNoMes = pNoMes.length > 0 ? (inativosNoMes / pNoMes.length) * 100 : 0;
+      const volMercadoNoMes = pNoMes.reduce((sum, p) => sum + p.vol_total_mensal, 0);
+
+      somaAtivos += ativosNoMes;
+      somaTaxaAtivos += taxaAtivosNoMes;
+      somaInativos += inativosNoMes;
+      somaChurnRate += churnRateNoMes;
+      somaVolumeMercado += volMercadoNoMes;
+    });
+
+    parceirosAtivos = somaAtivos / numMonths;
+    taxaAtivos = somaTaxaAtivos / numMonths;
+    inativos = somaInativos / numMonths;
+    churnRate = somaChurnRate / numMonths;
+    totalVolumeMercado = somaVolumeMercado / numMonths;
+  } else {
+    parceirosAtivos = parceirosNoPeriodo.filter(p => p.status === 'Ativo').length;
+    taxaAtivos = parceirosNoPeriodo.length > 0 ? (parceirosAtivos / parceirosNoPeriodo.length) * 100 : 0;
+    inativos = parceirosNoPeriodo.filter(p => p.status === 'Reativação').length;
+    churnRate = parceirosNoPeriodo.length > 0 ? (inativos / parceirosNoPeriodo.length) * 100 : 0;
+    totalVolumeMercado = parceirosNoPeriodo.reduce((sum, p) => sum + p.vol_total_mensal, 0);
+  }
+
+  // Taxa de Reativação Dinâmica
+  const taxaReativacaoDinamica = dataService.getTaxaReativacaoNoPeriodo(
+    parceiros,
+    allProducoes,
+    selectedPeriod,
+    criterios?.limites
+  );
 
   const concentracaoGlobal = totalVolumeMercado > 0 
     ? (totalVolumePrata / totalVolumeMercado) * 100
@@ -305,11 +352,6 @@ export default function Dashboard() {
     }
   });
   const mediaProdutos = parceirosNoPeriodo.length > 0 ? totalProdutosOperados / parceirosNoPeriodo.length : 0;
-
-  const parceirosAtivos = parceirosNoPeriodo.filter(p => p.status === 'Ativo').length;
-  const taxaAtivos = parceirosNoPeriodo.length > 0 ? (parceirosAtivos / parceirosNoPeriodo.length) * 100 : 0;
-  const inativos = parceirosNoPeriodo.filter(p => p.status === 'Reativação').length;
-  const churnRate = parceirosNoPeriodo.length > 0 ? (inativos / parceirosNoPeriodo.length) * 100 : 0;
 
   // Formatar Moeda
   const formatCurrency = (val: number) => {
@@ -484,9 +526,9 @@ export default function Dashboard() {
         <div className="card kpi-card" style={{ padding: '1rem 1.25rem' }} onClick={() => setSelectedKpi('taxa-reativacao')}>
           <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>TAXA REATIVAÇÃO</span>
           <div style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--secondary-color)', margin: '0.2rem 0' }}>
-            {taxaReativacao.toFixed(1)}%
+            {taxaReativacaoDinamica.toFixed(1)}%
           </div>
-          <span style={{ fontSize: '0.7rem', color: taxaReativacao >= 25 ? 'var(--success)' : 'var(--danger)', fontWeight: 500 }}>Meta: &ge; 25%</span>
+          <span style={{ fontSize: '0.7rem', color: taxaReativacaoDinamica >= 25 ? 'var(--success)' : 'var(--danger)', fontWeight: 500 }}>Meta: &ge; 25%</span>
         </div>
       </div>
 
@@ -894,13 +936,11 @@ export default function Dashboard() {
 
               const sem = await dataService.getSemafaroStatus(pList, lList);
               const ciclo = await dataService.getCicloAtivacaoHunter(pList, allProds);
-              const reat = await dataService.getTaxaReativacao(pList, lList);
               
               setParceiros(pList);
               setLogs(lList);
               setAllProducoes(allProds);
               setCicloAtivacao(ciclo);
-              setTaxaReativacao(reat);
               setSemaforo(sem);
 
               // Atualizar alertas
@@ -1008,26 +1048,40 @@ function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs, se
       setLoading(true);
       async function calc() {
         try {
-          const winbackSet = new Set<string>();
-          const datasInicio: Record<string, string> = {};
-          allLogs.forEach(log => {
-            if (log.processo === 'Win-back') {
-              winbackSet.add(log.parceiro_id);
-              if (!datasInicio[log.parceiro_id]) {
-                datasInicio[log.parceiro_id] = new Date(log.data_contato).toLocaleDateString('pt-BR');
-              }
+          // Achar o menor mês/ano do período selecionado
+          let minAno = 9999;
+          let minMes = 13;
+          activeMonths.forEach(m => {
+            if (m.ano < minAno || (m.ano === minAno && m.mes < minMes)) {
+              minAno = m.ano;
+              minMes = m.mes;
             }
           });
-          const list = parceiros
-            .filter(p => winbackSet.has(p.id))
-            .map(p => ({
+
+          let antAno = minAno;
+          let antMes = minMes - 1;
+          if (antMes === 0) {
+            antMes = 12;
+            antAno -= 1;
+          }
+
+          const periodStrMesAnterior = `${antMes === 1 ? 'janeiro' : antMes === 2 ? 'fevereiro' : antMes === 3 ? 'marco' : antMes === 4 ? 'abril' : antMes === 5 ? 'maio' : 'junho'}_${antAno}`;
+          const parceirosNoMesAnterior = dataService.getParceirosComStatusNoPeriodo(parceiros, allProducoes, periodStrMesAnterior);
+          const parceirosEmReativacao = parceirosNoMesAnterior.filter(p => p.status === 'Reativação');
+
+          const list = parceirosEmReativacao.map(p => {
+            const volPrataPeriodo = (parceiroProdMap[p.id]?.total || 0) / numMonths;
+            const reativado = volPrataPeriodo > 0;
+            return {
               nome: p.nome,
-              status: p.status,
+              inicioWinback: `Ref: ${antMes < 10 ? '0' + antMes : antMes}/${antAno}`,
+              status: reativado ? 'Ativo' : 'Reativação',
               classificacao: p.classificacao,
               score: p.score_comercial,
-              inicioWinback: datasInicio[p.id] || 'N/A',
-              volPrata: (parceiroProdMap[p.id]?.total || 0) / numMonths
-            }));
+              volPrata: volPrataPeriodo
+            };
+          });
+
           setDetails(list);
         } catch (e) {
           console.error(e);

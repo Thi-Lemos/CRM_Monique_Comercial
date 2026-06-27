@@ -1002,10 +1002,6 @@ export const dataService = {
     const limites = limitesConfig || { dias_inatividade_winback: 60, dias_conversao_hunter: 7 };
 
     return parceiros
-      .filter(p => {
-        const createdDate = p.created_at ? new Date(p.created_at) : new Date(2026, 4, 1);
-        return createdDate.getTime() <= refDate.getTime();
-      })
       .map(p => {
         const createdDate = p.created_at ? new Date(p.created_at) : new Date(2026, 4, 1);
         const diffCriacaoTempo = refDate.getTime() - createdDate.getTime();
@@ -1051,7 +1047,7 @@ export const dataService = {
         }
 
         if (!temProducaoRecente) {
-          if (diferencaCriacaoDias <= limites.dias_conversao_hunter) {
+          if (diferencaCriacaoDias < 0 || diferencaCriacaoDias <= limites.dias_conversao_hunter) {
             statusCalculado = 'Onboarding';
           } else {
             statusCalculado = 'Reativação';
@@ -1064,6 +1060,60 @@ export const dataService = {
           vol_prata_mensal: volPrataMensalPeriodo
         };
       });
+  },
+
+  getTaxaReativacaoNoPeriodo(
+    parceiros: Parceiro[],
+    allProducoes: ProducaoMensal[],
+    period: string,
+    limitesConfig?: { dias_inatividade_winback: number; dias_conversao_hunter: number }
+  ): number {
+    const activeMonths = getMonthsForPeriod(period);
+    
+    // Achar o menor mês/ano do período selecionado
+    let minAno = 9999;
+    let minMes = 13;
+    activeMonths.forEach(m => {
+      if (m.ano < minAno || (m.ano === minAno && m.mes < minMes)) {
+        minAno = m.ano;
+        minMes = m.mes;
+      }
+    });
+
+    // Mês anterior ao início do período
+    let antAno = minAno;
+    let antMes = minMes - 1;
+    if (antMes === 0) {
+      antMes = 12;
+      antAno -= 1;
+    }
+
+    const periodStrMesAnterior = `${antMes === 1 ? 'janeiro' : antMes === 2 ? 'fevereiro' : antMes === 3 ? 'marco' : antMes === 4 ? 'abril' : antMes === 5 ? 'maio' : 'junho'}_${antAno}`;
+    const parceirosNoMesAnterior = this.getParceirosComStatusNoPeriodo(parceiros, allProducoes, periodStrMesAnterior, limitesConfig);
+
+    // Filtrar parceiros que estavam no status 'Reativação' no mês anterior
+    const parceirosEmReativacao = parceirosNoMesAnterior.filter(p => p.status === 'Reativação');
+
+    if (parceirosEmReativacao.length === 0) return 0;
+
+    // Verificar quantos deles produziram no período selecionado
+    let reativados = 0;
+    parceirosEmReativacao.forEach(p => {
+      const temProducaoNoPeriodo = allProducoes.some(prod => {
+        const matchMes = activeMonths.some(m => m.ano === prod.ano && m.mes === prod.mes);
+        if (matchMes && prod.parceiro_id === p.id) {
+          const vol = (prod.vol_fgts || 0) + (prod.vol_clt || 0) + (prod.vol_cgv || 0) + (prod.vol_pix || 0);
+          return vol > 0;
+        }
+        return false;
+      });
+
+      if (temProducaoNoPeriodo) {
+        reativados++;
+      }
+    });
+
+    return Math.round((reativados / parceirosEmReativacao.length) * 1000) / 10;
   }
 };
 
