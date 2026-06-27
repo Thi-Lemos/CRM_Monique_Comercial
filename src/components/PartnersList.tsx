@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { dataService } from '../services/dataService';
-import { Parceiro } from '../types';
+import { Parceiro, ProducaoMensal, CriteriosConfig } from '../types';
 import { Search, Plus, Eye, Edit2, Trash2, X, Check, FileSpreadsheet } from 'lucide-react';
 
 interface PartnersListProps {
@@ -9,6 +9,9 @@ interface PartnersListProps {
 
 export default function PartnersList({ onSelectPartner }: PartnersListProps) {
   const [parceiros, setParceiros] = useState<Parceiro[]>([]);
+  const [allProducoes, setAllProducoes] = useState<ProducaoMensal[]>([]);
+  const [criterios, setCriterios] = useState<CriteriosConfig | null>(null);
+  const [selectedPeriod, setSelectedPeriod] = useState<string>('maio_2026');
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
@@ -32,14 +35,20 @@ export default function PartnersList({ onSelectPartner }: PartnersListProps) {
     propostas_pagas_semana: 0,
     produtos_ativos: [] as string[],
     concorrentes: '',
-    status: 'Em prospecção' as Parceiro['status']
+    status: 'Onboarding' as Parceiro['status']
   });
 
   const loadPartners = async () => {
     try {
       setLoading(true);
-      const list = await dataService.getParceiros();
+      const [list, prods, config] = await Promise.all([
+        dataService.getParceiros(),
+        dataService.getAllProducao(),
+        dataService.getCriterios()
+      ]);
       setParceiros(list);
+      setAllProducoes(prods);
+      setCriterios(config);
     } catch (e) {
       console.error('Erro ao ler parceiros:', e);
     } finally {
@@ -214,7 +223,14 @@ export default function PartnersList({ onSelectPartner }: PartnersListProps) {
     reader.readAsBinaryString(file);
   };
 
-  const filteredParceiros = parceiros.filter(p => {
+  const parceirosNoPeriodo = dataService.getParceirosComStatusNoPeriodo(
+    parceiros,
+    allProducoes,
+    selectedPeriod,
+    criterios?.limites
+  );
+
+  const filteredParceiros = parceirosNoPeriodo.filter(p => {
     const matchesSearch = p.nome.toLowerCase().includes(search.toLowerCase()) || 
                           (p.cnpj || '').includes(search);
     const matchesStatus = statusFilter ? p.status === statusFilter : true;
@@ -245,8 +261,28 @@ export default function PartnersList({ onSelectPartner }: PartnersListProps) {
           </p>
         </div>
         
-        <div style={{ display: 'flex', gap: '0.75rem' }}>
-          <label className="btn btn-secondary" style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+          {/* Seletor de Período */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginRight: '1rem' }}>
+            <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-muted)' }}>PERÍODO:</span>
+            <select
+              value={selectedPeriod}
+              onChange={(e) => setSelectedPeriod(e.target.value)}
+              className="form-input"
+              style={{ fontSize: '0.85rem', padding: '0.4rem 2rem 0.4rem 0.75rem', width: 'auto', margin: 0, height: '36px', borderRadius: 'var(--radius-sm)' }}
+            >
+              <option value="junho_2026">Junho/2026 (Mês Atual)</option>
+              <option value="maio_2026">Maio/2026</option>
+              <option value="abril_2026">Abril/2026</option>
+              <option value="marco_2026">Março/2026</option>
+              <option value="fevereiro_2026">Fevereiro/2026</option>
+              <option value="janeiro_2026">Janeiro/2026</option>
+              <option value="ultimos_3_meses">Últimos 3 meses (Média)</option>
+              <option value="ultimos_6_meses">Últimos 6 meses (Média)</option>
+            </select>
+          </div>
+
+          <label className="btn btn-secondary" style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0, height: '36px' }}>
             <FileSpreadsheet size={16} /> Importar XLSX
             <input 
               type="file" 
@@ -255,7 +291,7 @@ export default function PartnersList({ onSelectPartner }: PartnersListProps) {
               style={{ display: 'none' }} 
             />
           </label>
-          <button className="btn btn-primary" onClick={openAddModal}>
+          <button className="btn btn-primary" onClick={openAddModal} style={{ height: '36px', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <Plus size={18} /> Adicionar Parceiro
           </button>
         </div>

@@ -967,5 +967,151 @@ export const dataService = {
     });
 
     return Math.round((reativados / winbackPartners.size) * 1000) / 10;
+  },
+
+  getParceirosComStatusNoPeriodo(
+    parceiros: Parceiro[],
+    allProducoes: ProducaoMensal[],
+    period: string,
+    limitesConfig?: { dias_inatividade_winback: number; dias_conversao_hunter: number }
+  ): Parceiro[] {
+    const activeMonths = getMonthsForPeriod(period);
+    
+    // Encontrar o maior mês/ano do período
+    let refAno = 0;
+    let refMes = 0;
+    activeMonths.forEach(m => {
+      if (m.ano > refAno || (m.ano === refAno && m.mes > refMes)) {
+        refAno = m.ano;
+        refMes = m.mes;
+      }
+    });
+
+    // Último dia do mês de referência
+    const refDate = new Date(refAno, refMes, 0);
+
+    // Mapear produções por parceiro
+    const prodsMap: Record<string, ProducaoMensal[]> = {};
+    allProducoes.forEach(prod => {
+      if (!prodsMap[prod.parceiro_id]) {
+        prodsMap[prod.parceiro_id] = [];
+      }
+      prodsMap[prod.parceiro_id].push(prod);
+    });
+
+    const limites = limitesConfig || { dias_inatividade_winback: 60, dias_conversao_hunter: 7 };
+
+    return parceiros
+      .filter(p => {
+        const createdDate = p.created_at ? new Date(p.created_at) : new Date(2026, 4, 1);
+        return createdDate.getTime() <= refDate.getTime();
+      })
+      .map(p => {
+        const createdDate = p.created_at ? new Date(p.created_at) : new Date(2026, 4, 1);
+        const diffCriacaoTempo = refDate.getTime() - createdDate.getTime();
+        const diferencaCriacaoDias = diffCriacaoTempo / (1000 * 60 * 60 * 24);
+
+        const prods = prodsMap[p.id] || [];
+
+        // Apenas produções anteriores ou iguais à referência
+        const sortedProdsValidos = prods
+          .filter(pr => (pr.ano < refAno) || (pr.ano === refAno && pr.mes <= refMes))
+          .sort((a, b) => (b.ano !== a.ano ? b.ano - a.ano : b.mes - a.mes));
+
+        // Achar a produção mais recente que tenha volume > 0
+        let statusCalculado: Parceiro['status'] = 'Onboarding';
+        let temProducaoRecente = false;
+
+        // Calcular volume do parceiro específico no período selecionado (média mensal do período)
+        let volAcumuladoPeriodo = 0;
+        const numMonths = activeMonths.length;
+        activeMonths.forEach(m => {
+          const matchProd = prods.find(pr => pr.ano === m.ano && pr.mes === m.mes);
+          if (matchProd) {
+            volAcumuladoPeriodo += (matchProd.vol_fgts || 0) + (matchProd.vol_clt || 0) + (matchProd.vol_cgv || 0) + (matchProd.vol_pix || 0);
+          }
+        });
+        const volPrataMensalPeriodo = volAcumuladoPeriodo / numMonths;
+
+        const ultimaProdValida = sortedProdsValidos.find(pr => {
+          const vol = (pr.vol_fgts || 0) + (pr.vol_clt || 0) + (pr.vol_cgv || 0) + (pr.vol_pix || 0);
+          return vol > 0;
+        });
+
+        if (ultimaProdValida) {
+          temProducaoRecente = true;
+          const dataProd = new Date(ultimaProdValida.ano, ultimaProdValida.mes, 0);
+          const diasSemProd = (refDate.getTime() - dataProd.getTime()) / (1000 * 60 * 60 * 24);
+
+          if (diasSemProd > limites.dias_inatividade_winback) {
+            statusCalculado = 'Reativação';
+          } else {
+            statusCalculado = 'Ativo';
+          }
+        }
+
+        if (!temProducaoRecente) {
+          if (diferencaCriacaoDias <= limites.dias_conversao_hunter) {
+            statusCalculado = 'Onboarding';
+          } else {
+            statusCalculado = 'Reativação';
+          }
+        }
+
+        return {
+          ...p,
+          status: statusCalculado,
+          vol_prata_mensal: volPrataMensalPeriodo
+        };
+      });
   }
 };
+
+export const getMonthsForPeriod = (period: string) => {
+  switch (period) {
+    case 'junho_2026':
+      return [{ ano: 2026, mes: 6 }];
+    case 'maio_2026':
+      return [{ ano: 2026, mes: 5 }];
+    case 'abril_2026':
+      return [{ ano: 2026, mes: 4 }];
+    case 'marco_2026':
+      return [{ ano: 2026, mes: 3 }];
+    case 'fevereiro_2026':
+      return [{ ano: 2026, mes: 2 }];
+    case 'janeiro_2026':
+      return [{ ano: 2026, mes: 1 }];
+    case 'ultimos_3_meses':
+      return [
+        { ano: 2026, mes: 6 },
+        { ano: 2026, mes: 5 },
+        { ano: 2026, mes: 4 }
+      ];
+    case 'ultimos_6_meses':
+      return [
+        { ano: 2026, mes: 6 },
+        { ano: 2026, mes: 5 },
+        { ano: 2026, mes: 4 },
+        { ano: 2026, mes: 3 },
+        { ano: 2026, mes: 2 },
+        { ano: 2026, mes: 1 }
+      ];
+    default:
+      return [{ ano: 2026, mes: 6 }];
+  }
+};
+
+export const getPeriodLabel = (period: string) => {
+  switch (period) {
+    case 'junho_2026': return 'Jun/2026';
+    case 'maio_2026': return 'Mai/2026';
+    case 'abril_2026': return 'Abr/2026';
+    case 'marco_2026': return 'Mar/2026';
+    case 'fevereiro_2026': return 'Fev/2026';
+    case 'janeiro_2026': return 'Jan/2026';
+    case 'ultimos_3_meses': return 'Média - Safras Recentes';
+    case 'ultimos_6_meses': return 'Média - Semestre';
+    default: return 'Jun/2026';
+  }
+};
+

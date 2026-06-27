@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { dataService } from '../services/dataService';
-import { Parceiro, SemafaroStatus, CrmLog, ProducaoMensal } from '../types';
+import { dataService, getMonthsForPeriod, getPeriodLabel } from '../services/dataService';
+import { Parceiro, SemafaroStatus, CrmLog, ProducaoMensal, CriteriosConfig } from '../types';
 import ExcelImporter from './ExcelImporter';
 import { 
   TrendingUp, 
@@ -14,54 +14,6 @@ import {
   X
 } from 'lucide-react';
 
-// --- FUNÇÕES UTILITÁRIAS DE PERÍODOS E ALERTAS ---
-const getMonthsForPeriod = (period: string) => {
-  switch (period) {
-    case 'junho_2026':
-      return [{ ano: 2026, mes: 6 }];
-    case 'maio_2026':
-      return [{ ano: 2026, mes: 5 }];
-    case 'abril_2026':
-      return [{ ano: 2026, mes: 4 }];
-    case 'marco_2026':
-      return [{ ano: 2026, mes: 3 }];
-    case 'fevereiro_2026':
-      return [{ ano: 2026, mes: 2 }];
-    case 'janeiro_2026':
-      return [{ ano: 2026, mes: 1 }];
-    case 'ultimos_3_meses':
-      return [
-        { ano: 2026, mes: 6 },
-        { ano: 2026, mes: 5 },
-        { ano: 2026, mes: 4 }
-      ];
-    case 'ultimos_6_meses':
-      return [
-        { ano: 2026, mes: 6 },
-        { ano: 2026, mes: 5 },
-        { ano: 2026, mes: 4 },
-        { ano: 2026, mes: 3 },
-        { ano: 2026, mes: 2 },
-        { ano: 2026, mes: 1 }
-      ];
-    default:
-      return [{ ano: 2026, mes: 6 }];
-  }
-};
-
-const getPeriodLabel = (period: string) => {
-  switch (period) {
-    case 'junho_2026': return 'Jun/2026';
-    case 'maio_2026': return 'Mai/2026';
-    case 'abril_2026': return 'Abr/2026';
-    case 'marco_2026': return 'Mar/2026';
-    case 'fevereiro_2026': return 'Fev/2026';
-    case 'janeiro_2026': return 'Jan/2026';
-    case 'ultimos_3_meses': return 'Média - Safras Recentes';
-    case 'ultimos_6_meses': return 'Média - Semestre';
-    default: return 'Jun/2026';
-  }
-};
 
 function gerarAlertasDinamicos(pList: Parceiro[], lList: CrmLog[], allProds: ProducaoMensal[]) {
   const activeAlerts: any[] = [];
@@ -231,6 +183,7 @@ export default function Dashboard() {
   const [selectedKpi, setSelectedKpi] = useState<string | null>(null);
   const [lastWeeklyUploadDate, setLastWeeklyUploadDate] = useState<string>('');
   const [selectedPeriod, setSelectedPeriod] = useState<string>('maio_2026');
+  const [criterios, setCriterios] = useState<CriteriosConfig | null>(null);
 
   // Alertas gerados dinamicamente
   const [alertas, setAlertas] = useState<{
@@ -246,10 +199,11 @@ export default function Dashboard() {
     async function loadDashboardData() {
       try {
         setLoading(true);
-        const [pList, lList, allProds] = await Promise.all([
+        const [pList, lList, allProds, config] = await Promise.all([
           dataService.getParceiros(),
           dataService.getLogs(),
-          dataService.getAllProducao()
+          dataService.getAllProducao(),
+          dataService.getCriterios()
         ]);
 
         const sem = await dataService.getSemafaroStatus(pList, lList);
@@ -264,6 +218,7 @@ export default function Dashboard() {
         setCicloAtivacao(ciclo);
         setTaxaReativacao(reat);
         setLastWeeklyUploadDate(uploadDate);
+        setCriterios(config);
 
         const activeAlerts = gerarAlertasDinamicos(pList, lList, allProds);
         setAlertas(activeAlerts);
@@ -284,6 +239,14 @@ export default function Dashboard() {
   // --- CÁLCULO DOS KPIs GLOBAIS E DE PERÍODOS ---
   const activeMonths = getMonthsForPeriod(selectedPeriod);
   const numMonths = activeMonths.length;
+
+  // Recalcular parceiros e seus status para o período selecionado
+  const parceirosNoPeriodo = dataService.getParceirosComStatusNoPeriodo(
+    parceiros,
+    allProducoes,
+    selectedPeriod,
+    criterios?.limites
+  );
 
   let totalVolPrataAcumulado = 0;
   let fgtsSum = 0;
@@ -323,14 +286,14 @@ export default function Dashboard() {
     pix: pixSum / numMonths
   };
 
-  const totalVolumeMercado = parceiros.reduce((sum, p) => sum + p.vol_total_mensal, 0);
+  const totalVolumeMercado = parceirosNoPeriodo.reduce((sum, p) => sum + p.vol_total_mensal, 0);
 
   const concentracaoGlobal = totalVolumeMercado > 0 
     ? (totalVolumePrata / totalVolumeMercado) * 100
     : 0;
 
   let totalProdutosOperados = 0;
-  parceiros.forEach(p => {
+  parceirosNoPeriodo.forEach(p => {
     const prodData = parceiroProdMap[p.id];
     if (prodData) {
       let count = 0;
@@ -341,12 +304,12 @@ export default function Dashboard() {
       totalProdutosOperados += count;
     }
   });
-  const mediaProdutos = parceiros.length > 0 ? totalProdutosOperados / parceiros.length : 0;
+  const mediaProdutos = parceirosNoPeriodo.length > 0 ? totalProdutosOperados / parceirosNoPeriodo.length : 0;
 
-  const parceirosAtivos = parceiros.filter(p => p.status === 'Ativo').length;
-  const taxaAtivos = parceiros.length > 0 ? (parceirosAtivos / parceiros.length) * 100 : 0;
-  const inativos = parceiros.filter(p => p.status === 'Reativação').length;
-  const churnRate = parceiros.length > 0 ? (inativos / parceiros.length) * 100 : 0;
+  const parceirosAtivos = parceirosNoPeriodo.filter(p => p.status === 'Ativo').length;
+  const taxaAtivos = parceirosNoPeriodo.length > 0 ? (parceirosAtivos / parceirosNoPeriodo.length) * 100 : 0;
+  const inativos = parceirosNoPeriodo.filter(p => p.status === 'Reativação').length;
+  const churnRate = parceirosNoPeriodo.length > 0 ? (inativos / parceirosNoPeriodo.length) * 100 : 0;
 
   // Formatar Moeda
   const formatCurrency = (val: number) => {
@@ -746,10 +709,10 @@ export default function Dashboard() {
           </h3>
           
           {(() => {
-            const strat = parceiros.filter(p => p.classificacao === 'Estratégico').length;
-            const cresc = parceiros.filter(p => p.classificacao === 'Crescimento').length;
-            const desenv = parceiros.filter(p => p.classificacao === 'Desenvolvimento').length;
-            const total = parceiros.length || 1;
+            const strat = parceirosNoPeriodo.filter(p => p.classificacao === 'Estratégico').length;
+            const cresc = parceirosNoPeriodo.filter(p => p.classificacao === 'Crescimento').length;
+            const desenv = parceirosNoPeriodo.filter(p => p.classificacao === 'Desenvolvimento').length;
+            const total = parceirosNoPeriodo.length || 1;
 
             const pStrat = (strat / total) * 100;
             const pCresc = (cresc / total) * 100;
@@ -796,7 +759,7 @@ export default function Dashboard() {
                   <circle cx="60" cy="60" r="38" fill="var(--card-bg)" />
                   
                   <g style={{ transform: 'rotate(90deg) translate(50px, -65px)', transformOrigin: 'center' }}>
-                    <text x="10" y="-10" textAnchor="middle" style={{ fontSize: '10px', fontWeight: 800, fill: 'var(--secondary-color)' }}>{parceiros.length}</text>
+                    <text x="10" y="-10" textAnchor="middle" style={{ fontSize: '10px', fontWeight: 800, fill: 'var(--secondary-color)' }}>{parceirosNoPeriodo.length}</text>
                     <text x="10" y="2" textAnchor="middle" style={{ fontSize: '5px', fontWeight: 600, fill: 'var(--text-muted)' }}>PARCEIROS</text>
                   </g>
                 </svg>
@@ -878,7 +841,7 @@ export default function Dashboard() {
                 </tr>
               </thead>
               <tbody>
-                {[...parceiros]
+                {[...parceirosNoPeriodo]
                   .map(p => ({
                     ...p,
                     volPrataPeriodo: (parceiroProdMap[p.id]?.total || 0) / numMonths
@@ -954,7 +917,7 @@ export default function Dashboard() {
         <KpiOriginModal 
           kpiType={selectedKpi}
           onClose={() => setSelectedKpi(null)}
-          parceiros={parceiros}
+          parceiros={parceirosNoPeriodo}
           allProducoes={allProducoes}
           allLogs={logs}
           selectedPeriod={selectedPeriod}
