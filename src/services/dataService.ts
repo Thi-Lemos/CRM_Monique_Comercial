@@ -145,6 +145,18 @@ export const dataService = {
     return config;
   },
 
+  getLastWeeklyUploadDate(): string {
+    const data = localStorage.getItem('crm_prata_digital_last_upload_semanal');
+    if (!data) {
+      return new Date(2026, 5, 27).toISOString(); // Data simulada padrão
+    }
+    return data;
+  },
+
+  setLastWeeklyUploadDate(dateStr: string): void {
+    localStorage.setItem('crm_prata_digital_last_upload_semanal', dateStr);
+  },
+
   async saveParceiroStatusOnly(id: string, status: Parceiro['status']): Promise<void> {
     if (supabase) {
       try {

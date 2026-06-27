@@ -78,7 +78,7 @@ export default function CriteriaConfig() {
           farmer_concentracao_minima: 30
         },
         limites: {
-          dias_inatividade_winback: 90,
+          dias_inatividade_winback: 60,
           dias_conversao_hunter: 7
         },
         pesos_score: {
@@ -222,7 +222,7 @@ export default function CriteriaConfig() {
                 />
               </div>
               <div className="form-group">
-                <label className="form-label">Hunter: Reativações por Semana</label>
+                <label className="form-label">Winback: Reativações por Semana</label>
                 <input 
                   type="number" 
                   min={1} 
@@ -260,7 +260,7 @@ export default function CriteriaConfig() {
                   onChange={(e) => handleInputChange('limites', 'dias_inatividade_winback', parseInt(e.target.value) || 0)}
                 />
                 <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.15rem' }}>
-                  Dias com produção zerada que alteram o status para "Inativo" automaticamente.
+                  Dias com produção zerada que alteram o status para "Reativação" automaticamente.
                 </span>
               </div>
               <div className="form-group">
@@ -274,7 +274,7 @@ export default function CriteriaConfig() {
                   onChange={(e) => handleInputChange('limites', 'dias_conversao_hunter', parseInt(e.target.value) || 0)}
                 />
                 <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.15rem' }}>
-                  Dias tolerados para um novo parceiro cadastrado registrar a primeira produção antes de virar inativo.
+                  Dias tolerados para um novo parceiro cadastrado registrar a primeira produção antes de virar "Reativação".
                 </span>
               </div>
             </div>

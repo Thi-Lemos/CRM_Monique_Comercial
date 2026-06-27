@@ -6,7 +6,6 @@ import {
   TrendingUp, 
   Users, 
   Percent, 
-  ArrowUpRight, 
   Briefcase,
   Layers,
   AlertCircle,
@@ -14,6 +13,202 @@ import {
   PieChart,
   X
 } from 'lucide-react';
+
+// --- FUNÇÕES UTILITÁRIAS DE PERÍODOS E ALERTAS ---
+const getMonthsForPeriod = (period: string) => {
+  switch (period) {
+    case 'junho_2026':
+      return [{ ano: 2026, mes: 6 }];
+    case 'maio_2026':
+      return [{ ano: 2026, mes: 5 }];
+    case 'abril_2026':
+      return [{ ano: 2026, mes: 4 }];
+    case 'marco_2026':
+      return [{ ano: 2026, mes: 3 }];
+    case 'fevereiro_2026':
+      return [{ ano: 2026, mes: 2 }];
+    case 'janeiro_2026':
+      return [{ ano: 2026, mes: 1 }];
+    case 'ultimos_3_meses':
+      return [
+        { ano: 2026, mes: 6 },
+        { ano: 2026, mes: 5 },
+        { ano: 2026, mes: 4 }
+      ];
+    case 'ultimos_6_meses':
+      return [
+        { ano: 2026, mes: 6 },
+        { ano: 2026, mes: 5 },
+        { ano: 2026, mes: 4 },
+        { ano: 2026, mes: 3 },
+        { ano: 2026, mes: 2 },
+        { ano: 2026, mes: 1 }
+      ];
+    default:
+      return [{ ano: 2026, mes: 6 }];
+  }
+};
+
+const getPeriodLabel = (period: string) => {
+  switch (period) {
+    case 'junho_2026': return 'Jun/2026';
+    case 'maio_2026': return 'Mai/2026';
+    case 'abril_2026': return 'Abr/2026';
+    case 'marco_2026': return 'Mar/2026';
+    case 'fevereiro_2026': return 'Fev/2026';
+    case 'janeiro_2026': return 'Jan/2026';
+    case 'ultimos_3_meses': return 'Média - Safras Recentes';
+    case 'ultimos_6_meses': return 'Média - Semestre';
+    default: return 'Jun/2026';
+  }
+};
+
+function gerarAlertasDinamicos(pList: Parceiro[], lList: CrmLog[], allProds: ProducaoMensal[]) {
+  const activeAlerts: any[] = [];
+  const hoje = new Date();
+  const faturamentoTotalPrata = pList.reduce((sum, p) => sum + (p.vol_prata_mensal || 0), 0) || 1;
+
+  const prodsMap: { [key: string]: ProducaoMensal[] } = {};
+  for (const prod of allProds) {
+    if (!prodsMap[prod.parceiro_id]) {
+      prodsMap[prod.parceiro_id] = [];
+    }
+    prodsMap[prod.parceiro_id].push(prod);
+  }
+
+  for (const p of pList) {
+    const logsParceiro = lList.filter(l => l.parceiro_id === p.id);
+    const dataUltima = logsParceiro.length > 0 
+      ? new Date(logsParceiro[0].data_contato) 
+      : null;
+    
+    // Alerta A: Risco de Concentração Sistêmica
+    const sharePortfol = ((p.vol_prata_mensal || 0) / faturamentoTotalPrata) * 100;
+    if (p.status === 'Ativo' && sharePortfol >= 30) {
+      activeAlerts.push({
+        id: 'alert_conc_sist_' + p.id,
+        parceiro: p.nome,
+        parceiroId: p.id,
+        mensagem: `Risco de Concentração Sistêmica: O parceiro representa ${sharePortfol.toFixed(1)}% do faturamento total da Prata Digital.`,
+        prioridade: 'Alta',
+        ultimaInteracao: dataUltima ? dataUltima.toLocaleDateString('pt-BR') : 'Sem registro'
+      });
+    }
+
+    // Alerta B: Early Warning
+    const producoes = prodsMap[p.id] || [];
+    const prodJun = producoes.find(pr => pr.ano === 2026 && pr.mes === 6);
+    const prodMai = producoes.find(pr => pr.ano === 2026 && pr.mes === 5);
+    
+    if (p.status === 'Ativo' && prodJun && prodMai) {
+      const volJun = (prodJun.vol_fgts || 0) + (prodJun.vol_clt || 0) + (prodJun.vol_cgv || 0) + (prodJun.vol_pix || 0);
+      const volMai = (prodMai.vol_fgts || 0) + (prodMai.vol_clt || 0) + (prodMai.vol_cgv || 0) + (prodMai.vol_pix || 0);
+      
+      if (volMai > 0) {
+        const queda = ((volMai - volJun) / volMai) * 100;
+        if (queda >= 40) {
+          activeAlerts.push({
+            id: 'alert_early_warn_' + p.id,
+            parceiro: p.nome,
+            parceiroId: p.id,
+            mensagem: `Early Warning: Queda de produção recente no Prata. Redução de ${queda.toFixed(1)}% em relação ao mês anterior (de R$ ${volMai.toLocaleString('pt-BR')} para R$ ${volJun.toLocaleString('pt-BR')}).`,
+            prioridade: 'Alta',
+            ultimaInteracao: dataUltima ? dataUltima.toLocaleDateString('pt-BR') : 'Sem registro'
+          });
+        }
+      }
+    }
+
+    // Regra 1: Parceiro Estratégico sem contato há mais de 30 dias
+    if (p.classificacao === 'Estratégico' && p.status === 'Ativo') {
+      if (!dataUltima || (hoje.getTime() - dataUltima.getTime()) > (30 * 24 * 60 * 60 * 1000)) {
+        activeAlerts.push({
+          id: 'alert_strat_' + p.id,
+          parceiro: p.nome,
+          parceiroId: p.id,
+          mensagem: 'Parceiro Estratégico sem nenhum contato registrado nos últimos 30 dias.',
+          prioridade: 'Alta',
+          ultimaInteracao: dataUltima ? dataUltima.toLocaleDateString('pt-BR') : 'Sem registro'
+        });
+      }
+    }
+
+    // Regra 2: Novo parceiro (Onboarding) sem nenhuma operação/volume em 7 dias após criação
+    if (p.status === 'Onboarding') {
+      const dataCriacao = p.created_at ? new Date(p.created_at) : new Date();
+      if ((hoje.getTime() - dataCriacao.getTime()) > (7 * 24 * 60 * 60 * 1000) && p.vol_prata_mensal === 0) {
+        activeAlerts.push({
+          id: 'alert_new_' + p.id,
+          parceiro: p.nome,
+          parceiroId: p.id,
+          mensagem: 'Novo parceiro cadastrado há mais de 7 dias sem registrar nenhuma operação.',
+          prioridade: 'Alta',
+          ultimaInteracao: dataUltima ? dataUltima.toLocaleDateString('pt-BR') : 'Sem contato'
+        });
+      }
+    }
+
+    // REGRA DE GESTÃO COMERCIAL: Parceiro migrado de Onboarding para Reativação por inatividade nos primeiros 7 dias (limite exatamente 30 dias)
+    if (p.status === 'Reativação') {
+      const dataCriacao = p.created_at ? new Date(p.created_at) : new Date();
+      const diferencaCriacaoDias = (hoje.getTime() - dataCriacao.getTime()) / (1000 * 60 * 60 * 24);
+      
+      const temProducao = producoes.some(pr => {
+        const vol = (pr.vol_fgts || 0) + (pr.vol_clt || 0) + (pr.vol_cgv || 0) + (pr.vol_pix || 0);
+        return vol > 0;
+      });
+
+      if (diferencaCriacaoDias > 7 && diferencaCriacaoDias <= 30 && !temProducao) {
+        const diasRestantes = Math.ceil(30 - diferencaCriacaoDias);
+        activeAlerts.push({
+          id: 'alert_onb_to_reat_' + p.id,
+          parceiro: p.nome,
+          parceiroId: p.id,
+          mensagem: `Gestão Comercial: Parceiro migrado de Onboarding para Reativação por inatividade nos primeiros 7 dias. Alerta ativo por mais ${diasRestantes} dias enquanto não houver produção.`,
+          prioridade: 'Alta',
+          ultimaInteracao: dataUltima ? dataUltima.toLocaleDateString('pt-BR') : 'Sem contato'
+        });
+      }
+    }
+
+    // Regra 3: Parceiro com queda brusca de produção (Volume Prata = 0 ou em Reativação)
+    if (p.status === 'Reativação' && p.vol_total_mensal > 0) {
+      activeAlerts.push({
+        id: 'alert_inactive_' + p.id,
+        parceiro: p.nome,
+        parceiroId: p.id,
+        mensagem: 'Produção zerada há 60+ dias — processo Win-back deve ser iniciado.',
+        prioridade: 'Alta',
+        ultimaInteracao: dataUltima ? dataUltima.toLocaleDateString('pt-BR') : 'Sem registro'
+      });
+    }
+
+    // Oportunidades (Prioridade Média)
+    if (p.status === 'Ativo' && !p.produtos_ativos.includes('CGV') && p.num_vendedores >= 4) {
+      activeAlerts.push({
+        id: 'alert_opp_cgv_' + p.id,
+        parceiro: p.nome,
+        parceiroId: p.id,
+        mensagem: 'Parceiro qualificado para expansão do produto CGV (ainda não ativado).',
+        prioridade: 'Média',
+        ultimaInteracao: dataUltima ? dataUltima.toLocaleDateString('pt-BR') : 'Sem registro'
+      });
+    }
+
+    if (p.status === 'Ativo' && p.vol_total_mensal > 150000 && p.vol_prata_mensal / p.vol_total_mensal < 0.25) {
+      activeAlerts.push({
+        id: 'alert_opp_conc_' + p.id,
+        parceiro: p.nome,
+        parceiroId: p.id,
+        mensagem: 'Concentração no Prata abaixo de 25% — grande volume de mercado captável.',
+        prioridade: 'Média',
+        ultimaInteracao: dataUltima ? dataUltima.toLocaleDateString('pt-BR') : 'Sem registro'
+      });
+    }
+  }
+
+  return activeAlerts;
+}
 
 export default function Dashboard() {
   const [parceiros, setParceiros] = useState<Parceiro[]>([]);
@@ -24,8 +219,9 @@ export default function Dashboard() {
   const [showImporter, setShowImporter] = useState(false);
   const [cicloAtivacao, setCicloAtivacao] = useState(6);
   const [taxaReativacao, setTaxaReativacao] = useState(25.0);
-  const [mixProdutos, setMixProdutos] = useState({ fgts: 0, clt: 0, cgv: 0, pix: 0 });
   const [selectedKpi, setSelectedKpi] = useState<string | null>(null);
+  const [lastWeeklyUploadDate, setLastWeeklyUploadDate] = useState<string>('');
+  const [selectedPeriod, setSelectedPeriod] = useState<string>('junho_2026');
 
   // Alertas gerados dinamicamente
   const [alertas, setAlertas] = useState<{
@@ -41,17 +237,16 @@ export default function Dashboard() {
     async function loadDashboardData() {
       try {
         setLoading(true);
-        // Carrega os dados base de uma só vez em lote (paralelo)
         const [pList, lList, allProds] = await Promise.all([
           dataService.getParceiros(),
           dataService.getLogs(),
           dataService.getAllProducao()
         ]);
 
-        // Evita chamadas redundantes N+1 passando os dados carregados em memória
         const sem = await dataService.getSemafaroStatus(pList, lList);
         const ciclo = await dataService.getCicloAtivacaoHunter(pList, allProds);
         const reat = await dataService.getTaxaReativacao(pList, lList);
+        const uploadDate = dataService.getLastWeeklyUploadDate();
         
         setParceiros(pList);
         setLogs(lList);
@@ -59,146 +254,9 @@ export default function Dashboard() {
         setSemaforo(sem);
         setCicloAtivacao(ciclo);
         setTaxaReativacao(reat);
+        setLastWeeklyUploadDate(uploadDate);
 
-        // Calcular Mix de Produtos
-        let fgtsSum = 0;
-        let cltSum = 0;
-        let cgvSum = 0;
-        let pixSum = 0;
-
-        const prodsMap: { [key: string]: typeof allProds } = {};
-        for (const prod of allProds) {
-          if (!prodsMap[prod.parceiro_id]) {
-            prodsMap[prod.parceiro_id] = [];
-          }
-          prodsMap[prod.parceiro_id].push(prod);
-        }
-
-        for (const p of pList) {
-          const prods = prodsMap[p.id] || [];
-          const pJun = prods.find(pr => pr.ano === 2026 && pr.mes === 6);
-          if (pJun) {
-            fgtsSum += pJun.vol_fgts || 0;
-            cltSum += pJun.vol_clt || 0;
-            cgvSum += pJun.vol_cgv || 0;
-            pixSum += pJun.vol_pix || 0;
-          }
-        }
-        setMixProdutos({ fgts: fgtsSum, clt: cltSum, cgv: cgvSum, pix: pixSum });
-
-        // Gerar Alertas baseados nas regras do Manual
-        const activeAlerts: typeof alertas = [];
-        const hoje = new Date();
-        const faturamentoTotalPrata = pList.reduce((sum, p) => sum + (p.vol_prata_mensal || 0), 0) || 1;
-
-        for (const p of pList) {
-          const logsParceiro = lList.filter(l => l.parceiro_id === p.id);
-          const dataUltima = logsParceiro.length > 0 
-            ? new Date(logsParceiro[0].data_contato) 
-            : null;
-          
-          // Alerta A: Risco de Concentração Sistêmica (Parceiro representa >= 30% da carteira da Prata)
-          const sharePortfol = ((p.vol_prata_mensal || 0) / faturamentoTotalPrata) * 100;
-          if (p.status === 'Ativo' && sharePortfol >= 30) {
-            activeAlerts.push({
-              id: 'alert_conc_sist_' + p.id,
-              parceiro: p.nome,
-              parceiroId: p.id,
-              mensagem: `Risco de Concentração Sistêmica: O parceiro representa ${sharePortfol.toFixed(1)}% do faturamento total da Prata Digital.`,
-              prioridade: 'Alta',
-              ultimaInteracao: dataUltima ? dataUltima.toLocaleDateString('pt-BR') : 'Sem registro'
-            });
-          }
-
-          // Alerta B: Early Warning (Queda brusca de produção recente no Prata de Junho vs Maio)
-          const producoes = prodsMap[p.id] || [];
-          const prodJun = producoes.find(pr => pr.ano === 2026 && pr.mes === 6);
-          const prodMai = producoes.find(pr => pr.ano === 2026 && pr.mes === 5);
-          
-          if (p.status === 'Ativo' && prodJun && prodMai) {
-            const volJun = (prodJun.vol_fgts || 0) + (prodJun.vol_clt || 0) + (prodJun.vol_cgv || 0) + (prodJun.vol_pix || 0);
-            const volMai = (prodMai.vol_fgts || 0) + (prodMai.vol_clt || 0) + (prodMai.vol_cgv || 0) + (prodMai.vol_pix || 0);
-            
-            if (volMai > 0) {
-              const queda = ((volMai - volJun) / volMai) * 100;
-              if (queda >= 40) {
-                activeAlerts.push({
-                  id: 'alert_early_warn_' + p.id,
-                  parceiro: p.nome,
-                  parceiroId: p.id,
-                  mensagem: `Early Warning: Queda de produção recente no Prata. Redução de ${queda.toFixed(1)}% em relação ao mês anterior (de R$ ${volMai.toLocaleString('pt-BR')} para R$ ${volJun.toLocaleString('pt-BR')}).`,
-                  prioridade: 'Alta',
-                  ultimaInteracao: dataUltima ? dataUltima.toLocaleDateString('pt-BR') : 'Sem registro'
-                });
-              }
-            }
-          }
-
-          // Regra 1: Parceiro Estratégico sem contato há mais de 30 dias
-          if (p.classificacao === 'Estratégico' && p.status === 'Ativo') {
-            if (!dataUltima || (hoje.getTime() - dataUltima.getTime()) > (30 * 24 * 60 * 60 * 1000)) {
-              activeAlerts.push({
-                id: 'alert_strat_' + p.id,
-                parceiro: p.nome,
-                parceiroId: p.id,
-                mensagem: 'Parceiro Estratégico sem nenhum contato registrado nos últimos 30 dias.',
-                prioridade: 'Alta',
-                ultimaInteracao: dataUltima ? dataUltima.toLocaleDateString('pt-BR') : 'Sem registro'
-              });
-            }
-          }
-
-          // Regra 2: Novo parceiro (Onboarding) sem nenhuma operação/volume em 7 dias após criação
-          if (p.status === 'Onboarding') {
-            const dataCriacao = p.created_at ? new Date(p.created_at) : new Date();
-            if ((hoje.getTime() - dataCriacao.getTime()) > (7 * 24 * 60 * 60 * 1000) && p.vol_prata_mensal === 0) {
-              activeAlerts.push({
-                id: 'alert_new_' + p.id,
-                parceiro: p.nome,
-                parceiroId: p.id,
-                mensagem: 'Novo parceiro cadastrado há mais de 7 dias sem registrar nenhuma operação.',
-                prioridade: 'Alta',
-                ultimaInteracao: dataUltima ? dataUltima.toLocaleDateString('pt-BR') : 'Sem contato'
-              });
-            }
-          }
-
-          // Regra 3: Parceiro com queda brusca de produção (Volume Prata = 0 ou em Reativação)
-          if (p.status === 'Reativação' && p.vol_total_mensal > 0) {
-            activeAlerts.push({
-              id: 'alert_inactive_' + p.id,
-              parceiro: p.nome,
-              parceiroId: p.id,
-              mensagem: 'Produção zerada há 60+ dias — processo Win-back deve ser iniciado.',
-              prioridade: 'Alta',
-              ultimaInteracao: dataUltima ? dataUltima.toLocaleDateString('pt-BR') : 'Sem registro'
-            });
-          }
-
-          // Oportunidades (Prioridade Média)
-          if (p.status === 'Ativo' && !p.produtos_ativos.includes('CGV') && p.num_vendedores >= 4) {
-            activeAlerts.push({
-              id: 'alert_opp_cgv_' + p.id,
-              parceiro: p.nome,
-              parceiroId: p.id,
-              mensagem: 'Parceiro qualificado para expansão do produto CGV (ainda não ativado).',
-              prioridade: 'Média',
-              ultimaInteracao: dataUltima ? dataUltima.toLocaleDateString('pt-BR') : 'Sem registro'
-            });
-          }
-
-          if (p.status === 'Ativo' && p.vol_total_mensal > 150000 && p.vol_prata_mensal / p.vol_total_mensal < 0.25) {
-            activeAlerts.push({
-              id: 'alert_opp_conc_' + p.id,
-              parceiro: p.nome,
-              parceiroId: p.id,
-              mensagem: 'Concentração no Prata abaixo de 25% — grande volume de mercado captável.',
-              prioridade: 'Média',
-              ultimaInteracao: dataUltima ? dataUltima.toLocaleDateString('pt-BR') : 'Sem registro'
-            });
-          }
-        }
-
+        const activeAlerts = gerarAlertasDinamicos(pList, lList, allProds);
         setAlertas(activeAlerts);
       } catch (e) {
         console.error('Erro ao carregar dados do dashboard:', e);
@@ -214,22 +272,72 @@ export default function Dashboard() {
     return <div style={{ padding: '2rem', textAlign: 'center', fontSize: '1.1rem', fontWeight: 500 }}>Carregando estatísticas do CRM...</div>;
   }
 
-  // --- CÁLCULO DOS KPIs GLOBAIS ---
+  // --- CÁLCULO DOS KPIs GLOBAIS E DE PERÍODOS ---
+  const activeMonths = getMonthsForPeriod(selectedPeriod);
+  const numMonths = activeMonths.length;
+
+  let totalVolPrataAcumulado = 0;
+  let fgtsSum = 0;
+  let cltSum = 0;
+  let cgvSum = 0;
+  let pixSum = 0;
+
+  // Mapa de relacionamento parceiro_id -> faturamentos acumulados no período selecionado
+  const parceiroProdMap: Record<string, { fgts: number; clt: number; cgv: number; pix: number; total: number }> = {};
+
+  allProducoes.forEach(prod => {
+    const match = activeMonths.some(m => m.ano === prod.ano && m.mes === prod.mes);
+    if (match) {
+      const vol = (prod.vol_fgts || 0) + (prod.vol_clt || 0) + (prod.vol_cgv || 0) + (prod.vol_pix || 0);
+      totalVolPrataAcumulado += vol;
+      fgtsSum += prod.vol_fgts || 0;
+      cltSum += prod.vol_clt || 0;
+      cgvSum += prod.vol_cgv || 0;
+      pixSum += prod.vol_pix || 0;
+
+      if (!parceiroProdMap[prod.parceiro_id]) {
+        parceiroProdMap[prod.parceiro_id] = { fgts: 0, clt: 0, cgv: 0, pix: 0, total: 0 };
+      }
+      parceiroProdMap[prod.parceiro_id].fgts += prod.vol_fgts || 0;
+      parceiroProdMap[prod.parceiro_id].clt += prod.vol_clt || 0;
+      parceiroProdMap[prod.parceiro_id].cgv += prod.vol_cgv || 0;
+      parceiroProdMap[prod.parceiro_id].pix += prod.vol_pix || 0;
+      parceiroProdMap[prod.parceiro_id].total += vol;
+    }
+  });
+
+  const totalVolumePrata = totalVolPrataAcumulado / numMonths;
+  const mixProdutos = {
+    fgts: fgtsSum / numMonths,
+    clt: cltSum / numMonths,
+    cgv: cgvSum / numMonths,
+    pix: pixSum / numMonths
+  };
+
   const totalVolumeMercado = parceiros.reduce((sum, p) => sum + p.vol_total_mensal, 0);
-  const totalVolumePrata = parceiros.reduce((sum, p) => sum + p.vol_prata_mensal, 0);
-  
-  const parceirosAtivos = parceiros.filter(p => p.status === 'Ativo').length;
-  const taxaAtivos = parceiros.length > 0 ? (parceirosAtivos / parceiros.length) * 100 : 0;
-  
+
   const concentracaoGlobal = totalVolumeMercado > 0 
     ? (totalVolumePrata / totalVolumeMercado) * 100
     : 0;
 
+  let totalProdutosOperados = 0;
+  parceiros.forEach(p => {
+    const prodData = parceiroProdMap[p.id];
+    if (prodData) {
+      let count = 0;
+      if (prodData.fgts > 0) count++;
+      if (prodData.clt > 0) count++;
+      if (prodData.cgv > 0) count++;
+      if (prodData.pix > 0) count++;
+      totalProdutosOperados += count;
+    }
+  });
+  const mediaProdutos = parceiros.length > 0 ? totalProdutosOperados / parceiros.length : 0;
+
+  const parceirosAtivos = parceiros.filter(p => p.status === 'Ativo').length;
+  const taxaAtivos = parceiros.length > 0 ? (parceirosAtivos / parceiros.length) * 100 : 0;
   const inativos = parceiros.filter(p => p.status === 'Reativação').length;
   const churnRate = parceiros.length > 0 ? (inativos / parceiros.length) * 100 : 0;
-
-  const totalProdutos = parceiros.reduce((sum, p) => sum + p.produtos_ativos.length, 0);
-  const mediaProdutos = parceiros.length > 0 ? totalProdutos / parceiros.length : 0;
 
   // Formatar Moeda
   const formatCurrency = (val: number) => {
@@ -248,11 +356,31 @@ export default function Dashboard() {
             Indicadores de faturamento e inteligência comercial · Monique
           </p>
         </div>
-        <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+          {/* Seletor de Período */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-muted)' }}>PERÍODO:</span>
+            <select
+              value={selectedPeriod}
+              onChange={(e) => setSelectedPeriod(e.target.value)}
+              className="form-input"
+              style={{ fontSize: '0.85rem', padding: '0.4rem 2rem 0.4rem 0.75rem', width: 'auto', margin: 0, height: '36px', borderRadius: 'var(--radius-sm)' }}
+            >
+              <option value="junho_2026">Junho/2026 (Mês Atual)</option>
+              <option value="maio_2026">Maio/2026</option>
+              <option value="abril_2026">Abril/2026</option>
+              <option value="marco_2026">Março/2026</option>
+              <option value="fevereiro_2026">Fevereiro/2026</option>
+              <option value="janeiro_2026">Janeiro/2026</option>
+              <option value="ultimos_3_meses">Últimos 3 meses (Média)</option>
+              <option value="ultimos_6_meses">Últimos 6 meses (Média)</option>
+            </select>
+          </div>
+
           <button 
             onClick={() => setShowImporter(true)} 
             className="btn btn-primary"
-            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', padding: '0.5rem 1rem' }}
+            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', padding: '0.5rem 1rem', height: '36px' }}
           >
             <Upload size={16} /> Importar Planilha Semanal
           </button>
@@ -263,9 +391,12 @@ export default function Dashboard() {
             color: '#dc2626',
             backgroundColor: 'rgba(220, 38, 38, 0.08)',
             border: '1px solid rgba(220, 38, 38, 0.2)',
-            borderRadius: 'var(--radius-sm)'
+            borderRadius: 'var(--radius-sm)',
+            height: '36px',
+            display: 'flex',
+            alignItems: 'center'
           }}>
-            Atualizado: {new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}
+            Atualizado: {lastWeeklyUploadDate ? new Date(lastWeeklyUploadDate).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'Sem carga'}
           </div>
         </div>
       </div>
@@ -278,7 +409,7 @@ export default function Dashboard() {
             <span className="kpi-label">Volume Total Mercado</span>
             <div className="kpi-value">{formatCurrency(totalVolumeMercado)}</div>
             <span className="kpi-meta" style={{ color: 'var(--text-muted)' }}>
-              Produção geral da carteira
+              Média Mensal · {getPeriodLabel(selectedPeriod)}
             </span>
           </div>
           <div className="kpi-icon-container">
@@ -291,8 +422,8 @@ export default function Dashboard() {
           <div>
             <span className="kpi-label">Volume Produzido Prata</span>
             <div className="kpi-value" style={{ color: 'var(--primary-color)' }}>{formatCurrency(totalVolumePrata)}</div>
-            <span className="kpi-meta success">
-              <ArrowUpRight size={14} /> +8.5% MoM
+            <span className="kpi-meta success" style={{ fontSize: '0.7rem' }}>
+              Ref: {getPeriodLabel(selectedPeriod)}
             </span>
           </div>
           <div className="kpi-icon-container" style={{ color: 'var(--primary-color)', backgroundColor: 'rgba(15, 184, 130, 0.15)' }}>
@@ -305,7 +436,9 @@ export default function Dashboard() {
           <div>
             <span className="kpi-label">Concentração Média Prata</span>
             <div className="kpi-value">{concentracaoGlobal.toFixed(1)}%</div>
-            <span className={`kpi-meta ${concentracaoGlobal >= 30 ? 'success' : 'danger'}`}>Meta: &ge; 30%</span>
+            <span className={`kpi-meta ${concentracaoGlobal >= 30 ? 'success' : 'danger'}`}>
+              Meta: &ge; 30% ({getPeriodLabel(selectedPeriod)})
+            </span>
           </div>
           <div className="kpi-icon-container">
             <Layers size={24} />
@@ -321,7 +454,7 @@ export default function Dashboard() {
             <span className="kpi-label">Parceiros Ativos</span>
             <div className="kpi-value">{parceirosAtivos}</div>
             <span className="kpi-meta" style={{ color: 'var(--text-muted)' }}>
-              Total geral: {parceiros.length} parceiros
+              Total geral: {parceiros.length} (Semáforo/Alertas fixos)
             </span>
           </div>
           <div className="kpi-icon-container">
@@ -334,7 +467,7 @@ export default function Dashboard() {
           <div>
             <span className="kpi-label">Taxa de Parceiros Ativos</span>
             <div className="kpi-value">{taxaAtivos.toFixed(1)}%</div>
-            <span className={`kpi-meta ${taxaAtivos >= 70 ? 'success' : 'danger'}`}>Meta: &ge; 70%</span>
+            <span className={`kpi-meta ${taxaAtivos >= 70 ? 'success' : 'danger'}`}>Meta: &ge; 70% (Fixo atual)</span>
           </div>
           <div className="kpi-icon-container">
             <Percent size={24} />
@@ -348,7 +481,7 @@ export default function Dashboard() {
           <div>
             <span className="kpi-label">Churn da Carteira</span>
             <div className="kpi-value" style={{ color: churnRate >= 10 ? 'var(--danger)' : 'inherit' }}>{churnRate.toFixed(1)}%</div>
-            <span className={`kpi-meta ${churnRate < 10 ? 'success' : 'danger'}`}>Meta: &lt; 10%</span>
+            <span className={`kpi-meta ${churnRate < 10 ? 'success' : 'danger'}`}>Meta: &lt; 10% (Fixo atual)</span>
           </div>
           <div className="kpi-icon-container" style={{ color: 'var(--danger)', backgroundColor: 'rgba(239, 68, 68, 0.15)' }}>
             <AlertCircle size={24} />
@@ -363,7 +496,9 @@ export default function Dashboard() {
           <div style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--secondary-color)', margin: '0.2rem 0' }}>
             {mediaProdutos.toFixed(1)}
           </div>
-          <span style={{ fontSize: '0.7rem', color: mediaProdutos >= 2 ? 'var(--success)' : 'var(--danger)', fontWeight: 500 }}>Meta: &ge; 2 / parc.</span>
+          <span style={{ fontSize: '0.7rem', color: mediaProdutos >= 2 ? 'var(--success)' : 'var(--danger)', fontWeight: 500 }}>
+            Meta: &ge; 2 ({getPeriodLabel(selectedPeriod)})
+          </span>
         </div>
 
         <div className="card kpi-card" style={{ padding: '1rem 1.25rem' }} onClick={() => setSelectedKpi('ciclo-ativacao')}>
@@ -394,7 +529,7 @@ export default function Dashboard() {
         return (
           <div className="card" style={{ padding: '1.5rem', marginBottom: '2rem' }}>
             <h3 className="card-title" style={{ marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <PieChart size={20} style={{ color: 'var(--primary-color)' }} /> Mix de Faturamento por Produto (Junho/2026)
+              <PieChart size={20} style={{ color: 'var(--primary-color)' }} /> Mix de Faturamento por Produto ({getPeriodLabel(selectedPeriod)})
             </h3>
             
             {/* Barra consolidada de Mix */}
@@ -521,13 +656,14 @@ export default function Dashboard() {
           </div>
         )}
       </div>
+
       {/* Seção de Gráficos de Desempenho */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(450px, 1fr))', gap: '1.5rem', marginBottom: '2rem' }}>
         
         {/* Gráfico 1: Top 5 Parceiros (Prata vs Mercado) */}
         <div className="card" style={{ padding: '1.5rem' }}>
           <h3 className="card-title" style={{ marginBottom: '1.25rem' }}>
-            <TrendingUp size={20} /> Comparativo de Volumes: Mercado vs Prata (Top 5)
+            <TrendingUp size={20} /> Comparativo de Volumes: Mercado vs Prata (Top 5 - {getPeriodLabel(selectedPeriod)})
           </h3>
           
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', marginTop: '1rem' }}>
@@ -535,13 +671,14 @@ export default function Dashboard() {
               .sort((a, b) => b.vol_total_mensal - a.vol_total_mensal)
               .slice(0, 5)
               .map(p => {
-                const percPrata = p.vol_total_mensal > 0 ? (p.vol_prata_mensal / p.vol_total_mensal) * 100 : 0;
+                const volPrataPeriodo = (parceiroProdMap[p.id]?.total || 0) / numMonths;
+                const percPrata = p.vol_total_mensal > 0 ? (volPrataPeriodo / p.vol_total_mensal) * 100 : 0;
                 return (
                   <div key={p.id} style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', fontWeight: 600 }}>
                       <span style={{ color: 'var(--secondary-color)' }}>{p.nome}</span>
                       <span style={{ color: 'var(--text-muted)' }}>
-                        Prata: <strong style={{ color: 'var(--primary-color)' }}>{percPrata.toFixed(0)}%</strong> ({formatCurrency(p.vol_prata_mensal)})
+                        Prata: <strong style={{ color: 'var(--primary-color)' }}>{percPrata.toFixed(0)}%</strong> ({formatCurrency(volPrataPeriodo)})
                       </span>
                     </div>
                     {/* Barra de Progresso Mercado vs Prata */}
@@ -717,7 +854,7 @@ export default function Dashboard() {
         {/* Ranking de Parceiros */}
         <div className="card" style={{ padding: '1.5rem' }}>
           <h3 className="card-title" style={{ marginBottom: '1.25rem' }}>
-            <Briefcase size={20} /> Ranking de Parceiros (Produção)
+            <Briefcase size={20} /> Ranking de Parceiros (Produção - {getPeriodLabel(selectedPeriod)})
           </h3>
           
           <div className="table-container" style={{ border: 'none', boxShadow: 'none' }}>
@@ -733,10 +870,14 @@ export default function Dashboard() {
               </thead>
               <tbody>
                 {[...parceiros]
-                  .sort((a, b) => b.vol_prata_mensal - a.vol_prata_mensal)
+                  .map(p => ({
+                    ...p,
+                    volPrataPeriodo: (parceiroProdMap[p.id]?.total || 0) / numMonths
+                  }))
+                  .sort((a, b) => b.volPrataPeriodo - a.volPrataPeriodo)
                   .slice(0, 5)
                   .map((p, index) => {
-                    const conc = p.vol_total_mensal > 0 ? (p.vol_prata_mensal / p.vol_total_mensal) * 100 : 0;
+                    const conc = p.vol_total_mensal > 0 ? (p.volPrataPeriodo / p.vol_total_mensal) * 100 : 0;
                     return (
                       <tr key={p.id}>
                         <td style={{ fontWeight: 700, color: index === 0 ? 'var(--warning)' : 'var(--text-muted)' }}>
@@ -744,7 +885,7 @@ export default function Dashboard() {
                         </td>
                         <td style={{ fontWeight: 600 }}>{p.nome}</td>
                         <td style={{ textAlign: 'right', fontWeight: 500 }}>
-                          {formatCurrency(p.vol_prata_mensal)}
+                          {formatCurrency(p.volPrataPeriodo)}
                         </td>
                         <td style={{ textAlign: 'right', fontWeight: 500 }}>
                           {conc.toFixed(0)}%
@@ -759,15 +900,19 @@ export default function Dashboard() {
                   })}
               </tbody>
             </table>
+          </div>
         </div>
       </div>
-    </div>
 
       {showImporter && (
         <ExcelImporter 
           onClose={() => setShowImporter(false)}
           onImportSuccess={async () => {
             try {
+              const newUploadDate = new Date().toISOString();
+              dataService.setLastWeeklyUploadDate(newUploadDate);
+              setLastWeeklyUploadDate(newUploadDate);
+
               // Recarregar os dados do Dashboard após importação em lote
               const [pList, lList, allProds] = await Promise.all([
                 dataService.getParceiros(),
@@ -786,140 +931,11 @@ export default function Dashboard() {
               setTaxaReativacao(reat);
               setSemaforo(sem);
 
-              // Recalcular Mix
-              let fgtsSum = 0;
-              let cltSum = 0;
-              let cgvSum = 0;
-              let pixSum = 0;
-
-              const prodsMap: { [key: string]: typeof allProds } = {};
-              for (const prod of allProds) {
-                if (!prodsMap[prod.parceiro_id]) {
-                  prodsMap[prod.parceiro_id] = [];
-                }
-                prodsMap[prod.parceiro_id].push(prod);
-              }
-
-              for (const p of pList) {
-                const prods = prodsMap[p.id] || [];
-                const pJun = prods.find(pr => pr.ano === 2026 && pr.mes === 6);
-                if (pJun) {
-                  fgtsSum += pJun.vol_fgts || 0;
-                  cltSum += pJun.vol_clt || 0;
-                  cgvSum += pJun.vol_cgv || 0;
-                  pixSum += pJun.vol_pix || 0;
-                }
-              }
-              setMixProdutos({ fgts: fgtsSum, clt: cltSum, cgv: cgvSum, pix: pixSum });
-
-              // Recalcular alertas
-              const faturamentoTotalPrata = pList.reduce((sum, p) => sum + (p.vol_prata_mensal || 0), 0) || 1;
-              const activeAlerts: any[] = [];
-              const hoje = new Date();
-
-              for (const p of pList) {
-                const logsParceiro = lList.filter(l => l.parceiro_id === p.id);
-                const dataUltima = logsParceiro.length > 0 ? new Date(logsParceiro[0].data_contato) : null;
-                
-                const sharePortfol = ((p.vol_prata_mensal || 0) / faturamentoTotalPrata) * 100;
-                if (p.status === 'Ativo' && sharePortfol >= 30) {
-                  activeAlerts.push({
-                    id: 'alert_conc_sist_' + p.id,
-                    parceiro: p.nome,
-                    parceiroId: p.id,
-                    mensagem: `Risco de Concentração Sistêmica: O parceiro representa ${sharePortfol.toFixed(1)}% do faturamento total da Prata Digital.`,
-                    prioridade: 'Alta',
-                    ultimaInteracao: dataUltima ? dataUltima.toLocaleDateString('pt-BR') : 'Sem registro'
-                  });
-                }
-
-                const producoes = prodsMap[p.id] || [];
-                const prodJun = producoes.find(pr => pr.ano === 2026 && pr.mes === 6);
-                const prodMai = producoes.find(pr => pr.ano === 2026 && pr.mes === 5);
-                
-                if (p.status === 'Ativo' && prodJun && prodMai) {
-                  const volJun = (prodJun.vol_fgts || 0) + (prodJun.vol_clt || 0) + (prodJun.vol_cgv || 0) + (prodJun.vol_pix || 0);
-                  const volMai = (prodMai.vol_fgts || 0) + (prodMai.vol_clt || 0) + (prodMai.vol_cgv || 0) + (prodMai.vol_pix || 0);
-                  
-                  if (volMai > 0) {
-                    const queda = ((volMai - volJun) / volMai) * 100;
-                    if (queda >= 40) {
-                      activeAlerts.push({
-                        id: 'alert_early_warn_' + p.id,
-                        parceiro: p.nome,
-                        parceiroId: p.id,
-                        mensagem: `Early Warning: Queda de produção recente no Prata. Redução de ${queda.toFixed(1)}% em relação ao mês anterior (de R$ ${volMai.toLocaleString('pt-BR')} para R$ ${volJun.toLocaleString('pt-BR')}).`,
-                        prioridade: 'Alta',
-                        ultimaInteracao: dataUltima ? dataUltima.toLocaleDateString('pt-BR') : 'Sem registro'
-                      });
-                    }
-                  }
-                }
-
-                if (p.classificacao === 'Estratégico' && p.status === 'Ativo') {
-                  if (!dataUltima || (hoje.getTime() - dataUltima.getTime()) > (30 * 24 * 60 * 60 * 1000)) {
-                    activeAlerts.push({
-                      id: 'alert_strat_' + p.id,
-                      parceiro: p.nome,
-                      parceiroId: p.id,
-                      mensagem: 'Parceiro Estratégico sem nenhum contato registrado nos últimos 30 dias.',
-                      prioridade: 'Alta',
-                      ultimaInteracao: dataUltima ? dataUltima.toLocaleDateString('pt-BR') : 'Sem registro'
-                    });
-                  }
-                }
-
-                if (p.status === 'Onboarding') {
-                  const dataCriacao = p.created_at ? new Date(p.created_at) : new Date();
-                  if ((hoje.getTime() - dataCriacao.getTime()) > (7 * 24 * 60 * 60 * 1000) && p.vol_prata_mensal === 0) {
-                    activeAlerts.push({
-                      id: 'alert_new_' + p.id,
-                      parceiro: p.nome,
-                      parceiroId: p.id,
-                      mensagem: 'Novo parceiro cadastrado há mais de 7 dias sem registrar nenhuma operação.',
-                      prioridade: 'Alta',
-                      ultimaInteracao: dataUltima ? dataUltima.toLocaleDateString('pt-BR') : 'Sem contato'
-                    });
-                  }
-                }
-
-                if (p.status === 'Reativação' && p.vol_total_mensal > 0) {
-                  activeAlerts.push({
-                    id: 'alert_inactive_' + p.id,
-                    parceiro: p.nome,
-                    parceiroId: p.id,
-                    mensagem: 'Produção zerada há 60+ dias — processo Win-back deve ser iniciado.',
-                    prioridade: 'Alta',
-                    ultimaInteracao: dataUltima ? dataUltima.toLocaleDateString('pt-BR') : 'Sem registro'
-                  });
-                }
-
-                if (p.status === 'Ativo' && !p.produtos_ativos.includes('CGV') && p.num_vendedores >= 4) {
-                  activeAlerts.push({
-                    id: 'alert_opp_cgv_' + p.id,
-                    parceiro: p.nome,
-                    parceiroId: p.id,
-                    mensagem: 'Parceiro qualificado para expansão do produto CGV (ainda não ativado).',
-                    prioridade: 'Média',
-                    ultimaInteracao: dataUltima ? dataUltima.toLocaleDateString('pt-BR') : 'Sem registro'
-                  });
-                }
-
-                if (p.status === 'Ativo' && p.vol_total_mensal > 150000 && p.vol_prata_mensal / p.vol_total_mensal < 0.25) {
-                  activeAlerts.push({
-                    id: 'alert_opp_conc_' + p.id,
-                    parceiro: p.nome,
-                    parceiroId: p.id,
-                    mensagem: 'Concentração no Prata abaixo de 25% — grande volume de mercado captável.',
-                    prioridade: 'Média',
-                    ultimaInteracao: dataUltima ? dataUltima.toLocaleDateString('pt-BR') : 'Sem registro'
-                  });
-                }
-              }
-
+              // Atualizar alertas
+              const activeAlerts = gerarAlertasDinamicos(pList, lList, allProds);
               setAlertas(activeAlerts);
             } catch (err) {
-              console.error(err);
+              console.error('Erro ao atualizar dados pós-importação:', err);
             }
           }}
         />
@@ -932,6 +948,7 @@ export default function Dashboard() {
           parceiros={parceiros}
           allProducoes={allProducoes}
           allLogs={logs}
+          selectedPeriod={selectedPeriod}
         />
       )}
     </div>
@@ -939,9 +956,40 @@ export default function Dashboard() {
 }
 
 // Modal de auditoria da origem de dados de cada KPI comercial
-function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs }: { kpiType: string; onClose: () => void; parceiros: Parceiro[]; allProducoes: ProducaoMensal[]; allLogs: CrmLog[] }) {
+function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs, selectedPeriod }: { kpiType: string; onClose: () => void; parceiros: Parceiro[]; allProducoes: ProducaoMensal[]; allLogs: CrmLog[]; selectedPeriod: string }) {
   const [loading, setLoading] = useState(false);
   const [details, setDetails] = useState<any[]>([]);
+
+  const activeMonths = getMonthsForPeriod(selectedPeriod);
+  const numMonths = activeMonths.length;
+
+  // Mapa de faturamento na Prata para cada parceiro no período selecionado
+  const parceiroProdMap: Record<string, { fgts: number; clt: number; cgv: number; pix: number; total: number }> = {};
+  allProducoes.forEach(prod => {
+    const match = activeMonths.some(m => m.ano === prod.ano && m.mes === prod.mes);
+    if (match) {
+      const vol = (prod.vol_fgts || 0) + (prod.vol_clt || 0) + (prod.vol_cgv || 0) + (prod.vol_pix || 0);
+      if (!parceiroProdMap[prod.parceiro_id]) {
+        parceiroProdMap[prod.parceiro_id] = { fgts: 0, clt: 0, cgv: 0, pix: 0, total: 0 };
+      }
+      parceiroProdMap[prod.parceiro_id].fgts += prod.vol_fgts || 0;
+      parceiroProdMap[prod.parceiro_id].clt += prod.vol_clt || 0;
+      parceiroProdMap[prod.parceiro_id].cgv += prod.vol_cgv || 0;
+      parceiroProdMap[prod.parceiro_id].pix += prod.vol_pix || 0;
+      parceiroProdMap[prod.parceiro_id].total += vol;
+    }
+  });
+
+  const getProdutosOperados = (pId: string) => {
+    const data = parceiroProdMap[pId];
+    if (!data) return [];
+    const prods = [];
+    if (data.fgts > 0) prods.push('FGTS');
+    if (data.clt > 0) prods.push('CLT');
+    if (data.cgv > 0) prods.push('CGV');
+    if (data.pix > 0) prods.push('Pix');
+    return prods;
+  };
 
   useEffect(() => {
     if (kpiType === 'ciclo-ativacao') {
@@ -1006,7 +1054,7 @@ function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs }: 
               classificacao: p.classificacao,
               score: p.score_comercial,
               inicioWinback: datasInicio[p.id] || 'N/A',
-              volPrata: p.vol_prata_mensal
+              volPrata: (parceiroProdMap[p.id]?.total || 0) / numMonths
             }));
           setDetails(list);
         } catch (e) {
@@ -1017,7 +1065,7 @@ function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs }: 
       }
       calc();
     }
-  }, [kpiType, parceiros, allProducoes, allLogs]);
+  }, [kpiType, parceiros, allProducoes, allLogs, selectedPeriod]);
 
   // Formatar Moeda
   const formatCurrency = (val: number) => {
@@ -1029,7 +1077,7 @@ function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs }: 
   let content = null;
 
   if (kpiType === 'total-mercado') {
-    title = 'Detalhamento do Volume de Mercado (Faturamento Mensal Geral)';
+    title = `Detalhamento do Volume de Mercado (Faturamento Mensal Geral - ${getPeriodLabel(selectedPeriod)})`;
     const rows = [...parceiros].sort((a, b) => b.vol_total_mensal - a.vol_total_mensal);
     content = (
       <table className="table">
@@ -1058,9 +1106,14 @@ function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs }: 
       </table>
     );
   } else if (kpiType === 'total-prata') {
-    title = 'Detalhamento do Volume Produzido Prata';
-    const rows = [...parceiros].sort((a, b) => b.vol_prata_mensal - a.vol_prata_mensal);
-    const totalPrata = rows.reduce((sum, p) => sum + p.vol_prata_mensal, 0) || 1;
+    title = `Detalhamento do Volume Produzido Prata (${getPeriodLabel(selectedPeriod)})`;
+    const rows = parceiros
+      .map(p => ({
+        ...p,
+        volPrataPeriodo: (parceiroProdMap[p.id]?.total || 0) / numMonths
+      }))
+      .sort((a, b) => b.volPrataPeriodo - a.volPrataPeriodo);
+    const totalPrata = rows.reduce((sum, p) => sum + p.volPrataPeriodo, 0) || 1;
     content = (
       <table className="table">
         <thead>
@@ -1074,7 +1127,7 @@ function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs }: 
         </thead>
         <tbody>
           {rows.map(p => {
-            const share = (p.vol_prata_mensal / totalPrata) * 100;
+            const share = (p.volPrataPeriodo / totalPrata) * 100;
             return (
               <tr key={p.id}>
                 <td style={{ fontWeight: 600 }}>{p.nome}</td>
@@ -1084,7 +1137,7 @@ function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs }: 
                   </span>
                 </td>
                 <td>{p.classificacao}</td>
-                <td style={{ textAlign: 'right', fontWeight: 600, color: 'var(--primary-color)' }}>{formatCurrency(p.vol_prata_mensal)}</td>
+                <td style={{ textAlign: 'right', fontWeight: 600, color: 'var(--primary-color)' }}>{formatCurrency(p.volPrataPeriodo)}</td>
                 <td style={{ textAlign: 'right', fontWeight: 600 }}>{share.toFixed(1)}%</td>
               </tr>
             );
@@ -1093,13 +1146,17 @@ function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs }: 
       </table>
     );
   } else if (kpiType === 'concentracao') {
-    title = 'Taxa de Concentração Média por Parceiro';
+    title = `Taxa de Concentração Média por Parceiro (${getPeriodLabel(selectedPeriod)})`;
     const rows = [...parceiros]
       .filter(p => p.vol_total_mensal > 0)
-      .map(p => ({
-        ...p,
-        conc: (p.vol_prata_mensal / p.vol_total_mensal) * 100
-      }))
+      .map(p => {
+        const volPrataPeriodo = (parceiroProdMap[p.id]?.total || 0) / numMonths;
+        return {
+          ...p,
+          volPrataPeriodo,
+          conc: (volPrataPeriodo / p.vol_total_mensal) * 100
+        };
+      })
       .sort((a, b) => b.conc - a.conc);
     content = (
       <table className="table">
@@ -1116,7 +1173,7 @@ function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs }: 
             <tr key={p.id}>
               <td style={{ fontWeight: 600 }}>{p.nome}</td>
               <td style={{ textAlign: 'right' }}>{formatCurrency(p.vol_total_mensal)}</td>
-              <td style={{ textAlign: 'right' }}>{formatCurrency(p.vol_prata_mensal)}</td>
+              <td style={{ textAlign: 'right' }}>{formatCurrency(p.volPrataPeriodo)}</td>
               <td style={{ textAlign: 'right', fontWeight: 600, color: p.conc >= 30 ? 'var(--danger)' : 'var(--success)' }}>
                 {p.conc.toFixed(1)}%
               </td>
@@ -1127,7 +1184,13 @@ function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs }: 
     );
   } else if (kpiType === 'parceiros-ativos') {
     title = 'Parceiros Ativos na Carteira';
-    const rows = parceiros.filter(p => p.status === 'Ativo').sort((a,b) => b.score_comercial - a.score_comercial);
+    const rows = parceiros
+      .filter(p => p.status === 'Ativo')
+      .map(p => ({
+        ...p,
+        volPrataPeriodo: (parceiroProdMap[p.id]?.total || 0) / numMonths
+      }))
+      .sort((a,b) => b.score_comercial - a.score_comercial);
     content = (
       <table className="table">
         <thead>
@@ -1150,7 +1213,7 @@ function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs }: 
                 </span>
               </td>
               <td>{p.modelo_atuacao}</td>
-              <td style={{ textAlign: 'right', fontWeight: 600 }}>{formatCurrency(p.vol_prata_mensal)}</td>
+              <td style={{ textAlign: 'right', fontWeight: 600 }}>{formatCurrency(p.volPrataPeriodo)}</td>
             </tr>
           ))}
         </tbody>
@@ -1234,8 +1297,17 @@ function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs }: 
       </table>
     );
   } else if (kpiType === 'media-produtos') {
-    title = 'Mix de Produtos Comercializados por Parceiro';
-    const rows = [...parceiros].sort((a, b) => b.produtos_ativos.length - a.produtos_ativos.length);
+    title = `Mix de Produtos Comercializados por Parceiro (${getPeriodLabel(selectedPeriod)})`;
+    const rows = [...parceiros]
+      .map(p => {
+        const ops = getProdutosOperados(p.id);
+        return {
+          ...p,
+          produtosOperados: ops,
+          volPrataPeriodo: (parceiroProdMap[p.id]?.total || 0) / numMonths
+        };
+      })
+      .sort((a, b) => b.produtosOperados.length - a.produtosOperados.length);
     content = (
       <table className="table">
         <thead>
@@ -1250,16 +1322,16 @@ function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs }: 
           {rows.map(p => (
             <tr key={p.id}>
               <td style={{ fontWeight: 600 }}>{p.nome}</td>
-              <td style={{ textAlign: 'center', fontWeight: 700 }}>{p.produtos_ativos.length}</td>
+              <td style={{ textAlign: 'center', fontWeight: 700 }}>{p.produtosOperados.length}</td>
               <td>
                 <div style={{ display: 'flex', gap: '0.25rem', flexWrap: 'wrap' }}>
-                  {p.produtos_ativos.map(prod => (
+                  {p.produtosOperados.map(prod => (
                     <span key={prod} className="badge badge-success" style={{ fontSize: '0.65rem' }}>{prod}</span>
                   ))}
-                  {p.produtos_ativos.length === 0 && <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>Nenhum</span>}
+                  {p.produtosOperados.length === 0 && <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>Nenhum</span>}
                 </div>
               </td>
-              <td style={{ textAlign: 'right' }}>{formatCurrency(p.vol_prata_mensal)}</td>
+              <td style={{ textAlign: 'right' }}>{formatCurrency(p.volPrataPeriodo)}</td>
             </tr>
           ))}
         </tbody>
