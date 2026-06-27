@@ -459,11 +459,11 @@ export const dataService = {
     // Atualizar localmente o parceiro
     const partnerIdx = db.parceiros.findIndex(p => p.id === prod.parceiro_id);
     if (partnerIdx !== -1) {
-      // Volume de Junho de 2026 ou o mais recente
+      // Usar a produção consolidada de referência de Maio de 2026 (mês anterior completo)
       const partnerProds = db.producao.filter(pr => pr.parceiro_id === prod.parceiro_id);
-      const recent = partnerProds.sort((a,b) => (b.ano !== a.ano ? b.ano - a.ano : b.mes - a.mes))[0];
-      if (recent) {
-        db.parceiros[partnerIdx].vol_prata_mensal = (recent.vol_fgts || 0) + (recent.vol_clt || 0) + (recent.vol_cgv || 0) + (recent.vol_pix || 0);
+      const consolidado = partnerProds.find(pr => pr.ano === 2026 && pr.mes === 5);
+      if (consolidado) {
+        db.parceiros[partnerIdx].vol_prata_mensal = (consolidado.vol_fgts || 0) + (consolidado.vol_clt || 0) + (consolidado.vol_cgv || 0) + (consolidado.vol_pix || 0);
         // Recalcular score
         const { score, classificacao } = calculateScoreAndClassification(db.parceiros[partnerIdx]);
         db.parceiros[partnerIdx].score_comercial = score;
@@ -477,18 +477,18 @@ export const dataService = {
 
   async recalculateParceiroPrataVolume(parceiroId: string) {
     if (!supabase) return;
-    // Pega a produção mais recente do parceiro
+    // Pega a produção consolidada de referência de Maio de 2026 (mês anterior completo)
     const { data: prods } = await supabase
       .from('producao')
       .select('*')
       .eq('parceiro_id', parceiroId)
-      .order('ano', { ascending: false })
-      .order('mes', { ascending: false })
+      .eq('ano', 2026)
+      .eq('mes', 5)
       .limit(1);
 
     if (prods && prods.length > 0) {
-      const latest = prods[0];
-      const volPrata = parseFloat(latest.vol_fgts || 0) + parseFloat(latest.vol_clt || 0) + parseFloat(latest.vol_cgv || 0) + parseFloat(latest.vol_pix || 0);
+      const consolidado = prods[0];
+      const volPrata = parseFloat(consolidado.vol_fgts || 0) + parseFloat(consolidado.vol_clt || 0) + parseFloat(consolidado.vol_cgv || 0) + parseFloat(consolidado.vol_pix || 0);
       
       // Pega o parceiro para recalcular o score
       const { data: partner } = await supabase
