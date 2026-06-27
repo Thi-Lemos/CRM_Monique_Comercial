@@ -66,7 +66,6 @@ const getPeriodLabel = (period: string) => {
 function gerarAlertasDinamicos(pList: Parceiro[], lList: CrmLog[], allProds: ProducaoMensal[]) {
   const activeAlerts: any[] = [];
   const hoje = new Date();
-  const faturamentoTotalPrata = pList.reduce((sum, p) => sum + (p.vol_prata_mensal || 0), 0) || 1;
 
   const prodsMap: { [key: string]: ProducaoMensal[] } = {};
   for (const prod of allProds) {
@@ -76,42 +75,51 @@ function gerarAlertasDinamicos(pList: Parceiro[], lList: CrmLog[], allProds: Pro
     prodsMap[prod.parceiro_id].push(prod);
   }
 
+  // Faturamento consolidado total no mês anterior (Maio/2026) por estar completo
+  const faturamentoTotalPrataMai = pList.reduce((sum, p) => {
+    const prods = prodsMap[p.id] || [];
+    const prMai = prods.find(pr => pr.ano === 2026 && pr.mes === 5);
+    const vol = prMai ? (prMai.vol_fgts || 0) + (prMai.vol_clt || 0) + (prMai.vol_cgv || 0) + (prMai.vol_pix || 0) : 0;
+    return sum + vol;
+  }, 0) || 1;
+
   for (const p of pList) {
     const logsParceiro = lList.filter(l => l.parceiro_id === p.id);
     const dataUltima = logsParceiro.length > 0 
       ? new Date(logsParceiro[0].data_contato) 
       : null;
     
-    // Alerta A: Risco de Concentração Sistêmica
-    const sharePortfol = ((p.vol_prata_mensal || 0) / faturamentoTotalPrata) * 100;
+    const producoes = prodsMap[p.id] || [];
+    const prodMai = producoes.find(pr => pr.ano === 2026 && pr.mes === 5);
+    const volPrataMai = prodMai ? (prodMai.vol_fgts || 0) + (prodMai.vol_clt || 0) + (prodMai.vol_cgv || 0) + (prodMai.vol_pix || 0) : 0;
+
+    // Alerta A: Risco de Concentração Sistêmica (usando dados de Maio/2026)
+    const sharePortfol = (volPrataMai / faturamentoTotalPrataMai) * 100;
     if (p.status === 'Ativo' && sharePortfol >= 30) {
       activeAlerts.push({
         id: 'alert_conc_sist_' + p.id,
         parceiro: p.nome,
         parceiroId: p.id,
-        mensagem: `Risco de Concentração Sistêmica: O parceiro representa ${sharePortfol.toFixed(1)}% do faturamento total da Prata Digital.`,
+        mensagem: `Risco de Concentração Sistêmica (Ref: Mai/26): O parceiro representou ${sharePortfol.toFixed(1)}% do faturamento consolidado do Prata Digital no mês anterior.`,
         prioridade: 'Alta',
         ultimaInteracao: dataUltima ? dataUltima.toLocaleDateString('pt-BR') : 'Sem registro'
       });
     }
 
-    // Alerta B: Early Warning
-    const producoes = prodsMap[p.id] || [];
-    const prodJun = producoes.find(pr => pr.ano === 2026 && pr.mes === 6);
-    const prodMai = producoes.find(pr => pr.ano === 2026 && pr.mes === 5);
+    // Alerta B: Early Warning (comparando safra de Maio/2026 com Abril/2026 por estarem fechadas)
+    const prodAbr = producoes.find(pr => pr.ano === 2026 && pr.mes === 4);
     
-    if (p.status === 'Ativo' && prodJun && prodMai) {
-      const volJun = (prodJun.vol_fgts || 0) + (prodJun.vol_clt || 0) + (prodJun.vol_cgv || 0) + (prodJun.vol_pix || 0);
-      const volMai = (prodMai.vol_fgts || 0) + (prodMai.vol_clt || 0) + (prodMai.vol_cgv || 0) + (prodMai.vol_pix || 0);
+    if (p.status === 'Ativo' && prodMai && prodAbr) {
+      const volAbr = (prodAbr.vol_fgts || 0) + (prodAbr.vol_clt || 0) + (prodAbr.vol_cgv || 0) + (prodAbr.vol_pix || 0);
       
-      if (volMai > 0) {
-        const queda = ((volMai - volJun) / volMai) * 100;
+      if (volAbr > 0) {
+        const queda = ((volAbr - volPrataMai) / volAbr) * 100;
         if (queda >= 40) {
           activeAlerts.push({
             id: 'alert_early_warn_' + p.id,
             parceiro: p.nome,
             parceiroId: p.id,
-            mensagem: `Early Warning: Queda de produção recente no Prata. Redução de ${queda.toFixed(1)}% em relação ao mês anterior (de R$ ${volMai.toLocaleString('pt-BR')} para R$ ${volJun.toLocaleString('pt-BR')}).`,
+            mensagem: `Early Warning (Queda Consolidada): Redução de ${queda.toFixed(1)}% no faturamento consolidado de Maio em relação a Abril (de R$ ${volAbr.toLocaleString('pt-BR')} para R$ ${volPrataMai.toLocaleString('pt-BR')}).`,
             prioridade: 'Alta',
             ultimaInteracao: dataUltima ? dataUltima.toLocaleDateString('pt-BR') : 'Sem registro'
           });
@@ -195,12 +203,13 @@ function gerarAlertasDinamicos(pList: Parceiro[], lList: CrmLog[], allProds: Pro
       });
     }
 
-    if (p.status === 'Ativo' && p.vol_total_mensal > 150000 && p.vol_prata_mensal / p.vol_total_mensal < 0.25) {
+    const shareMercadoMai = p.vol_total_mensal > 0 ? (volPrataMai / p.vol_total_mensal) : 0;
+    if (p.status === 'Ativo' && p.vol_total_mensal > 150000 && shareMercadoMai < 0.25) {
       activeAlerts.push({
         id: 'alert_opp_conc_' + p.id,
         parceiro: p.nome,
         parceiroId: p.id,
-        mensagem: 'Concentração no Prata abaixo de 25% — grande volume de mercado captável.',
+        mensagem: `Concentração no Prata abaixo de 25% no mês de Maio (${(shareMercadoMai * 100).toFixed(0)}%) — grande volume de mercado captável.`,
         prioridade: 'Média',
         ultimaInteracao: dataUltima ? dataUltima.toLocaleDateString('pt-BR') : 'Sem registro'
       });
@@ -221,7 +230,7 @@ export default function Dashboard() {
   const [taxaReativacao, setTaxaReativacao] = useState(25.0);
   const [selectedKpi, setSelectedKpi] = useState<string | null>(null);
   const [lastWeeklyUploadDate, setLastWeeklyUploadDate] = useState<string>('');
-  const [selectedPeriod, setSelectedPeriod] = useState<string>('junho_2026');
+  const [selectedPeriod, setSelectedPeriod] = useState<string>('maio_2026');
 
   // Alertas gerados dinamicamente
   const [alertas, setAlertas] = useState<{
