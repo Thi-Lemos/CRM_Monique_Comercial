@@ -305,7 +305,10 @@ export default function Dashboard() {
       const taxaAtivosNoMes = pNoMes.length > 0 ? (ativosNoMes / pNoMes.length) * 100 : 0;
       const inativosNoMes = pNoMes.filter(p => p.status === 'Reativação').length;
       const churnRateNoMes = pNoMes.length > 0 ? (inativosNoMes / pNoMes.length) * 100 : 0;
-      const volMercadoNoMes = pNoMes.reduce((sum, p) => sum + p.vol_total_mensal, 0);
+      
+      const parceirosAtivosNoMes = pNoMes.filter(p => p.status === 'Ativo');
+      const somaVolMercadoAtivosNoMes = parceirosAtivosNoMes.reduce((sum, p) => sum + p.vol_total_mensal, 0);
+      const volMercadoNoMes = parceirosAtivosNoMes.length > 0 ? (somaVolMercadoAtivosNoMes / parceirosAtivosNoMes.length) : 0;
 
       somaAtivos += ativosNoMes;
       somaTaxaAtivos += taxaAtivosNoMes;
@@ -324,7 +327,10 @@ export default function Dashboard() {
     taxaAtivos = parceirosNoPeriodo.length > 0 ? (parceirosAtivos / parceirosNoPeriodo.length) * 100 : 0;
     inativos = parceirosNoPeriodo.filter(p => p.status === 'Reativação').length;
     churnRate = parceirosNoPeriodo.length > 0 ? (inativos / parceirosNoPeriodo.length) * 100 : 0;
-    totalVolumeMercado = parceirosNoPeriodo.reduce((sum, p) => sum + p.vol_total_mensal, 0);
+    
+    const parceirosAtivosNoPeriodo = parceirosNoPeriodo.filter(p => p.status === 'Ativo');
+    const somaVolMercadoAtivos = parceirosAtivosNoPeriodo.reduce((sum, p) => sum + p.vol_total_mensal, 0);
+    totalVolumeMercado = parceirosAtivosNoPeriodo.length > 0 ? (somaVolMercadoAtivos / parceirosAtivosNoPeriodo.length) : 0;
   }
 
   // Taxa de Reativação Dinâmica
@@ -1104,12 +1110,12 @@ function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs, se
 
   if (kpiType === 'total-mercado') {
     title = `Detalhamento do Volume de Mercado (Faturamento Mensal Geral - ${getPeriodLabel(selectedPeriod)})`;
-    const rows = [...parceiros].sort((a, b) => b.vol_total_mensal - a.vol_total_mensal);
+    const rows = parceiros.filter(p => p.status === 'Ativo').sort((a, b) => b.vol_total_mensal - a.vol_total_mensal);
     content = (
       <table className="table">
         <thead>
           <tr>
-            <th>Parceiro</th>
+            <th>Parceiro (Ativo)</th>
             <th>Status</th>
             <th>Classificação</th>
             <th style={{ textAlign: 'right' }}>Faturamento Mercado</th>
@@ -1129,6 +1135,14 @@ function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs, se
             </tr>
           ))}
         </tbody>
+        <tfoot>
+          <tr style={{ fontWeight: 800, backgroundColor: 'rgba(0, 0, 0, 0.05)' }}>
+            <td colSpan={3}>Média por Parceiro Ativo</td>
+            <td style={{ textAlign: 'right', color: 'var(--primary-color)' }}>
+              {formatCurrency(rows.length > 0 ? rows.reduce((sum, r) => sum + r.vol_total_mensal, 0) / rows.length : 0)}
+            </td>
+          </tr>
+        </tfoot>
       </table>
     );
   } else if (kpiType === 'total-prata') {
