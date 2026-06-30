@@ -170,7 +170,7 @@ function gerarAlertasDinamicos(pList: Parceiro[], lList: CrmLog[], allProds: Pro
   return activeAlerts;
 }
 
-export default function Dashboard() {
+export default function Dashboard({ onSelectPartner }: { onSelectPartner?: (id: string) => void }) {
   const [parceiros, setParceiros] = useState<Parceiro[]>([]);
   const [logs, setLogs] = useState<CrmLog[]>([]);
   const [allProducoes, setAllProducoes] = useState<ProducaoMensal[]>([]);
@@ -833,7 +833,12 @@ export default function Dashboard() {
               </p>
             ) : (
               alertas.map(alert => (
-                <div key={alert.id} className={`alert-item ${alert.prioridade}`}>
+                <div 
+                  key={alert.id} 
+                  className={`alert-item ${alert.prioridade}`}
+                  onClick={() => onSelectPartner?.(alert.parceiroId)}
+                  style={{ cursor: onSelectPartner ? 'pointer' : 'default' }}
+                >
                   <div className="alert-body">
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <span style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--secondary-color)' }}>

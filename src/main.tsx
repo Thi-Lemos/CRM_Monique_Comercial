@@ -63,7 +63,14 @@ function App() {
   const renderContent = () => {
     switch (activeTab) {
       case 'dashboard':
-        return <Dashboard />;
+        return (
+          <Dashboard 
+            onSelectPartner={(id) => {
+              setSelectedPartnerId(id);
+              setActiveTab('parceiro-detalhe');
+            }}
+          />
+        );
       
       case 'parceiros':
         return (
