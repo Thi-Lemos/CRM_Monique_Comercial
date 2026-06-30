@@ -223,7 +223,7 @@ a {
   overflow-x: auto;
   border: 1px solid rgba(15, 184, 130, 0.25);
   border-radius: var(--radius-md);
-  background: rgba(10, 90, 60, 0.14);
+  background: rgba(255, 255, 255, 0.65);
   box-shadow: var(--shadow-sm);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);

@@ -17,6 +17,15 @@ export interface Parceiro {
   propostas_pagas_semana?: number;
   created_at?: string;
   updated_at?: string;
+  inserido_manualmente?: boolean;
+  vol_total_detalhes?: {
+    mes1: string;
+    valor1: number;
+    mes2: string;
+    valor2: number;
+    mes3: string;
+    valor3: number;
+  };
 }
 
 export interface ProducaoMensal {

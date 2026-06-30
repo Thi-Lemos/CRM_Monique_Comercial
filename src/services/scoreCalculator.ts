@@ -12,7 +12,8 @@ export function calculateCriteriaNotes(parceiro: Partial<Parceiro>) {
 
   // N2: Concentração atual
   let n2 = 1;
-  const conc = volTotal > 0 ? ((parceiro.vol_prata_mensal || 0) / volTotal) * 100 : 0;
+  const volTotalSeguro = Math.max(volTotal, parceiro.vol_prata_mensal || 0);
+  const conc = volTotalSeguro > 0 ? ((parceiro.vol_prata_mensal || 0) / volTotalSeguro) * 100 : 0;
   if (conc < 10) n2 = 1;
   else if (conc <= 20) n2 = 3;
   else if (conc <= 30) n2 = 5;

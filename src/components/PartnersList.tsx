@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { dataService } from '../services/dataService';
 import { Parceiro, ProducaoMensal, CriteriosConfig } from '../types';
-import { Search, Plus, Eye, Edit2, Trash2, X, Check, FileSpreadsheet } from 'lucide-react';
+import { Search, Plus, Edit2, Trash2, FileSpreadsheet } from 'lucide-react';
+import PartnerFormModal from './PartnerFormModal';
+
+
+
 
 interface PartnersListProps {
   onSelectPartner: (id: string) => void;
@@ -19,24 +23,8 @@ export default function PartnersList({ onSelectPartner }: PartnersListProps) {
   const [ascendingOrder, setAscendingOrder] = useState(false);
   
   // Controle de Modal e Edição
-  const [showModal, setShowModal] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  
-  const [formData, setFormData] = useState({
-    nome: '',
-    cnpj: '',
-    contato_principal: '',
-    email: '',
-    modelo_atuacao: 'Físico' as Parceiro['modelo_atuacao'],
-    area_geografica: 'Local' as Parceiro['area_geografica'],
-    num_vendedores: 1,
-    vol_total_mensal: 0,
-    vol_prata_mensal: 0,
-    propostas_pagas_semana: 0,
-    produtos_ativos: [] as string[],
-    concorrentes: '',
-    status: 'Onboarding' as Parceiro['status']
-  });
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [selectedPartnerForEdit, setSelectedPartnerForEdit] = useState<Parceiro | null>(null);
 
   const loadPartners = async () => {
     try {
@@ -71,88 +59,16 @@ export default function PartnersList({ onSelectPartner }: PartnersListProps) {
     }
   };
 
-  const handleProductToggle = (prod: string) => {
-    setFormData(prev => {
-      const active = prev.produtos_ativos.includes(prod)
-        ? prev.produtos_ativos.filter(p => p !== prod)
-        : [...prev.produtos_ativos, prod];
-      return { ...prev, produtos_ativos: active };
-    });
-  };
-
-  const formatCNPJ = (val: string) => {
-    const clean = val.replace(/\D/g, '');
-    if (clean.length <= 14) {
-      return clean
-        .replace(/^(\d{2})(\d)/, '$1.$2')
-        .replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3')
-        .replace(/\.(\d{3})(\d)/, '.$1/$2')
-        .replace(/(\d{4})(\d)/, '$1-$2');
-    }
-    return val;
-  };
-
-  const handleCNPJChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const raw = e.target.value;
-    setFormData(prev => ({ ...prev, cnpj: formatCNPJ(raw) }));
-  };
-
   const openAddModal = () => {
-    setEditingId(null);
-    setFormData({
-      nome: '',
-      cnpj: '',
-      contato_principal: '',
-      email: '',
-      modelo_atuacao: 'Físico',
-      area_geografica: 'Local',
-      num_vendedores: 1,
-      vol_total_mensal: 0,
-      vol_prata_mensal: 0,
-      propostas_pagas_semana: 0,
-      produtos_ativos: [],
-      concorrentes: '',
-      status: 'Onboarding'
-    });
-    setShowModal(true);
+    setSelectedPartnerForEdit(null);
+    setIsFormOpen(true);
   };
 
   const openEditModal = (partner: Parceiro) => {
-    setEditingId(partner.id);
-    setFormData({
-      nome: partner.nome,
-      cnpj: partner.cnpj,
-      contato_principal: partner.contato_principal,
-      email: partner.email || '',
-      modelo_atuacao: partner.modelo_atuacao,
-      area_geografica: partner.area_geografica,
-      num_vendedores: partner.num_vendedores,
-      vol_total_mensal: partner.vol_total_mensal,
-      vol_prata_mensal: partner.vol_prata_mensal,
-      propostas_pagas_semana: partner.propostas_pagas_semana || 0,
-      produtos_ativos: partner.produtos_ativos || [],
-      concorrentes: partner.concorrentes || '',
-      status: partner.status
-    });
-    setShowModal(true);
+    setSelectedPartnerForEdit(partner);
+    setIsFormOpen(true);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formData.nome || !formData.cnpj || !formData.contato_principal) {
-      alert('Por favor, preencha todos os campos obrigatórios.');
-      return;
-    }
-
-    try {
-      const payload = editingId ? { id: editingId, ...formData } : formData;
-      await dataService.saveParceiro(payload);
-      setShowModal(false);
-      await loadPartners();
-    } catch (err: any) {
-      alert(err.message || 'Erro ao salvar parceiro.');
-    }
-  };
 
   // Importar Planilha .xlsx
   const handleImportXLSX = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -207,6 +123,7 @@ export default function PartnersList({ onSelectPartner }: PartnersListProps) {
               produtos_ativos: produtos,
               propostas_pagas_semana: propostasPagas,
               status: 'Reativação',
+              inserido_manualmente: false,
               created_at: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
             });
             importados++;
@@ -389,10 +306,11 @@ export default function PartnersList({ onSelectPartner }: PartnersListProps) {
             </thead>
             <tbody>
               {sortedAndFilteredParceiros.map((p) => {
-                const conc = p.vol_total_mensal > 0 ? (p.vol_prata_mensal / p.vol_total_mensal) * 100 : 0;
+                const concText = p.vol_total_mensal > 0 ? `${((p.vol_prata_mensal / p.vol_total_mensal) * 100).toFixed(0)}%` : 'NVT';
                 return (
                   <tr 
                     key={p.id}
+                    onClick={() => onSelectPartner(p.id)}
                     onMouseEnter={e => (e.currentTarget as HTMLTableRowElement).style.backgroundColor = 'rgba(15, 184, 130, 0.08)'}
                     onMouseLeave={e => (e.currentTarget as HTMLTableRowElement).style.backgroundColor = ''}
                     style={{ transition: 'background-color 0.2s ease', cursor: 'pointer' }}
@@ -401,7 +319,7 @@ export default function PartnersList({ onSelectPartner }: PartnersListProps) {
                       <div style={{ fontWeight: 700, color: 'var(--secondary-color)' }}>{p.nome}</div>
                       <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{p.modelo_atuacao} · {p.area_geografica}</div>
                     </td>
-                    <td style={{ fontSize: '0.85rem' }}>{p.cnpj}</td>
+                    <td style={{ fontSize: '0.8rem', whiteSpace: 'nowrap' }}>{p.cnpj}</td>
                     <td>{p.contato_principal}</td>
                     <td>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -415,7 +333,7 @@ export default function PartnersList({ onSelectPartner }: PartnersListProps) {
                     </td>
                     <td style={{ textAlign: 'right', fontWeight: 600 }}>
                       {formatCurrency(p.vol_prata_mensal)}
-                      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 400 }}>conc. {conc.toFixed(0)}%</div>
+                      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 400 }}>conc. {concText}</div>
                     </td>
                     <td>
                       <span className={`badge ${
@@ -425,15 +343,12 @@ export default function PartnersList({ onSelectPartner }: PartnersListProps) {
                         {p.status}
                       </span>
                     </td>
-                    <td style={{ textAlign: 'center' }}>
+                    <td style={{ textAlign: 'center' }} onClick={(e) => e.stopPropagation()}>
                       <div style={{ display: 'inline-flex', gap: '0.35rem' }}>
-                        <button className="btn btn-secondary btn-icon" onClick={() => onSelectPartner(p.id)} title="Visualizar Detalhes">
-                          <Eye size={15} />
-                        </button>
-                        <button className="btn btn-secondary btn-icon" onClick={() => openEditModal(p)} title="Editar Cadastro">
+                        <button className="btn btn-secondary btn-icon" onClick={(e) => { e.stopPropagation(); openEditModal(p); }} title="Editar Cadastro">
                           <Edit2 size={15} />
                         </button>
-                        <button className="btn btn-secondary btn-icon" style={{ color: 'var(--danger)' }} onClick={() => handleDelete(p.id, p.nome)} title="Excluir Parceiro">
+                        <button className="btn btn-secondary btn-icon" style={{ color: 'var(--danger)' }} onClick={(e) => { e.stopPropagation(); handleDelete(p.id, p.nome); }} title="Excluir Parceiro">
                           <Trash2 size={15} />
                         </button>
                       </div>
@@ -446,149 +361,12 @@ export default function PartnersList({ onSelectPartner }: PartnersListProps) {
         </div>
       )}
 
-      {/* Modal de Adicionar/Editar Parceiro */}
-      {showModal && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(7, 12, 20, 0.7)',
-          display: 'flex',
-          alignItems: 'flex-start',
-          justifyContent: 'center',
-          zIndex: 100,
-          padding: '3rem 1.5rem',
-          overflowY: 'auto',
-          backdropFilter: 'var(--glass-blur)',
-          WebkitBackdropFilter: 'var(--glass-blur)'
-        }}>
-          <div className="card fade-in" style={{
-            width: '100%',
-            maxWidth: '960px',
-            borderRadius: 'var(--radius-lg)',
-            boxShadow: 'var(--shadow-lg)',
-            backgroundColor: 'rgba(209, 250, 237, 0.95)',
-            border: '1px solid rgba(15, 184, 130, 0.35)',
-            marginBottom: '2rem'
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--secondary-color)' }}>
-                {editingId ? 'Editar Cadastro do Parceiro' : 'Adicionar Novo Parceiro B2B'}
-              </h3>
-              <button onClick={() => setShowModal(false)} style={{ border: 'none', background: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}><X size={20} /></button>
-            </div>
-
-            <form onSubmit={handleSubmit}>
-              <div className="form-row">
-                <div className="form-group">
-                  <label className="form-label">Razão Social / Nome Fantasia *</label>
-                  <input type="text" required className="form-input" value={formData.nome} onChange={(e) => setFormData(prev => ({ ...prev, nome: e.target.value }))} />
-                </div>
-                <div className="form-group">
-                  <label className="form-label">CNPJ *</label>
-                  <input type="text" required placeholder="00.000.000/0000-00" className="form-input" value={formData.cnpj} onChange={handleCNPJChange} />
-                </div>
-              </div>
-
-              <div className="form-row">
-                <div className="form-group">
-                  <label className="form-label">Contato Principal *</label>
-                  <input type="text" required placeholder="Ex: Carlos Silva" className="form-input" value={formData.contato_principal} onChange={(e) => setFormData(prev => ({ ...prev, contato_principal: e.target.value }))} />
-                </div>
-                <div className="form-group">
-                  <label className="form-label">E-mail Comercial</label>
-                  <input type="email" placeholder="contato@parceiro.com.br" className="form-input" value={formData.email} onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))} />
-                </div>
-              </div>
-
-              <div className="form-row">
-                <div className="form-group">
-                  <label className="form-label">Modelo de Atuação *</label>
-                  <select className="form-input" value={formData.modelo_atuacao} onChange={(e) => setFormData(prev => ({ ...prev, modelo_atuacao: e.target.value as any }))}>
-                    <option value="Físico">Físico</option>
-                    <option value="Digital">Digital</option>
-                    <option value="Pastinhas">Pastinhas</option>
-                    <option value="Híbrido">Híbrido</option>
-                  </select>
-                </div>
-                <div className="form-group">
-                  <label className="form-label">Área Geográfica *</label>
-                  <select className="form-input" value={formData.area_geografica} onChange={(e) => setFormData(prev => ({ ...prev, area_geografica: e.target.value as any }))}>
-                    <option value="Local">Local</option>
-                    <option value="Regional">Regional</option>
-                    <option value="Estadual">Estadual</option>
-                    <option value="Nacional">Nacional</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="form-row">
-                <div className="form-group">
-                  <label className="form-label">Nº de Vendedores *</label>
-                  <input type="number" min={1} required className="form-input" value={formData.num_vendedores} onChange={(e) => setFormData(prev => ({ ...prev, num_vendedores: parseInt(e.target.value) || 1 }))} />
-                </div>
-                <div className="form-group">
-                  <label className="form-label">Propostas Pagas na Semana (Farmer)</label>
-                  <input type="number" min={0} className="form-input" value={formData.propostas_pagas_semana} onChange={(e) => setFormData(prev => ({ ...prev, propostas_pagas_semana: parseInt(e.target.value) || 0 }))} />
-                </div>
-              </div>
-
-              <div className="form-row">
-                <div className="form-group">
-                  <label className="form-label">Vol. Total Mensal Declarado (R$) *</label>
-                  <input type="number" min={0} required className="form-input" value={formData.vol_total_mensal} onChange={(e) => setFormData(prev => ({ ...prev, vol_total_mensal: parseFloat(e.target.value) || 0 }))} />
-                </div>
-                <div className="form-group">
-                  <label className="form-label">Concorrentes Declarados</label>
-                  <input type="text" placeholder="Ex: Facta, V8, Hub" className="form-input" value={formData.concorrentes} onChange={(e) => setFormData(prev => ({ ...prev, concorrentes: e.target.value }))} />
-                </div>
-              </div>
-
-              <div className="form-group" style={{ margin: '1rem 0' }}>
-                <label className="form-label" style={{ marginBottom: '0.5rem' }}>Produtos Ativos no Saque/Prata Digital</label>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
-                  {['FGTS', 'CLT', 'CGV', 'Pix'].map(prod => {
-                    const isChecked = formData.produtos_ativos.includes(prod);
-                    return (
-                      <button
-                        key={prod}
-                        type="button"
-                        onClick={() => handleProductToggle(prod)}
-                        style={{
-                          padding: '0.5rem 1rem',
-                          borderRadius: 'var(--radius-sm)',
-                          border: '1px solid',
-                          borderColor: isChecked ? 'var(--primary-color)' : 'var(--border-color)',
-                          backgroundColor: isChecked ? 'rgba(15, 184, 130, 0.15)' : 'rgba(255, 255, 255, 0.05)',
-                          color: isChecked ? 'var(--primary-hover)' : 'var(--text-main)',
-                          fontWeight: isChecked ? 600 : 500,
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '0.25rem',
-                          transition: 'var(--transition)'
-                        }}
-                      >
-                        {isChecked && <Check size={14} />}
-                        {prod === 'Pix' ? 'Pix no Cartão' : prod}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end', marginTop: '2rem', borderTop: '1px solid var(--border-color)', paddingTop: '1.25rem' }}>
-                <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Cancelar</button>
-                <button type="submit" className="btn btn-primary">
-                  {editingId ? 'Salvar Alterações' : 'Criar Parceiro'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      <PartnerFormModal
+        isOpen={isFormOpen}
+        onClose={() => setIsFormOpen(false)}
+        partner={selectedPartnerForEdit}
+        onSave={loadPartners}
+      />
     </div>
   );
 }

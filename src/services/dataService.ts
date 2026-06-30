@@ -198,6 +198,45 @@ export const dataService = {
       list = getLocalDB().parceiros;
     }
 
+    // Auto-cura para parceiros duplicados sem CNPJ
+    const vistosSemCnpj = new Set<string>();
+    const idsParaDeletar = new Set<string>();
+    list.forEach(p => {
+      const cnpjLimpo = (p.cnpj || '').replace(/\D/g, '');
+      const semCnpj = cnpjLimpo === '';
+      if (semCnpj) {
+        const nomeNormalizado = p.nome.trim().toLowerCase();
+        if (vistosSemCnpj.has(nomeNormalizado)) {
+          idsParaDeletar.add(p.id);
+        } else {
+          vistosSemCnpj.add(nomeNormalizado);
+        }
+      }
+    });
+
+    if (idsParaDeletar.size > 0) {
+      list = list.filter(p => !idsParaDeletar.has(p.id));
+      
+      const db = getLocalDB();
+      db.parceiros = db.parceiros.filter(p => !idsParaDeletar.has(p.id));
+      db.producao = db.producao.filter(pr => !idsParaDeletar.has(pr.parceiro_id));
+      db.logs = db.logs.filter(l => !idsParaDeletar.has(l.parceiro_id));
+      saveLocalDB(db);
+
+      if (supabase) {
+        for (const id of idsParaDeletar) {
+          try {
+            const { error } = await supabase.from('parceiros').delete().eq('id', id);
+            if (error) {
+              console.error('Erro ao excluir parceiro duplicado sem CNPJ no Supabase:', error);
+            }
+          } catch (err: any) {
+            console.error('Falha de rede ao excluir no Supabase:', err);
+          }
+        }
+      }
+    }
+
     const config = await this.getCriterios();
     
     // Otimização N+1: Carregar todas as produções em lote em uma única consulta
@@ -225,6 +264,45 @@ export const dataService = {
         prodsMap[prod.parceiro_id] = [];
       }
       prodsMap[prod.parceiro_id].push(prod);
+    }
+
+    // Migração de auto-cura: Ajustar data de criação de parceiros sem produção recentes ou como Onboarding para 30 dias atrás
+    const hoje = new Date();
+    let migrouAlgum = false;
+    for (let p of list) {
+      const parceiroProds = prodsMap[p.id] || [];
+      const temProducao = parceiroProds.some(pr => {
+        const vol = (pr.vol_fgts || 0) + (pr.vol_clt || 0) + (pr.vol_cgv || 0) + (pr.vol_pix || 0);
+        return vol > 0;
+      });
+
+      if (!temProducao && (p.status === 'Onboarding' && !p.inserido_manualmente)) {
+        p.created_at = new Date(hoje.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString();
+        p.status = 'Reativação';
+        migrouAlgum = true;
+        
+        if (supabase) {
+          supabase
+            .from('parceiros')
+            .update({ created_at: p.created_at, status: 'Reativação' })
+            .eq('id', p.id)
+            .then(({ error }) => {
+              if (error) console.error('Erro ao atualizar created_at no Supabase:', error);
+            });
+        }
+      }
+    }
+
+    if (migrouAlgum) {
+      const db = getLocalDB();
+      list.forEach(p => {
+        const idx = db.parceiros.findIndex(x => x.id === p.id);
+        if (idx !== -1) {
+          db.parceiros[idx].created_at = p.created_at;
+          db.parceiros[idx].status = p.status;
+        }
+      });
+      saveLocalDB(db);
     }
 
     const finalParceiros: Parceiro[] = [];
@@ -262,7 +340,7 @@ export const dataService = {
       }
 
       if (!temProducaoRecente) {
-        if (diferencaCriacaoDias <= diasLimites.dias_conversao_hunter) {
+        if (p.inserido_manualmente && diferencaCriacaoDias <= diasLimites.dias_conversao_hunter) {
           statusCalculado = 'Onboarding';
         } else {
           statusCalculado = 'Reativação';
@@ -325,9 +403,13 @@ export const dataService = {
           result = data;
         } else {
           const { id, ...insertData } = updated;
+          const finalInsertData = {
+            ...insertData,
+            created_at: parceiro.created_at || new Date().toISOString()
+          };
           const { data, error } = await supabase
             .from('parceiros')
-            .insert([insertData])
+            .insert([finalInsertData])
             .select()
             .single();
           if (error) throw error;
@@ -352,7 +434,7 @@ export const dataService = {
     const newPartner: Parceiro = {
       ...updated,
       id: 'p_' + Math.random().toString(36).substr(2, 9),
-      created_at: new Date().toISOString()
+      created_at: parceiro.created_at || new Date().toISOString()
     } as Parceiro;
     db.parceiros.push(newPartner);
     saveLocalDB(db);
@@ -1047,7 +1129,7 @@ export const dataService = {
         }
 
         if (!temProducaoRecente) {
-          if (diferencaCriacaoDias < 0 || diferencaCriacaoDias <= limites.dias_conversao_hunter) {
+          if (p.inserido_manualmente && (diferencaCriacaoDias < 0 || diferencaCriacaoDias <= limites.dias_conversao_hunter)) {
             statusCalculado = 'Onboarding';
           } else {
             statusCalculado = 'Reativação';
@@ -1057,7 +1139,8 @@ export const dataService = {
         return {
           ...p,
           status: statusCalculado,
-          vol_prata_mensal: volPrataMensalPeriodo
+          vol_prata_mensal: volPrataMensalPeriodo,
+          vol_total_mensal: (p.vol_total_mensal || 0) > 0 ? Math.max(p.vol_total_mensal, volPrataMensalPeriodo) : 0
         };
       });
   },

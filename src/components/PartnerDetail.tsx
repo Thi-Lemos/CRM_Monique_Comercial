@@ -4,15 +4,16 @@ import { calculateCriteriaNotes } from '../services/scoreCalculator';
 import { Parceiro, ProducaoMensal, CrmLog, ProducaoSemanal } from '../types';
 import { 
   ArrowLeft, 
-  Settings, 
-  TrendingUp, 
   MessageSquare,
-  History,
   Plus,
-  CalendarDays,
   Edit,
-  X
+  X,
+  Settings,
+  TrendingUp,
+  CalendarDays,
+  History
 } from 'lucide-react';
+import PartnerFormModal from './PartnerFormModal';
 
 interface PartnerDetailProps {
   partnerId: string;
@@ -40,21 +41,7 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
   });
 
   // Estado para Edição do Parceiro
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [editFormData, setEditFormData] = useState({
-    nome: '',
-    cnpj: '',
-    contato_principal: '',
-    email: '',
-    modelo_atuacao: 'Físico' as any,
-    area_geografica: 'Local' as any,
-    num_vendedores: 1,
-    vol_total_mensal: 0,
-    vol_prata_mensal: 0,
-    produtos_ativos: [] as string[],
-    propostas_pagas_semana: 0,
-    status: 'Ativo' as any
-  });
+  const [isFormOpen, setIsFormOpen] = useState(false);
 
   const loadData = async () => {
     try {
@@ -123,44 +110,7 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
   };
 
   const openEditModal = () => {
-    setEditFormData({
-      nome: partner.nome,
-      cnpj: partner.cnpj || '',
-      contato_principal: partner.contato_principal,
-      email: partner.email || '',
-      modelo_atuacao: partner.modelo_atuacao,
-      area_geografica: partner.area_geografica,
-      num_vendedores: partner.num_vendedores,
-      vol_total_mensal: partner.vol_total_mensal,
-      vol_prata_mensal: partner.vol_prata_mensal,
-      produtos_ativos: partner.produtos_ativos || [],
-      propostas_pagas_semana: partner.propostas_pagas_semana || 0,
-      status: partner.status
-    });
-    setShowEditModal(true);
-  };
-
-  const handleEditSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      await dataService.saveParceiro({ id: partner.id, ...editFormData });
-      setShowEditModal(false);
-      await loadData();
-    } catch (err: any) {
-      alert(err.message || 'Erro ao salvar alterações.');
-    }
-  };
-
-  const handleProductCheckboxChange = (prod: string, checked: boolean) => {
-    setEditFormData(prev => {
-      const current = [...(prev.produtos_ativos || [])];
-      if (checked && !current.includes(prod)) {
-        current.push(prod);
-      } else if (!checked && current.includes(prod)) {
-        return { ...prev, produtos_ativos: current.filter(p => p !== prod) };
-      }
-      return { ...prev, produtos_ativos: current };
-    });
+    setIsFormOpen(true);
   };
 
   return (
@@ -241,13 +191,17 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
           <div>
             <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>CONCENTRAÇÃO PRATA</span>
             <p style={{ fontWeight: 700, color: 'var(--secondary-color)', fontSize: '1.1rem', marginTop: '0.15rem' }}>
-              {partner.vol_total_mensal > 0 ? ((partner.vol_prata_mensal / partner.vol_total_mensal) * 100).toFixed(0) : '0'}%
+              {partner.vol_total_mensal > 0 ? `${((partner.vol_prata_mensal / partner.vol_total_mensal) * 100).toFixed(0)}%` : 'NVT'}
             </p>
-            <span className={`badge ${
-              (partner.vol_prata_mensal / partner.vol_total_mensal) >= 0.3 ? 'badge-success' : 'badge-warning'
-            }`} style={{ fontSize: '0.65rem', padding: '0.1rem 0.4rem', marginTop: '0.1rem' }}>
-              {(partner.vol_prata_mensal / partner.vol_total_mensal) >= 0.3 ? 'Verde' : 'Abaixo Meta (30%)'}
-            </span>
+            {partner.vol_total_mensal > 0 ? (
+              <span className={`badge ${(partner.vol_prata_mensal / partner.vol_total_mensal) >= 0.3 ? 'badge-success' : 'badge-warning'}`} style={{ fontSize: '0.65rem', padding: '0.1rem 0.4rem', marginTop: '0.1rem' }}>
+                {(partner.vol_prata_mensal / partner.vol_total_mensal) >= 0.3 ? 'Verde' : 'Abaixo Meta (30%)'}
+              </span>
+            ) : (
+              <span className="badge badge-warning" style={{ fontSize: '0.65rem', padding: '0.1rem 0.4rem', marginTop: '0.1rem' }}>
+                Necessita de Vol. Total (NVT)
+              </span>
+            )}
           </div>
           <div>
             <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>PRODUTOS ATIVOS</span>
@@ -262,27 +216,27 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
       </div>
 
       {/* Grid de Duas Colunas: Score / Produção */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(460px, 1fr))', gap: '1.5rem', marginBottom: '1.5rem', alignItems: 'start' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '1rem', marginBottom: '1.5rem', alignItems: 'start' }}>
         
         {/* Bloco do Score Comercial */}
-        <div className="card" style={{ padding: '1.5rem' }}>
-          <h3 className="card-title" style={{ justifyContent: 'space-between' }}>
+        <div className="card" style={{ padding: '1.25rem' }}>
+          <h3 className="card-title" style={{ justifyContent: 'space-between', fontSize: '1rem', marginBottom: '0.75rem' }}>
             <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Settings size={20} /> Detalhamento do Score Comercial
+              <Settings size={18} /> Detalhamento do Score Comercial
             </span>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <span className={`badge ${partner.score_comercial >= 80 ? 'badge-success' : partner.score_comercial >= 50 ? 'badge-info' : 'badge-warning'}`} style={{ fontSize: '1rem', padding: '0.35rem 0.75rem' }}>
+              <span className={`badge ${partner.score_comercial >= 80 ? 'badge-success' : partner.score_comercial >= 50 ? 'badge-info' : 'badge-warning'}`} style={{ fontSize: '0.85rem', padding: '0.25rem 0.5rem' }}>
                 {partner.score_comercial} / 100
               </span>
             </div>
           </h3>
 
-          <div style={{ marginBottom: '1.5rem', padding: '1rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(15, 23, 42, 0.4)', border: '1px solid var(--border-color)' }}>
-            <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Classificação Atual:</p>
-            <p style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--secondary-color)', display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.15rem' }}>
+          <div style={{ marginBottom: '1rem', padding: '0.75rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(15, 23, 42, 0.4)', border: '1px solid var(--border-color)' }}>
+            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Classificação Atual:</p>
+            <p style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--secondary-color)', display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.1rem' }}>
               {partner.classificacao === 'Estratégico' ? '⭐ Estratégico' : partner.classificacao === 'Crescimento' ? '🔼 Crescimento' : '🛠️ Desenvolvimento'}
             </p>
-            <p style={{ fontSize: '0.85rem', fontWeight: 550, color: 'var(--text-main)', marginTop: '0.5rem' }}>
+            <p style={{ fontSize: '0.75rem', fontWeight: 550, color: 'var(--text-main)', marginTop: '0.4rem' }}>
               <strong>Estratégia:</strong> {
                 partner.classificacao === 'Estratégico' ? 'Retenção ativa + expansão de produtos' :
                 partner.classificacao === 'Crescimento' ? 'Inclusão de produtos + aumento de concentração' :
@@ -291,22 +245,22 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
             </p>
           </div>
 
-          <h4 style={{ fontSize: '0.875rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Notas por Critério (Pesos)</h4>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+          <h4 style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Notas por Critério (Pesos)</h4>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
             {[
               { label: 'Volume total mensal (25%)', note: notes.n1, desc: 'Declarado' },
-              { label: 'Concentração atual no Prata (20%)', note: notes.n2, desc: `${partner.vol_total_mensal > 0 ? ((partner.vol_prata_mensal/partner.vol_total_mensal)*100).toFixed(0) : 0}%` },
+              { label: 'Concentração atual no Prata (20%)', note: notes.n2, desc: partner.vol_total_mensal > 0 ? `${((partner.vol_prata_mensal / partner.vol_total_mensal) * 100).toFixed(0)}%` : 'NVT' },
               { label: 'Estrutura / Nº Vendedores (15%)', note: notes.n3, desc: `${partner.num_vendedores} vend.` },
               { label: 'Abrangência geográfica (15%)', note: notes.n4, desc: partner.area_geografica },
               { label: 'Produtos ativos no Prata (10%)', note: notes.n5, desc: `${partner.produtos_ativos.length} prod.` },
               { label: 'Modelo de atuação (10%)', note: notes.n6, desc: partner.modelo_atuacao },
               { label: 'Risco de dependência de produto único (5%)', note: notes.n7, desc: `${partner.produtos_ativos.length} prod.` }
             ].map((c, i) => (
-              <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.875rem', paddingBottom: '0.5rem', borderBottom: '1px solid var(--border-color)' }}>
+              <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.78rem', paddingBottom: '0.35rem', borderBottom: '1px solid var(--border-color)' }}>
                 <span style={{ color: 'var(--text-main)', fontWeight: 500 }}>{c.label}</span>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>({c.desc})</span>
-                  <span style={{ fontWeight: 700, color: 'var(--secondary-color)', backgroundColor: 'rgba(255, 255, 255, 0.05)', padding: '0.15rem 0.5rem', borderRadius: '4px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>({c.desc})</span>
+                  <span style={{ fontWeight: 700, color: 'var(--secondary-color)', backgroundColor: 'rgba(255, 255, 255, 0.05)', padding: '0.1rem 0.4rem', borderRadius: '4px' }}>
                     {c.note}
                   </span>
                 </div>
@@ -316,50 +270,47 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
         </div>
 
         {/* Bloco de Produção Mensal */}
-        <div className="card" style={{ padding: '1.5rem' }}>
-          <h3 className="card-title" style={{ justifyContent: 'space-between' }}>
+        <div className="card" style={{ padding: '1.25rem' }}>
+          <h3 className="card-title" style={{ justifyContent: 'space-between', fontSize: '1rem', marginBottom: '0.75rem' }}>
             <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <TrendingUp size={20} /> Histórico de Produção Mensal
+              <TrendingUp size={18} /> Histórico de Produção Mensal
             </span>
-            <button className="btn btn-secondary" style={{ padding: '0.35rem 0.75rem', fontSize: '0.75rem' }} onClick={() => setShowProdForm(true)}>
-              <Plus size={14} /> Registrar Produção
+            <button className="btn btn-secondary" style={{ padding: '0.35rem 0.65rem', fontSize: '0.725rem' }} onClick={() => setShowProdForm(true)}>
+              <Plus size={12} /> Registrar Produção
             </button>
           </h3>
 
-          <div className="table-container" style={{ border: 'none', boxShadow: 'none', overflowX: 'auto' }}>
-            <table className="table" style={{ fontSize: '0.8rem' }}>
+          <div className="table-container" style={{ border: 'none', boxShadow: 'none', overflowX: 'visible' }}>
+            <table className="table" style={{ fontSize: '0.75rem', width: '100%' }}>
               <thead>
                 <tr>
-                  <th style={{ backgroundColor: 'var(--secondary-color)', color: '#ffffff', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>Mês/Ano</th>
-                  <th style={{ backgroundColor: 'var(--secondary-color)', color: '#ffffff', borderBottom: '1px solid rgba(255, 255, 255, 0.15)', textAlign: 'right' }}>FGTS</th>
-                  <th style={{ backgroundColor: 'var(--secondary-color)', color: '#ffffff', borderBottom: '1px solid rgba(255, 255, 255, 0.15)', textAlign: 'right' }}>CLT</th>
-                  <th style={{ backgroundColor: 'var(--secondary-color)', color: '#ffffff', borderBottom: '1px solid rgba(255, 255, 255, 0.15)', textAlign: 'right' }}>CGV / Pix</th>
-                  <th style={{ backgroundColor: 'var(--secondary-color)', color: '#ffffff', borderBottom: '1px solid rgba(255, 255, 255, 0.15)', textAlign: 'right' }}>Total Prata</th>
-                  <th style={{ backgroundColor: 'var(--secondary-color)', color: '#ffffff', borderBottom: '1px solid rgba(255, 255, 255, 0.15)', textAlign: 'right' }}>Conc. %</th>
+                  <th style={{ backgroundColor: 'var(--secondary-color)', color: '#ffffff', borderBottom: '1px solid rgba(255, 255, 255, 0.15)', padding: '0.5rem 0.4rem' }}>Mês/Ano</th>
+                  <th style={{ backgroundColor: 'var(--secondary-color)', color: '#ffffff', borderBottom: '1px solid rgba(255, 255, 255, 0.15)', textAlign: 'right', padding: '0.5rem 0.4rem' }}>FGTS</th>
+                  <th style={{ backgroundColor: 'var(--secondary-color)', color: '#ffffff', borderBottom: '1px solid rgba(255, 255, 255, 0.15)', textAlign: 'right', padding: '0.5rem 0.4rem' }}>CLT</th>
+                  <th style={{ backgroundColor: 'var(--secondary-color)', color: '#ffffff', borderBottom: '1px solid rgba(255, 255, 255, 0.15)', textAlign: 'right', padding: '0.5rem 0.4rem' }}>CGV</th>
+                  <th style={{ backgroundColor: 'var(--secondary-color)', color: '#ffffff', borderBottom: '1px solid rgba(255, 255, 255, 0.15)', textAlign: 'right', padding: '0.5rem 0.4rem' }}>Pix</th>
+                  <th style={{ backgroundColor: 'var(--secondary-color)', color: '#ffffff', borderBottom: '1px solid rgba(255, 255, 255, 0.15)', textAlign: 'right', padding: '0.5rem 0.4rem' }}>Total Prata</th>
+                  <th style={{ backgroundColor: 'var(--secondary-color)', color: '#ffffff', borderBottom: '1px solid rgba(255, 255, 255, 0.15)', textAlign: 'right', padding: '0.5rem 0.4rem' }}>Conc. %</th>
                 </tr>
               </thead>
               <tbody>
                 {producao.length === 0 ? (
                   <tr>
-                    <td colSpan={6} style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '2rem 0' }}>Nenhum volume registrado.</td>
+                    <td colSpan={7} style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '2rem 0' }}>Nenhum volume registrado.</td>
                   </tr>
                 ) : (
                   producao.map(p => {
                     const totalDeclarado = partner.vol_total_mensal;
-                    let conc = 0;
-                    if (totalDeclarado > 0) {
-                      conc = Math.min(100, (p.vol_total! / totalDeclarado) * 100);
-                    } else if (p.vol_total! > 0) {
-                      conc = 100;
-                    }
+                    const concText = totalDeclarado > 0 ? `${Math.min(100, (p.vol_total! / totalDeclarado) * 100).toFixed(0)}%` : 'NVT';
                     return (
                       <tr key={p.id}>
-                        <td style={{ fontWeight: 650, whiteSpace: 'nowrap' }}>{p.mes.toString().padStart(2, '0')}/{p.ano}</td>
-                        <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>{formatCurrency(p.vol_fgts)}</td>
-                        <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>{formatCurrency(p.vol_clt)}</td>
-                        <td style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>{formatCurrency(p.vol_cgv + p.vol_pix)}</td>
-                        <td style={{ textAlign: 'right', fontWeight: 650, color: 'var(--primary-color)', whiteSpace: 'nowrap' }}>{formatCurrency(p.vol_total!)}</td>
-                        <td style={{ textAlign: 'right', fontWeight: 600 }}>{conc.toFixed(0)}%</td>
+                        <td style={{ fontWeight: 650, whiteSpace: 'nowrap', padding: '0.5rem 0.4rem' }}>{p.mes.toString().padStart(2, '0')}/{p.ano}</td>
+                        <td style={{ textAlign: 'right', whiteSpace: 'nowrap', padding: '0.5rem 0.4rem' }}>{formatCurrency(p.vol_fgts)}</td>
+                        <td style={{ textAlign: 'right', whiteSpace: 'nowrap', padding: '0.5rem 0.4rem' }}>{formatCurrency(p.vol_clt)}</td>
+                        <td style={{ textAlign: 'right', whiteSpace: 'nowrap', padding: '0.5rem 0.4rem' }}>{formatCurrency(p.vol_cgv)}</td>
+                        <td style={{ textAlign: 'right', whiteSpace: 'nowrap', padding: '0.5rem 0.4rem' }}>{formatCurrency(p.vol_pix)}</td>
+                        <td style={{ textAlign: 'right', fontWeight: 650, color: 'var(--primary-color)', whiteSpace: 'nowrap', padding: '0.5rem 0.4rem' }}>{formatCurrency(p.vol_total!)}</td>
+                        <td style={{ textAlign: 'right', fontWeight: 600, padding: '0.5rem 0.4rem' }}>{concText}</td>
                       </tr>
                     );
                   })
@@ -574,134 +525,12 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
         </div>
       )}
 
-      {/* Modal de Edição do Parceiro */}
-      {showEditModal && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(7, 12, 20, 0.7)',
-          display: 'flex',
-          alignItems: 'flex-start',
-          justifyContent: 'center',
-          zIndex: 100,
-          padding: '3rem 1.5rem',
-          overflowY: 'auto',
-          backdropFilter: 'var(--glass-blur)',
-          WebkitBackdropFilter: 'var(--glass-blur)'
-        }}>
-          <div className="card fade-in" style={{
-            width: '100%',
-            maxWidth: '750px',
-            borderRadius: 'var(--radius-md)',
-            boxShadow: 'var(--shadow-lg)',
-            backgroundColor: 'rgba(209, 250, 237, 0.95)',
-            border: '1px solid rgba(15, 184, 130, 0.35)',
-            marginBottom: '2rem'
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
-              <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--secondary-color)' }}>Editar Informações do Parceiro</h3>
-              <button onClick={() => setShowEditModal(false)} style={{ border: 'none', background: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}><X size={20} /></button>
-            </div>
-
-            <form onSubmit={handleEditSubmit}>
-              <div className="form-row">
-                <div className="form-group">
-                  <label className="form-label">Nome do Parceiro *</label>
-                  <input type="text" required className="form-input" value={editFormData.nome} onChange={(e) => setEditFormData(prev => ({ ...prev, nome: e.target.value }))} />
-                </div>
-                <div className="form-group">
-                  <label className="form-label">CNPJ</label>
-                  <input type="text" className="form-input" value={editFormData.cnpj} onChange={(e) => setEditFormData(prev => ({ ...prev, cnpj: e.target.value }))} />
-                </div>
-              </div>
-
-              <div className="form-row">
-                <div className="form-group">
-                  <label className="form-label">Contato Principal *</label>
-                  <input type="text" required className="form-input" value={editFormData.contato_principal} onChange={(e) => setEditFormData(prev => ({ ...prev, contato_principal: e.target.value }))} />
-                </div>
-                <div className="form-group">
-                  <label className="form-label">Email</label>
-                  <input type="email" className="form-input" value={editFormData.email} onChange={(e) => setEditFormData(prev => ({ ...prev, email: e.target.value }))} />
-                </div>
-              </div>
-
-              <div className="form-row">
-                <div className="form-group">
-                  <label className="form-label">Modelo de Atuação</label>
-                  <select className="form-input" value={editFormData.modelo_atuacao} onChange={(e) => setEditFormData(prev => ({ ...prev, modelo_atuacao: e.target.value as any }))}>
-                    <option value="Físico">Físico</option>
-                    <option value="Digital">Digital</option>
-                    <option value="Híbrido">Híbrido</option>
-                  </select>
-                </div>
-                <div className="form-group">
-                  <label className="form-label">Área Geográfica</label>
-                  <select className="form-input" value={editFormData.area_geografica} onChange={(e) => setEditFormData(prev => ({ ...prev, area_geografica: e.target.value as any }))}>
-                    <option value="Local">Local</option>
-                    <option value="Regional">Regional</option>
-                    <option value="Nacional">Nacional</option>
-                  </select>
-                </div>
-                <div className="form-group">
-                  <label className="form-label">Nº Vendedores</label>
-                  <input type="number" min={1} className="form-input" value={editFormData.num_vendedores} onChange={(e) => setEditFormData(prev => ({ ...prev, num_vendedores: parseInt(e.target.value) || 1 }))} />
-                </div>
-              </div>
-
-              <div className="form-row">
-                <div className="form-group">
-                  <label className="form-label">Vol. Total Estimado Mensal (R$)</label>
-                  <input type="number" min={0} className="form-input" value={editFormData.vol_total_mensal} onChange={(e) => setEditFormData(prev => ({ ...prev, vol_total_mensal: parseFloat(e.target.value) || 0 }))} />
-                </div>
-                <div className="form-group">
-                  <label className="form-label">Vol. Prata Faturado Mensal (R$)</label>
-                  <input type="number" min={0} className="form-input" value={editFormData.vol_prata_mensal} onChange={(e) => setEditFormData(prev => ({ ...prev, vol_prata_mensal: parseFloat(e.target.value) || 0 }))} />
-                </div>
-                <div className="form-group">
-                  <label className="form-label">Propostas Pagas / Semana</label>
-                  <input type="number" min={0} className="form-input" value={editFormData.propostas_pagas_semana} onChange={(e) => setEditFormData(prev => ({ ...prev, propostas_pagas_semana: parseInt(e.target.value) || 0 }))} />
-                </div>
-              </div>
-
-              <div className="form-row">
-                <div className="form-group">
-                  <label className="form-label">Status</label>
-                  <select className="form-input" value={editFormData.status} onChange={(e) => setEditFormData(prev => ({ ...prev, status: e.target.value as any }))}>
-                    <option value="Ativo">Ativo</option>
-                    <option value="Onboarding">Onboarding</option>
-                    <option value="Reativação">Reativação</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="form-group" style={{ marginTop: '1rem' }}>
-                <label className="form-label" style={{ marginBottom: '0.5rem', display: 'block' }}>Produtos Ativos no Prata</label>
-                <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap' }}>
-                  {['FGTS', 'CLT', 'CGV', 'Pix'].map(prod => (
-                    <label key={prod} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.875rem' }}>
-                      <input 
-                        type="checkbox" 
-                        checked={editFormData.produtos_ativos.includes(prod)}
-                        onChange={(e) => handleProductCheckboxChange(prod, e.target.checked)}
-                      />
-                      {prod}
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end', marginTop: '2rem', borderTop: '1px solid var(--border-color)', paddingTop: '1.25rem' }}>
-                <button type="button" className="btn btn-secondary" onClick={() => setShowEditModal(false)}>Cancelar</button>
-                <button type="submit" className="btn btn-primary">Salvar Alterações</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      <PartnerFormModal
+        isOpen={isFormOpen}
+        onClose={() => setIsFormOpen(false)}
+        partner={partner}
+        onSave={loadData}
+      />
     </div>
   );
 }

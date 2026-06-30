@@ -79,17 +79,21 @@ function gerarAlertasDinamicos(pList: Parceiro[], lList: CrmLog[], allProds: Pro
       }
     }
 
-    // Regra 1: Parceiro Estratégico sem contato há mais de 30 dias
+    // Regra 1: Parceiro Estratégico sem contato há mais de 30 dias (apenas se cadastrado há mais de 30 dias)
     if (p.classificacao === 'Estratégico' && p.status === 'Ativo') {
-      if (!dataUltima || (hoje.getTime() - dataUltima.getTime()) > (30 * 24 * 60 * 60 * 1000)) {
-        activeAlerts.push({
-          id: 'alert_strat_' + p.id,
-          parceiro: p.nome,
-          parceiroId: p.id,
-          mensagem: 'Parceiro Estratégico sem nenhum contato registrado nos últimos 30 dias.',
-          prioridade: 'Alta',
-          ultimaInteracao: dataUltima ? dataUltima.toLocaleDateString('pt-BR') : 'Sem registro'
-        });
+      const dataCriacao = p.created_at ? new Date(p.created_at) : new Date();
+      const diferencaCriacaoDias = (hoje.getTime() - dataCriacao.getTime()) / (1000 * 60 * 60 * 24);
+      if (diferencaCriacaoDias > 30) {
+        if (!dataUltima || (hoje.getTime() - dataUltima.getTime()) > (30 * 24 * 60 * 60 * 1000)) {
+          activeAlerts.push({
+            id: 'alert_strat_' + p.id,
+            parceiro: p.nome,
+            parceiroId: p.id,
+            mensagem: 'Parceiro Estratégico sem nenhum contato registrado nos últimos 30 dias.',
+            prioridade: 'Alta',
+            ultimaInteracao: dataUltima ? dataUltima.toLocaleDateString('pt-BR') : 'Sem registro'
+          });
+        }
       }
     }
 
@@ -108,39 +112,34 @@ function gerarAlertasDinamicos(pList: Parceiro[], lList: CrmLog[], allProds: Pro
       }
     }
 
-    // REGRA DE GESTÃO COMERCIAL: Parceiro migrado de Onboarding para Reativação por inatividade nos primeiros 7 dias (limite exatamente 30 dias)
-    if (p.status === 'Reativação') {
+
+    // Regra 3: Parceiro com queda brusca de produção (Volume Prata = 0 ou em Reativação, com inatividade real de 60+ dias)
+    if (p.status === 'Reativação' && p.vol_total_mensal > 0) {
       const dataCriacao = p.created_at ? new Date(p.created_at) : new Date();
       const diferencaCriacaoDias = (hoje.getTime() - dataCriacao.getTime()) / (1000 * 60 * 60 * 24);
       
-      const temProducao = producoes.some(pr => {
+      const sortedProds = [...producoes].sort((a, b) => (b.ano !== a.ano ? b.ano - a.ano : b.mes - a.mes));
+      const ultimaProd = sortedProds.find(pr => {
         const vol = (pr.vol_fgts || 0) + (pr.vol_clt || 0) + (pr.vol_cgv || 0) + (pr.vol_pix || 0);
         return vol > 0;
       });
+      
+      let diasSemProducao = diferencaCriacaoDias;
+      if (ultimaProd) {
+        const dataUltimaProd = new Date(ultimaProd.ano, ultimaProd.mes, 0);
+        diasSemProducao = (hoje.getTime() - dataUltimaProd.getTime()) / (1000 * 60 * 60 * 24);
+      }
 
-      if (diferencaCriacaoDias > 7 && diferencaCriacaoDias <= 30 && !temProducao) {
-        const diasRestantes = Math.ceil(30 - diferencaCriacaoDias);
+      if (diasSemProducao >= 60) {
         activeAlerts.push({
-          id: 'alert_onb_to_reat_' + p.id,
+          id: 'alert_inactive_' + p.id,
           parceiro: p.nome,
           parceiroId: p.id,
-          mensagem: `Gestão Comercial: Parceiro migrado de Onboarding para Reativação por inatividade nos primeiros 7 dias. Alerta ativo por mais ${diasRestantes} dias enquanto não houver produção.`,
+          mensagem: 'Produção zerada há 60+ dias — processo Win-back deve ser iniciado.',
           prioridade: 'Alta',
-          ultimaInteracao: dataUltima ? dataUltima.toLocaleDateString('pt-BR') : 'Sem contato'
+          ultimaInteracao: dataUltima ? dataUltima.toLocaleDateString('pt-BR') : 'Sem registro'
         });
       }
-    }
-
-    // Regra 3: Parceiro com queda brusca de produção (Volume Prata = 0 ou em Reativação)
-    if (p.status === 'Reativação' && p.vol_total_mensal > 0) {
-      activeAlerts.push({
-        id: 'alert_inactive_' + p.id,
-        parceiro: p.nome,
-        parceiroId: p.id,
-        mensagem: 'Produção zerada há 60+ dias — processo Win-back deve ser iniciado.',
-        prioridade: 'Alta',
-        ultimaInteracao: dataUltima ? dataUltima.toLocaleDateString('pt-BR') : 'Sem registro'
-      });
     }
 
     // Oportunidades (Prioridade Média)
@@ -269,8 +268,6 @@ export default function Dashboard() {
   let taxaAtivos = 0;
   let inativos = 0;
   let churnRate = 0;
-  let totalVolumeMercado = 0;
-  let totalVolumePrata = 0;
   let mixProdutos = { fgts: 0, clt: 0, cgv: 0, pix: 0 };
 
   if (numMonths > 1) {
@@ -278,8 +275,6 @@ export default function Dashboard() {
     let somaTaxaAtivos = 0;
     let somaInativos = 0;
     let somaChurnRate = 0;
-    let somaVolumeMercado = 0;
-    let somaVolumePrata = 0;
     let somaFgts = 0;
     let somaClt = 0;
     let somaCgv = 0;
@@ -296,46 +291,36 @@ export default function Dashboard() {
       let cltAtivosNoMes = 0;
       let cgvAtivosNoMes = 0;
       let pixAtivosNoMes = 0;
-      let prataAtivosNoMes = 0;
 
       ativosNoMes.forEach(p => {
         const prod = allProducoes.find(pr => pr.parceiro_id === p.id && pr.ano === m.ano && pr.mes === m.mes);
-        if (prod) {
-          fgtsAtivosNoMes += prod.vol_fgts || 0;
-          cltAtivosNoMes += prod.vol_clt || 0;
-          cgvAtivosNoMes += prod.vol_cgv || 0;
-          pixAtivosNoMes += prod.vol_pix || 0;
-          prataAtivosNoMes += (prod.vol_fgts || 0) + (prod.vol_clt || 0) + (prod.vol_cgv || 0) + (prod.vol_pix || 0);
-        }
+        const volFgts = prod?.vol_fgts || 0;
+        const volClt = prod?.vol_clt || 0;
+        const volCgv = prod?.vol_cgv || 0;
+        const volPix = prod?.vol_pix || 0;
+
+        fgtsAtivosNoMes += volFgts;
+        cltAtivosNoMes += volClt;
+        cgvAtivosNoMes += volCgv;
+        pixAtivosNoMes += volPix;
       });
-
-      const fgtsMedioNoMes = qtdAtivosNoMes > 0 ? fgtsAtivosNoMes / qtdAtivosNoMes : 0;
-      const cltMedioNoMes = qtdAtivosNoMes > 0 ? cltAtivosNoMes / qtdAtivosNoMes : 0;
-      const cgvMedioNoMes = qtdAtivosNoMes > 0 ? cgvAtivosNoMes / qtdAtivosNoMes : 0;
-      const pixMedioNoMes = qtdAtivosNoMes > 0 ? pixAtivosNoMes / qtdAtivosNoMes : 0;
-      const prataMedioNoMes = qtdAtivosNoMes > 0 ? prataAtivosNoMes / qtdAtivosNoMes : 0;
-
-      const somaVolMercadoAtivosNoMes = ativosNoMes.reduce((sum, p) => sum + p.vol_total_mensal, 0);
-      const volMercadoNoMes = qtdAtivosNoMes > 0 ? (somaVolMercadoAtivosNoMes / qtdAtivosNoMes) : 0;
 
       somaAtivos += qtdAtivosNoMes;
       somaTaxaAtivos += pNoMes.length > 0 ? (qtdAtivosNoMes / pNoMes.length) * 100 : 0;
       somaInativos += pNoMes.filter(p => p.status === 'Reativação').length;
       somaChurnRate += pNoMes.length > 0 ? (pNoMes.filter(p => p.status === 'Reativação').length / pNoMes.length) * 100 : 0;
-      somaVolumeMercado += volMercadoNoMes;
-      somaVolumePrata += prataMedioNoMes;
-      somaFgts += fgtsMedioNoMes;
-      somaClt += cltMedioNoMes;
-      somaCgv += cgvMedioNoMes;
-      somaPix += pixMedioNoMes;
+      
+      somaFgts += fgtsAtivosNoMes;
+      somaClt += cltAtivosNoMes;
+      somaCgv += cgvAtivosNoMes;
+      somaPix += pixAtivosNoMes;
     });
 
     parceirosAtivos = somaAtivos / numMonths;
     taxaAtivos = somaTaxaAtivos / numMonths;
     inativos = somaInativos / numMonths;
     churnRate = somaChurnRate / numMonths;
-    totalVolumeMercado = somaVolumeMercado / numMonths;
-    totalVolumePrata = somaVolumePrata / numMonths;
+    
     mixProdutos = {
       fgts: somaFgts / numMonths,
       clt: somaClt / numMonths,
@@ -351,33 +336,30 @@ export default function Dashboard() {
     inativos = parceirosNoPeriodo.filter(p => p.status === 'Reativação').length;
     churnRate = parceirosNoPeriodo.length > 0 ? (inativos / parceirosNoPeriodo.length) * 100 : 0;
     
-    const somaVolMercadoAtivos = ativosNoPeriodo.reduce((sum, p) => sum + p.vol_total_mensal, 0);
-    totalVolumeMercado = qtdAtivos > 0 ? (somaVolMercadoAtivos / qtdAtivos) : 0;
-
     let fgtsAtivos = 0;
     let cltAtivos = 0;
     let cgvAtivos = 0;
     let pixAtivos = 0;
-    let prataAtivos = 0;
 
     ativosNoPeriodo.forEach(p => {
       const m = activeMonths[0];
       const prod = allProducoes.find(pr => pr.parceiro_id === p.id && pr.ano === m.ano && pr.mes === m.mes);
-      if (prod) {
-        fgtsAtivos += prod.vol_fgts || 0;
-        cltAtivos += prod.vol_clt || 0;
-        cgvAtivos += prod.vol_cgv || 0;
-        pixAtivos += prod.vol_pix || 0;
-        prataAtivos += (prod.vol_fgts || 0) + (prod.vol_clt || 0) + (prod.vol_cgv || 0) + (prod.vol_pix || 0);
-      }
+      const volFgts = prod?.vol_fgts || 0;
+      const volClt = prod?.vol_clt || 0;
+      const volCgv = prod?.vol_cgv || 0;
+      const volPix = prod?.vol_pix || 0;
+
+      fgtsAtivos += volFgts;
+      cltAtivos += volClt;
+      cgvAtivos += volCgv;
+      pixAtivos += volPix;
     });
 
-    totalVolumePrata = qtdAtivos > 0 ? prataAtivos / qtdAtivos : 0;
     mixProdutos = {
-      fgts: qtdAtivos > 0 ? fgtsAtivos / qtdAtivos : 0,
-      clt: qtdAtivos > 0 ? cltAtivos / qtdAtivos : 0,
-      cgv: qtdAtivos > 0 ? cgvAtivos / qtdAtivos : 0,
-      pix: qtdAtivos > 0 ? pixAtivos / qtdAtivos : 0
+      fgts: fgtsAtivos,
+      clt: cltAtivos,
+      cgv: cgvAtivos,
+      pix: pixAtivos
     };
   }
 
@@ -389,9 +371,6 @@ export default function Dashboard() {
     criterios?.limites
   );
 
-  const concentracaoGlobal = totalVolumeMercado > 0 
-    ? (totalVolumePrata / totalVolumeMercado) * 100
-    : 0;
 
   let totalProdutosOperados = 0;
   parceirosNoPeriodo.forEach(p => {
@@ -469,50 +448,6 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Grid de KPIs Superiores (Volume e Concentração) */}
-      <div className="dashboard-summary-grid" style={{ marginBottom: '1.5rem' }}>
-        {/* KPI 1: Volume Total Mercado */}
-        <div className="card kpi-card" onClick={() => setSelectedKpi('total-mercado')}>
-          <div>
-            <span className="kpi-label">Volume Total Mercado</span>
-            <div className="kpi-value">{formatCurrency(totalVolumeMercado)}</div>
-            <span className="kpi-meta" style={{ color: 'var(--text-muted)' }}>
-              Média Mensal · {getPeriodLabel(selectedPeriod)}
-            </span>
-          </div>
-          <div className="kpi-icon-container">
-            <TrendingUp size={24} />
-          </div>
-        </div>
-
-        {/* KPI 2: Volume Prata */}
-        <div className="card kpi-card" onClick={() => setSelectedKpi('total-prata')}>
-          <div>
-            <span className="kpi-label">Volume Produzido Prata</span>
-            <div className="kpi-value" style={{ color: 'var(--primary-color)' }}>{formatCurrency(totalVolumePrata)}</div>
-            <span className="kpi-meta success" style={{ fontSize: '0.7rem' }}>
-              Ref: {getPeriodLabel(selectedPeriod)}
-            </span>
-          </div>
-          <div className="kpi-icon-container" style={{ color: 'var(--primary-color)', backgroundColor: 'rgba(15, 184, 130, 0.15)' }}>
-            <TrendingUp size={24} />
-          </div>
-        </div>
-
-        {/* KPI 3: Concentração Média */}
-        <div className="card kpi-card" onClick={() => setSelectedKpi('concentracao')}>
-          <div>
-            <span className="kpi-label">Concentração Média Prata</span>
-            <div className="kpi-value">{concentracaoGlobal.toFixed(1)}%</div>
-            <span className={`kpi-meta ${concentracaoGlobal >= 30 ? 'success' : 'danger'}`}>
-              Meta: &ge; 30% ({getPeriodLabel(selectedPeriod)})
-            </span>
-          </div>
-          <div className="kpi-icon-container">
-            <Layers size={24} />
-          </div>
-        </div>
-      </div>
 
       {/* Grid de KPIs Inferiores (Status da Carteira) */}
       <div className="dashboard-summary-grid" style={{ marginBottom: '2rem' }}>
@@ -535,7 +470,7 @@ export default function Dashboard() {
           <div>
             <span className="kpi-label">Taxa de Parceiros Ativos</span>
             <div className="kpi-value">{taxaAtivos.toFixed(1)}%</div>
-            <span className={`kpi-meta ${taxaAtivos >= 70 ? 'success' : 'danger'}`}>Meta: &ge; 70% (Fixo atual)</span>
+            <span className={`kpi-meta ${taxaAtivos >= 70 ? 'success' : 'danger'}`}>Meta: &ge; 70%</span>
           </div>
           <div className="kpi-icon-container">
             <Percent size={24} />
@@ -549,7 +484,7 @@ export default function Dashboard() {
           <div>
             <span className="kpi-label">Churn da Carteira</span>
             <div className="kpi-value" style={{ color: churnRate >= 10 ? 'var(--danger)' : 'inherit' }}>{churnRate.toFixed(1)}%</div>
-            <span className={`kpi-meta ${churnRate < 10 ? 'success' : 'danger'}`}>Meta: &lt; 10% (Fixo atual)</span>
+            <span className={`kpi-meta ${churnRate < 10 ? 'success' : 'danger'}`}>Meta: &lt; 10%</span>
           </div>
           <div className="kpi-icon-container" style={{ color: 'var(--danger)', backgroundColor: 'rgba(239, 68, 68, 0.15)' }}>
             <AlertCircle size={24} />
@@ -565,7 +500,7 @@ export default function Dashboard() {
             {mediaProdutos.toFixed(1)}
           </div>
           <span style={{ fontSize: '0.7rem', color: mediaProdutos >= 2 ? 'var(--success)' : 'var(--danger)', fontWeight: 500 }}>
-            Meta: &ge; 2 ({getPeriodLabel(selectedPeriod)})
+            Meta: &ge; 2
           </span>
         </div>
 
@@ -945,7 +880,7 @@ export default function Dashboard() {
                   .sort((a, b) => b.volPrataPeriodo - a.volPrataPeriodo)
                   .slice(0, 5)
                   .map((p, index) => {
-                    const conc = p.vol_total_mensal > 0 ? (p.volPrataPeriodo / p.vol_total_mensal) * 100 : 0;
+                    const concText = p.vol_total_mensal > 0 ? `${((p.volPrataPeriodo / p.vol_total_mensal) * 100).toFixed(0)}%` : 'NVT';
                     return (
                       <tr key={p.id}>
                         <td style={{ fontWeight: 700, color: index === 0 ? 'var(--warning)' : 'var(--text-muted)' }}>
@@ -956,7 +891,7 @@ export default function Dashboard() {
                           {formatCurrency(p.volPrataPeriodo)}
                         </td>
                         <td style={{ textAlign: 'right', fontWeight: 500 }}>
-                          {conc.toFixed(0)}%
+                          {concText}
                         </td>
                         <td style={{ textAlign: 'center' }}>
                           <span className={`badge ${p.score_comercial >= 80 ? 'badge-success' : p.score_comercial >= 50 ? 'badge-info' : 'badge-warning'}`}>
@@ -1174,7 +1109,7 @@ function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs, se
             <tr key={p.id}>
               <td style={{ fontWeight: 600 }}>{p.nome}</td>
               <td>
-                <span className={`badge ${p.status === 'Ativo' ? 'badge-success' : p.status === 'Reativação' ? 'badge-danger' : 'badge-info'}`}>
+                <span className={`badge ${p.status === 'Ativo' ? 'badge-success' : p.status === 'Reativação' ? 'badge-danger' : p.status === 'Onboarding' ? 'badge-info' : 'badge-info'}`}>
                   {p.status}
                 </span>
               </td>
@@ -1185,16 +1120,16 @@ function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs, se
         </tbody>
         <tfoot>
           <tr style={{ fontWeight: 800, backgroundColor: 'rgba(0, 0, 0, 0.05)' }}>
-            <td colSpan={3}>Média por Parceiro Ativo</td>
+            <td colSpan={3}>Volume Total de Mercado</td>
             <td style={{ textAlign: 'right', color: 'var(--primary-color)' }}>
-              {formatCurrency(rows.length > 0 ? rows.reduce((sum, r) => sum + r.vol_total_mensal, 0) / rows.length : 0)}
+              {formatCurrency(rows.reduce((sum, r) => sum + (r.vol_total_mensal || 0), 0))}
             </td>
           </tr>
         </tfoot>
       </table>
     );
   } else if (kpiType === 'total-prata') {
-    title = `Detalhamento do Volume Produzido Prata (Média por Parceiro Ativo - ${getPeriodLabel(selectedPeriod)})`;
+    title = `Detalhamento do Volume Produzido Prata (Total Consolidado - ${getPeriodLabel(selectedPeriod)})`;
     const rows = parceiros
       .filter(p => p.status === 'Ativo')
       .map(p => ({
@@ -1234,9 +1169,9 @@ function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs, se
         </tbody>
         <tfoot>
           <tr style={{ fontWeight: 800, backgroundColor: 'rgba(0, 0, 0, 0.05)' }}>
-            <td colSpan={3}>Média por Parceiro Ativo</td>
+            <td colSpan={3}>Volume Total Produzido Prata</td>
             <td style={{ textAlign: 'right', color: 'var(--primary-color)' }}>
-              {formatCurrency(rows.length > 0 ? totalPrata / rows.length : 0)}
+              {formatCurrency(totalPrata)}
             </td>
             <td></td>
           </tr>
@@ -1244,15 +1179,17 @@ function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs, se
       </table>
     );
   } else if (kpiType === 'concentracao') {
-    title = `Taxa de Concentração Média por Parceiro (${getPeriodLabel(selectedPeriod)})`;
+    title = `Taxa de Concentração por Parceiro (${getPeriodLabel(selectedPeriod)})`;
     const rows = [...parceiros]
       .filter(p => p.vol_total_mensal > 0)
       .map(p => {
         const volPrataPeriodo = (parceiroProdMap[p.id]?.total || 0) / numMonths;
+        const volTotalAjustado = Math.max(p.vol_total_mensal || 0, volPrataPeriodo);
         return {
           ...p,
           volPrataPeriodo,
-          conc: (volPrataPeriodo / p.vol_total_mensal) * 100
+          vol_total_mensal: volTotalAjustado,
+          conc: volTotalAjustado > 0 ? (volPrataPeriodo / volTotalAjustado) * 100 : 0
         };
       })
       .sort((a, b) => b.conc - a.conc);

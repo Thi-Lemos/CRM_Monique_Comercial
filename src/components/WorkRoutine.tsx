@@ -58,6 +58,9 @@ export default function WorkRoutine() {
     const customSaved = savedTasks.filter(t => !t.isDynamic);
     const dynamicDoneStates = savedTasks.filter(t => t.isDynamic && t.done).map(t => t.id);
 
+    // Carregar IDs de tarefas dinâmicas excluídas pelo usuário
+    const deletedDynamicIds = JSON.parse(localStorage.getItem('crm_prata_digital_rotina_deletadas') || '[]');
+
     // 2. Gerar sugestões dinâmicas baseadas na saúde da carteira
     const dynamicTasks: RoutineTask[] = [];
     const hoje = new Date();
@@ -125,56 +128,6 @@ export default function WorkRoutine() {
       });
     });
 
-    // QUARTA-FEIRA
-    // Farmer Crescimento qualificado para cross-selling
-    const crescimentoParceiros = pList.filter(p => p.classificacao === 'Crescimento' && p.status === 'Ativo');
-    crescimentoParceiros.forEach(p => {
-      // Regra 1: Qualificado para CGV
-      if (!p.produtos_ativos.includes('CGV') && p.num_vendedores >= 4) {
-        const id = `dyn_cross_cgv_${p.id}`;
-        dynamicTasks.push({
-          id,
-          title: `Farmer Crescimento: Apresentar proposta de cross-selling do produto CGV para ${p.nome}`,
-          dayOfWeek: 'Quarta',
-          done: dynamicDoneStates.includes(id),
-          isDynamic: true,
-          parceiroId: p.id
-        });
-      }
-      // Regra 2: Qualificado para Pix no Cartão (Digitais)
-      if (!p.produtos_ativos.includes('Pix') && p.modelo_atuacao === 'Digital') {
-        const id = `dyn_cross_pix_${p.id}`;
-        dynamicTasks.push({
-          id,
-          title: `Farmer Crescimento: Apresentar Pix no Cartão como complemento digital para ${p.nome}`,
-          dayOfWeek: 'Quarta',
-          done: dynamicDoneStates.includes(id),
-          isDynamic: true,
-          parceiroId: p.id
-        });
-      }
-    });
-
-    // QUINTA-FEIRA
-    // Onboarding Hunter travado (novos sem produção com mais de 7 dias)
-    const onboardingTravado = pList.filter(p => p.status === 'Reativação');
-    onboardingTravado.forEach(p => {
-      const dataCriacao = p.created_at ? new Date(p.created_at) : hoje;
-      const diasSemProd = (hoje.getTime() - dataCriacao.getTime()) / (1000 * 60 * 60 * 24);
-      
-      if (diasSemProd > 7 && diasSemProd <= 30 && p.vol_prata_mensal === 0) {
-        const id = `dyn_hunter_onboard_support_${p.id}`;
-        dynamicTasks.push({
-          id,
-          title: `Hunter Onboarding: Ligar para ${p.nome} e solucionar gargalos na ativação da plataforma`,
-          dayOfWeek: 'Quinta',
-          done: dynamicDoneStates.includes(id),
-          isDynamic: true,
-          parceiroId: p.id
-        });
-      }
-    });
-
     // SEXTA-FEIRA
     dynamicTasks.push({
       id: 'dyn_rev_kpi',
@@ -191,8 +144,11 @@ export default function WorkRoutine() {
       isDynamic: true
     });
 
+    // Filtrar tarefas dinâmicas deletadas
+    const activeDynamicTasks = dynamicTasks.filter(t => !deletedDynamicIds.includes(t.id));
+
     // Juntar e ordenar: dinâmicas primeiro, customizadas depois
-    setTasks([...dynamicTasks, ...customSaved]);
+    setTasks([...activeDynamicTasks, ...customSaved]);
   };
 
   const persistTasks = (allTasks: RoutineTask[]) => {
@@ -230,6 +186,13 @@ export default function WorkRoutine() {
   };
 
   const handleDeleteTask = (id: string) => {
+    const task = tasks.find(t => t.id === id);
+    if (task?.isDynamic) {
+      const deleted = JSON.parse(localStorage.getItem('crm_prata_digital_rotina_deletadas') || '[]');
+      deleted.push(id);
+      localStorage.setItem('crm_prata_digital_rotina_deletadas', JSON.stringify(deleted));
+    }
+
     const updated = tasks.filter(t => t.id !== id);
     setTasks(updated);
     persistTasks(updated);
@@ -364,23 +327,21 @@ export default function WorkRoutine() {
                         )}
                       </div>
 
-                      {/* Excluir se for customizada */}
-                      {!task.isDynamic && (
-                        <button 
-                          onClick={() => handleDeleteTask(task.id)}
-                          style={{
-                            background: 'none',
-                            border: 'none',
-                            cursor: 'pointer',
-                            color: 'var(--danger)',
-                            opacity: 0.6,
-                            padding: '0 0.2rem'
-                          }}
-                          title="Excluir tarefa"
-                        >
-                          <Trash2 size={14} />
-                        </button>
-                      )}
+                      {/* Excluir tarefa */}
+                      <button 
+                        onClick={() => handleDeleteTask(task.id)}
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          cursor: 'pointer',
+                          color: 'var(--danger)',
+                          opacity: 0.6,
+                          padding: '0 0.2rem'
+                        }}
+                        title="Excluir tarefa"
+                      >
+                        <Trash2 size={14} />
+                      </button>
                     </div>
                   ))
                 )}
