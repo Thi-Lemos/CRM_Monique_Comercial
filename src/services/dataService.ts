@@ -185,6 +185,7 @@ export const dataService = {
         const { data, error } = await supabase
           .from('parceiros')
           .select('*')
+          .range(0, 9999)
           .order('nome', { ascending: true });
         
         if (!error && data) {
@@ -245,7 +246,8 @@ export const dataService = {
       try {
         const { data, error } = await supabase
           .from('producao')
-          .select('*');
+          .select('*')
+          .range(0, 9999);
         if (!error && data) {
           allProds = data as ProducaoMensal[];
         }
@@ -766,7 +768,8 @@ export const dataService = {
       try {
         const { data, error } = await supabase
           .from('producao')
-          .select('*');
+          .select('*')
+          .range(0, 9999);
         if (!error && data) {
           return data as ProducaoMensal[];
         }

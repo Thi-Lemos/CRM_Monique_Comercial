@@ -3,7 +3,7 @@ import { Parceiro } from '../types';
 export function calculateCriteriaNotes(parceiro: Partial<Parceiro>) {
   // N1: Volume total mensal
   let n1 = 1;
-  const volTotal = parceiro.vol_total_mensal || 0;
+  const volTotal = Math.max(parceiro.vol_total_mensal || 0, parceiro.vol_prata_mensal || 0);
   if (volTotal <= 30000) n1 = 1;
   else if (volTotal <= 80000) n1 = 3;
   else if (volTotal <= 150000) n1 = 5;
