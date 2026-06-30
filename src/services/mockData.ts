@@ -16,7 +16,7 @@ export const initialParceiros: Parceiro[] = [
       "CGV"
     ],
     "vol_total_mensal": 0,
-    "vol_prata_mensal": 1381385.3599999999,
+    "vol_prata_mensal": 669883.61,
     "status": "Ativo",
     "score_comercial": 35,
     "classificacao": "Desenvolvimento"
@@ -35,7 +35,7 @@ export const initialParceiros: Parceiro[] = [
       "CLT"
     ],
     "vol_total_mensal": 0,
-    "vol_prata_mensal": 793986.6799999999,
+    "vol_prata_mensal": 1362962.3599999999,
     "status": "Ativo",
     "score_comercial": 32,
     "classificacao": "Desenvolvimento"
@@ -55,7 +55,7 @@ export const initialParceiros: Parceiro[] = [
       "CGV"
     ],
     "vol_total_mensal": 0,
-    "vol_prata_mensal": 195289.46000000002,
+    "vol_prata_mensal": 81630.23,
     "status": "Ativo",
     "score_comercial": 35,
     "classificacao": "Desenvolvimento"
@@ -74,7 +74,7 @@ export const initialParceiros: Parceiro[] = [
       "CLT"
     ],
     "vol_total_mensal": 0,
-    "vol_prata_mensal": 101823.87,
+    "vol_prata_mensal": 324472.99,
     "status": "Ativo",
     "score_comercial": 32,
     "classificacao": "Desenvolvimento"
@@ -93,7 +93,7 @@ export const initialParceiros: Parceiro[] = [
       "CLT"
     ],
     "vol_total_mensal": 0,
-    "vol_prata_mensal": 38521.21,
+    "vol_prata_mensal": 63263.869999999995,
     "status": "Ativo",
     "score_comercial": 32,
     "classificacao": "Desenvolvimento"
@@ -112,7 +112,7 @@ export const initialParceiros: Parceiro[] = [
       "CLT"
     ],
     "vol_total_mensal": 0,
-    "vol_prata_mensal": 53930.56,
+    "vol_prata_mensal": 39066.759999999995,
     "status": "Ativo",
     "score_comercial": 32,
     "classificacao": "Desenvolvimento"
@@ -131,7 +131,7 @@ export const initialParceiros: Parceiro[] = [
       "CLT"
     ],
     "vol_total_mensal": 0,
-    "vol_prata_mensal": 34525.1,
+    "vol_prata_mensal": 24223.28,
     "status": "Ativo",
     "score_comercial": 32,
     "classificacao": "Desenvolvimento"
@@ -150,7 +150,7 @@ export const initialParceiros: Parceiro[] = [
       "CLT"
     ],
     "vol_total_mensal": 0,
-    "vol_prata_mensal": 22520.96,
+    "vol_prata_mensal": 24506.35,
     "status": "Ativo",
     "score_comercial": 32,
     "classificacao": "Desenvolvimento"
@@ -169,7 +169,7 @@ export const initialParceiros: Parceiro[] = [
       "CLT"
     ],
     "vol_total_mensal": 0,
-    "vol_prata_mensal": 32495.39,
+    "vol_prata_mensal": 18986.29,
     "status": "Ativo",
     "score_comercial": 32,
     "classificacao": "Desenvolvimento"
@@ -188,7 +188,7 @@ export const initialParceiros: Parceiro[] = [
       "CLT"
     ],
     "vol_total_mensal": 0,
-    "vol_prata_mensal": 41075.54,
+    "vol_prata_mensal": 40555.76,
     "status": "Ativo",
     "score_comercial": 32,
     "classificacao": "Desenvolvimento"
@@ -207,7 +207,7 @@ export const initialParceiros: Parceiro[] = [
       "CLT"
     ],
     "vol_total_mensal": 0,
-    "vol_prata_mensal": 40292.09,
+    "vol_prata_mensal": 29386.170000000002,
     "status": "Ativo",
     "score_comercial": 32,
     "classificacao": "Desenvolvimento"
@@ -226,7 +226,7 @@ export const initialParceiros: Parceiro[] = [
       "CLT"
     ],
     "vol_total_mensal": 0,
-    "vol_prata_mensal": 13654.09,
+    "vol_prata_mensal": 21199.65,
     "status": "Ativo",
     "score_comercial": 32,
     "classificacao": "Desenvolvimento"
@@ -245,7 +245,7 @@ export const initialParceiros: Parceiro[] = [
       "CLT"
     ],
     "vol_total_mensal": 0,
-    "vol_prata_mensal": 20268.72,
+    "vol_prata_mensal": 15150.16,
     "status": "Ativo",
     "score_comercial": 32,
     "classificacao": "Desenvolvimento"
@@ -264,7 +264,7 @@ export const initialParceiros: Parceiro[] = [
       "CLT"
     ],
     "vol_total_mensal": 0,
-    "vol_prata_mensal": 29324.29,
+    "vol_prata_mensal": 11701.98,
     "status": "Ativo",
     "score_comercial": 32,
     "classificacao": "Desenvolvimento"
@@ -283,7 +283,7 @@ export const initialParceiros: Parceiro[] = [
       "CLT"
     ],
     "vol_total_mensal": 0,
-    "vol_prata_mensal": 30490.65,
+    "vol_prata_mensal": 5747.99,
     "status": "Ativo",
     "score_comercial": 32,
     "classificacao": "Desenvolvimento"
@@ -302,7 +302,7 @@ export const initialParceiros: Parceiro[] = [
       "CLT"
     ],
     "vol_total_mensal": 0,
-    "vol_prata_mensal": 16878.16,
+    "vol_prata_mensal": 9332.6,
     "status": "Ativo",
     "score_comercial": 32,
     "classificacao": "Desenvolvimento"
@@ -321,7 +321,7 @@ export const initialParceiros: Parceiro[] = [
       "CLT"
     ],
     "vol_total_mensal": 0,
-    "vol_prata_mensal": 15219.990000000002,
+    "vol_prata_mensal": 13332.380000000001,
     "status": "Ativo",
     "score_comercial": 32,
     "classificacao": "Desenvolvimento"
@@ -340,7 +340,7 @@ export const initialParceiros: Parceiro[] = [
       "CLT"
     ],
     "vol_total_mensal": 0,
-    "vol_prata_mensal": 6196.93,
+    "vol_prata_mensal": 4223.91,
     "status": "Ativo",
     "score_comercial": 32,
     "classificacao": "Desenvolvimento"
@@ -378,7 +378,7 @@ export const initialParceiros: Parceiro[] = [
       "CLT"
     ],
     "vol_total_mensal": 0,
-    "vol_prata_mensal": 8857.67,
+    "vol_prata_mensal": 27499.19,
     "status": "Ativo",
     "score_comercial": 32,
     "classificacao": "Desenvolvimento"
@@ -397,7 +397,7 @@ export const initialParceiros: Parceiro[] = [
       "CLT"
     ],
     "vol_total_mensal": 0,
-    "vol_prata_mensal": 12913.14,
+    "vol_prata_mensal": 11676.54,
     "status": "Ativo",
     "score_comercial": 32,
     "classificacao": "Desenvolvimento"
@@ -416,7 +416,7 @@ export const initialParceiros: Parceiro[] = [
       "CLT"
     ],
     "vol_total_mensal": 0,
-    "vol_prata_mensal": 8333.11,
+    "vol_prata_mensal": 11417.66,
     "status": "Ativo",
     "score_comercial": 32,
     "classificacao": "Desenvolvimento"
@@ -435,7 +435,7 @@ export const initialParceiros: Parceiro[] = [
       "CLT"
     ],
     "vol_total_mensal": 0,
-    "vol_prata_mensal": 2611.33,
+    "vol_prata_mensal": 6845.17,
     "status": "Ativo",
     "score_comercial": 32,
     "classificacao": "Desenvolvimento"
@@ -511,7 +511,7 @@ export const initialParceiros: Parceiro[] = [
       "CLT"
     ],
     "vol_total_mensal": 0,
-    "vol_prata_mensal": 11713.400000000001,
+    "vol_prata_mensal": 4109.55,
     "status": "Ativo",
     "score_comercial": 32,
     "classificacao": "Desenvolvimento"
@@ -549,7 +549,7 @@ export const initialParceiros: Parceiro[] = [
       "CLT"
     ],
     "vol_total_mensal": 0,
-    "vol_prata_mensal": 8091.68,
+    "vol_prata_mensal": 8258.02,
     "status": "Ativo",
     "score_comercial": 32,
     "classificacao": "Desenvolvimento"
@@ -568,7 +568,7 @@ export const initialParceiros: Parceiro[] = [
       "CLT"
     ],
     "vol_total_mensal": 0,
-    "vol_prata_mensal": 5334.780000000001,
+    "vol_prata_mensal": 2250.23,
     "status": "Ativo",
     "score_comercial": 32,
     "classificacao": "Desenvolvimento"
@@ -625,7 +625,7 @@ export const initialParceiros: Parceiro[] = [
       "CLT"
     ],
     "vol_total_mensal": 0,
-    "vol_prata_mensal": 4970.0199999999995,
+    "vol_prata_mensal": 1796.32,
     "status": "Ativo",
     "score_comercial": 32,
     "classificacao": "Desenvolvimento"
@@ -644,7 +644,7 @@ export const initialParceiros: Parceiro[] = [
       "CLT"
     ],
     "vol_total_mensal": 0,
-    "vol_prata_mensal": 7454.01,
+    "vol_prata_mensal": 3154.01,
     "status": "Ativo",
     "score_comercial": 32,
     "classificacao": "Desenvolvimento"
@@ -682,7 +682,7 @@ export const initialParceiros: Parceiro[] = [
       "CLT"
     ],
     "vol_total_mensal": 0,
-    "vol_prata_mensal": 4926.9400000000005,
+    "vol_prata_mensal": 2490.81,
     "status": "Ativo",
     "score_comercial": 32,
     "classificacao": "Desenvolvimento"
@@ -739,7 +739,7 @@ export const initialParceiros: Parceiro[] = [
       "CLT"
     ],
     "vol_total_mensal": 0,
-    "vol_prata_mensal": 9573.63,
+    "vol_prata_mensal": 1033.49,
     "status": "Ativo",
     "score_comercial": 32,
     "classificacao": "Desenvolvimento"
@@ -758,7 +758,7 @@ export const initialParceiros: Parceiro[] = [
       "CLT"
     ],
     "vol_total_mensal": 0,
-    "vol_prata_mensal": 5850.32,
+    "vol_prata_mensal": 3030.25,
     "status": "Ativo",
     "score_comercial": 32,
     "classificacao": "Desenvolvimento"
@@ -777,7 +777,7 @@ export const initialParceiros: Parceiro[] = [
       "CLT"
     ],
     "vol_total_mensal": 0,
-    "vol_prata_mensal": 1165.49,
+    "vol_prata_mensal": 2506.09,
     "status": "Ativo",
     "score_comercial": 32,
     "classificacao": "Desenvolvimento"
@@ -815,7 +815,7 @@ export const initialParceiros: Parceiro[] = [
       "CLT"
     ],
     "vol_total_mensal": 0,
-    "vol_prata_mensal": 5485.25,
+    "vol_prata_mensal": 2395.89,
     "status": "Ativo",
     "score_comercial": 32,
     "classificacao": "Desenvolvimento"
@@ -853,7 +853,7 @@ export const initialParceiros: Parceiro[] = [
       "CLT"
     ],
     "vol_total_mensal": 0,
-    "vol_prata_mensal": 9799.32,
+    "vol_prata_mensal": 33327.55,
     "status": "Ativo",
     "score_comercial": 32,
     "classificacao": "Desenvolvimento"
@@ -872,7 +872,7 @@ export const initialParceiros: Parceiro[] = [
       "CLT"
     ],
     "vol_total_mensal": 0,
-    "vol_prata_mensal": 7053.97,
+    "vol_prata_mensal": 1458.01,
     "status": "Ativo",
     "score_comercial": 32,
     "classificacao": "Desenvolvimento"
@@ -891,7 +891,7 @@ export const initialParceiros: Parceiro[] = [
       "CLT"
     ],
     "vol_total_mensal": 0,
-    "vol_prata_mensal": 7337.429999999999,
+    "vol_prata_mensal": 1076.78,
     "status": "Ativo",
     "score_comercial": 32,
     "classificacao": "Desenvolvimento"
@@ -909,9 +909,9 @@ export const initialParceiros: Parceiro[] = [
       "FGTS"
     ],
     "vol_total_mensal": 0,
-    "vol_prata_mensal": 0,
+    "vol_prata_mensal": 58701.8,
     "status": "Reativação",
-    "score_comercial": 12,
+    "score_comercial": 28,
     "classificacao": "Desenvolvimento"
   },
   {
@@ -965,7 +965,7 @@ export const initialParceiros: Parceiro[] = [
       "CLT"
     ],
     "vol_total_mensal": 0,
-    "vol_prata_mensal": 8442.11,
+    "vol_prata_mensal": 2406.34,
     "status": "Ativo",
     "score_comercial": 32,
     "classificacao": "Desenvolvimento"
@@ -1022,7 +1022,7 @@ export const initialParceiros: Parceiro[] = [
       "CLT"
     ],
     "vol_total_mensal": 0,
-    "vol_prata_mensal": 4454.84,
+    "vol_prata_mensal": 221,
     "status": "Ativo",
     "score_comercial": 32,
     "classificacao": "Desenvolvimento"
@@ -1098,7 +1098,7 @@ export const initialParceiros: Parceiro[] = [
       "CLT"
     ],
     "vol_total_mensal": 0,
-    "vol_prata_mensal": 1142.67,
+    "vol_prata_mensal": 5386.63,
     "status": "Ativo",
     "score_comercial": 32,
     "classificacao": "Desenvolvimento"
@@ -1154,7 +1154,7 @@ export const initialParceiros: Parceiro[] = [
       "CLT"
     ],
     "vol_total_mensal": 0,
-    "vol_prata_mensal": 4133.5,
+    "vol_prata_mensal": 1188.5,
     "status": "Ativo",
     "score_comercial": 32,
     "classificacao": "Desenvolvimento"
@@ -1210,7 +1210,7 @@ export const initialParceiros: Parceiro[] = [
       "FGTS"
     ],
     "vol_total_mensal": 0,
-    "vol_prata_mensal": 421.1,
+    "vol_prata_mensal": 2394.12,
     "status": "Ativo",
     "score_comercial": 28,
     "classificacao": "Desenvolvimento"
@@ -1229,7 +1229,7 @@ export const initialParceiros: Parceiro[] = [
       "CLT"
     ],
     "vol_total_mensal": 0,
-    "vol_prata_mensal": 451.3,
+    "vol_prata_mensal": 5451.3,
     "status": "Ativo",
     "score_comercial": 32,
     "classificacao": "Desenvolvimento"
@@ -1248,7 +1248,7 @@ export const initialParceiros: Parceiro[] = [
       "CLT"
     ],
     "vol_total_mensal": 0,
-    "vol_prata_mensal": 707.94,
+    "vol_prata_mensal": 9248.08,
     "status": "Ativo",
     "score_comercial": 32,
     "classificacao": "Desenvolvimento"
@@ -1323,7 +1323,7 @@ export const initialParceiros: Parceiro[] = [
       "CLT"
     ],
     "vol_total_mensal": 0,
-    "vol_prata_mensal": 2407.51,
+    "vol_prata_mensal": 1229.89,
     "status": "Ativo",
     "score_comercial": 32,
     "classificacao": "Desenvolvimento"
@@ -1468,9 +1468,9 @@ export const initialParceiros: Parceiro[] = [
       "FGTS"
     ],
     "vol_total_mensal": 0,
-    "vol_prata_mensal": 0,
+    "vol_prata_mensal": 4300,
     "status": "Ativo",
-    "score_comercial": 12,
+    "score_comercial": 28,
     "classificacao": "Desenvolvimento"
   },
   {
@@ -1646,7 +1646,7 @@ export const initialParceiros: Parceiro[] = [
       "FGTS"
     ],
     "vol_total_mensal": 0,
-    "vol_prata_mensal": 51.4,
+    "vol_prata_mensal": 1229.02,
     "status": "Ativo",
     "score_comercial": 28,
     "classificacao": "Desenvolvimento"
@@ -1698,9 +1698,9 @@ export const initialParceiros: Parceiro[] = [
       "FGTS"
     ],
     "vol_total_mensal": 0,
-    "vol_prata_mensal": 0,
+    "vol_prata_mensal": 7603.85,
     "status": "Ativo",
-    "score_comercial": 12,
+    "score_comercial": 28,
     "classificacao": "Desenvolvimento"
   },
   {
@@ -1944,7 +1944,7 @@ export const initialParceiros: Parceiro[] = [
       "FGTS"
     ],
     "vol_total_mensal": 0,
-    "vol_prata_mensal": 32.44,
+    "vol_prata_mensal": 5009.41,
     "status": "Ativo",
     "score_comercial": 28,
     "classificacao": "Desenvolvimento"
@@ -4408,9 +4408,9 @@ export const initialParceiros: Parceiro[] = [
     "num_vendedores": 0,
     "produtos_ativos": [],
     "vol_total_mensal": 0,
-    "vol_prata_mensal": 0,
+    "vol_prata_mensal": 6260.65,
     "status": "Reativação",
-    "score_comercial": 10,
+    "score_comercial": 26,
     "classificacao": "Desenvolvimento"
   },
   {
@@ -7896,9 +7896,9 @@ export const initialParceiros: Parceiro[] = [
     "num_vendedores": 0,
     "produtos_ativos": [],
     "vol_total_mensal": 0,
-    "vol_prata_mensal": 0,
+    "vol_prata_mensal": 6035.77,
     "status": "Reativação",
-    "score_comercial": 10,
+    "score_comercial": 26,
     "classificacao": "Desenvolvimento"
   },
   {
@@ -8072,9 +8072,9 @@ export const initialParceiros: Parceiro[] = [
     "num_vendedores": 0,
     "produtos_ativos": [],
     "vol_total_mensal": 0,
-    "vol_prata_mensal": 0,
+    "vol_prata_mensal": 5595.96,
     "status": "Reativação",
-    "score_comercial": 10,
+    "score_comercial": 26,
     "classificacao": "Desenvolvimento"
   },
   {
@@ -8440,9 +8440,9 @@ export const initialParceiros: Parceiro[] = [
     "num_vendedores": 0,
     "produtos_ativos": [],
     "vol_total_mensal": 0,
-    "vol_prata_mensal": 0,
+    "vol_prata_mensal": 2436.13,
     "status": "Reativação",
-    "score_comercial": 10,
+    "score_comercial": 26,
     "classificacao": "Desenvolvimento"
   },
   {
@@ -8648,9 +8648,9 @@ export const initialParceiros: Parceiro[] = [
     "num_vendedores": 0,
     "produtos_ativos": [],
     "vol_total_mensal": 0,
-    "vol_prata_mensal": 0,
+    "vol_prata_mensal": 2945,
     "status": "Reativação",
-    "score_comercial": 10,
+    "score_comercial": 26,
     "classificacao": "Desenvolvimento"
   },
   {
@@ -11861,560 +11861,560 @@ export const initialProducao: ProducaoMensal[] = [
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 979454.73,
-    "vol_clt": 1208651.93,
-    "vol_cgv": 229194,
+    "vol_clt": 360551.8,
+    "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 2417300.66
+    "vol_total": 1340006.53
   },
   {
     "parceiro_id": "a57dd5df-72a2-4f28-9c72-322e551e4133",
     "ano": 2026,
     "mes": 4,
     "vol_fgts": 692169.9,
-    "vol_clt": 1025981.51,
+    "vol_clt": 129929.25,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 1718151.4100000001
+    "vol_total": 822099.15
   },
   {
     "parceiro_id": "a57dd5df-72a2-4f28-9c72-322e551e4133",
     "ano": 2026,
     "mes": 5,
     "vol_fgts": 531058.76,
-    "vol_clt": 787620.6,
-    "vol_cgv": 62706,
+    "vol_clt": 138824.85,
+    "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 1381385.3599999999
+    "vol_total": 669883.61
   },
   {
     "parceiro_id": "a106d268-bcfd-47e1-92f0-692f2ae6e259",
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 767394.77,
-    "vol_clt": 801900.22,
-    "vol_cgv": 0,
+    "vol_clt": 1208651.93,
+    "vol_cgv": 229194,
     "vol_pix": 0,
-    "vol_total": 1569294.99
+    "vol_total": 2205240.7
   },
   {
     "parceiro_id": "a106d268-bcfd-47e1-92f0-692f2ae6e259",
     "ano": 2026,
     "mes": 4,
     "vol_fgts": 593817.61,
-    "vol_clt": 540761.87,
+    "vol_clt": 1025981.51,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 1134579.48
+    "vol_total": 1619799.12
   },
   {
     "parceiro_id": "a106d268-bcfd-47e1-92f0-692f2ae6e259",
     "ano": 2026,
     "mes": 5,
     "vol_fgts": 512635.76,
-    "vol_clt": 281350.92,
-    "vol_cgv": 0,
+    "vol_clt": 787620.6,
+    "vol_cgv": 62706,
     "vol_pix": 0,
-    "vol_total": 793986.6799999999
+    "vol_total": 1362962.3599999999
   },
   {
     "parceiro_id": "96fea052-30fb-4edd-9466-fb3a7098c5e6",
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 88761.77,
-    "vol_clt": 360551.8,
-    "vol_cgv": 26141,
+    "vol_clt": 41149.3,
+    "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 475454.57
+    "vol_total": 129911.07
   },
   {
     "parceiro_id": "96fea052-30fb-4edd-9466-fb3a7098c5e6",
     "ano": 2026,
     "mes": 4,
     "vol_fgts": 79170.74,
-    "vol_clt": 129929.25,
+    "vol_clt": 18217.89,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 209099.99
+    "vol_total": 97388.63
   },
   {
     "parceiro_id": "96fea052-30fb-4edd-9466-fb3a7098c5e6",
     "ano": 2026,
     "mes": 5,
     "vol_fgts": 56464.61,
-    "vol_clt": 138824.85,
+    "vol_clt": 25165.62,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 195289.46000000002
+    "vol_total": 81630.23
   },
   {
     "parceiro_id": "3ede5148-a42b-4959-b13d-1eabd3dc1f49",
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 103123.8,
-    "vol_clt": 135103.24,
+    "vol_clt": 801900.22,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 238227.03999999998
+    "vol_total": 905024.02
   },
   {
     "parceiro_id": "3ede5148-a42b-4959-b13d-1eabd3dc1f49",
     "ano": 2026,
     "mes": 4,
     "vol_fgts": 66310.59,
-    "vol_clt": 53908.54,
+    "vol_clt": 540761.87,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 120219.13
+    "vol_total": 607072.46
   },
   {
     "parceiro_id": "3ede5148-a42b-4959-b13d-1eabd3dc1f49",
     "ano": 2026,
     "mes": 5,
     "vol_fgts": 43122.07,
-    "vol_clt": 58701.8,
+    "vol_clt": 281350.92,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 101823.87
+    "vol_total": 324472.99
   },
   {
     "parceiro_id": "f64c9c42-710c-43ee-81aa-b804328c44ff",
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 57325.84,
-    "vol_clt": 86349.79,
+    "vol_clt": 8088.17,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 143675.63
+    "vol_total": 65414.009999999995
   },
   {
     "parceiro_id": "f64c9c42-710c-43ee-81aa-b804328c44ff",
     "ano": 2026,
     "mes": 4,
     "vol_fgts": 48246.87,
-    "vol_clt": 26911.6,
+    "vol_clt": 5337.27,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 75158.47
+    "vol_total": 53584.14
   },
   {
     "parceiro_id": "f64c9c42-710c-43ee-81aa-b804328c44ff",
     "ano": 2026,
     "mes": 5,
     "vol_fgts": 38521.21,
-    "vol_clt": 0,
+    "vol_clt": 24742.66,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 38521.21
+    "vol_total": 63263.869999999995
   },
   {
     "parceiro_id": "0b6049fc-f9b1-48f6-9f55-cc330258b90a",
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 51416.02,
-    "vol_clt": 41149.3,
+    "vol_clt": 19699.91,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 92565.32
+    "vol_total": 71115.93
   },
   {
     "parceiro_id": "0b6049fc-f9b1-48f6-9f55-cc330258b90a",
     "ano": 2026,
     "mes": 4,
     "vol_fgts": 44607.11,
-    "vol_clt": 18217.89,
+    "vol_clt": 33566.49,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 62825
+    "vol_total": 78173.6
   },
   {
     "parceiro_id": "0b6049fc-f9b1-48f6-9f55-cc330258b90a",
     "ano": 2026,
     "mes": 5,
     "vol_fgts": 28764.94,
-    "vol_clt": 25165.62,
+    "vol_clt": 10301.82,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 53930.56
+    "vol_total": 39066.759999999995
   },
   {
     "parceiro_id": "1e5e6e09-1541-4c12-8130-b9004bae0e68",
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 53937.8,
-    "vol_clt": 19699.91,
+    "vol_clt": 14388.21,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 73637.71
+    "vol_total": 68326.01000000001
   },
   {
     "parceiro_id": "1e5e6e09-1541-4c12-8130-b9004bae0e68",
     "ano": 2026,
     "mes": 4,
     "vol_fgts": 28265.91,
-    "vol_clt": 33566.49,
+    "vol_clt": 2000.12,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 61832.399999999994
+    "vol_total": 30266.03
   },
   {
     "parceiro_id": "1e5e6e09-1541-4c12-8130-b9004bae0e68",
     "ano": 2026,
     "mes": 5,
     "vol_fgts": 24223.28,
-    "vol_clt": 10301.82,
+    "vol_clt": 0,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 34525.1
+    "vol_total": 24223.28
   },
   {
     "parceiro_id": "7c523d59-f4f7-4ca7-8fe1-6b80d87fee3a",
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 59558.09,
-    "vol_clt": 27657.01,
+    "vol_clt": 36319.08,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 87215.09999999999
+    "vol_total": 95877.17
   },
   {
     "parceiro_id": "7c523d59-f4f7-4ca7-8fe1-6b80d87fee3a",
     "ano": 2026,
     "mes": 4,
     "vol_fgts": 20100.43,
-    "vol_clt": 17305.62,
+    "vol_clt": 11372.04,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 37406.05
+    "vol_total": 31472.47
   },
   {
     "parceiro_id": "7c523d59-f4f7-4ca7-8fe1-6b80d87fee3a",
     "ano": 2026,
     "mes": 5,
     "vol_fgts": 16047.94,
-    "vol_clt": 6473.02,
+    "vol_clt": 8458.41,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 22520.96
+    "vol_total": 24506.35
   },
   {
     "parceiro_id": "885a053f-aa2a-4474-a495-99f2b2686668",
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 49669.7,
-    "vol_clt": 14818.41,
+    "vol_clt": 27657.01,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 64488.11
+    "vol_total": 77326.70999999999
   },
   {
     "parceiro_id": "885a053f-aa2a-4474-a495-99f2b2686668",
     "ano": 2026,
     "mes": 4,
     "vol_fgts": 26903.35,
-    "vol_clt": 13353.47,
+    "vol_clt": 17305.62,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 40256.82
+    "vol_total": 44208.97
   },
   {
     "parceiro_id": "885a053f-aa2a-4474-a495-99f2b2686668",
     "ano": 2026,
     "mes": 5,
     "vol_fgts": 12513.27,
-    "vol_clt": 19982.12,
+    "vol_clt": 6473.02,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 32495.39
+    "vol_total": 18986.29
   },
   {
     "parceiro_id": "2ceeea31-4c05-4824-ac49-277d2e150d16",
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 21177.36,
-    "vol_clt": 36319.08,
+    "vol_clt": 19877.29,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 57496.44
+    "vol_total": 41054.65
   },
   {
     "parceiro_id": "2ceeea31-4c05-4824-ac49-277d2e150d16",
     "ano": 2026,
     "mes": 4,
     "vol_fgts": 26851.01,
-    "vol_clt": 11372.04,
+    "vol_clt": 6444.92,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 38223.05
+    "vol_total": 33295.93
   },
   {
     "parceiro_id": "2ceeea31-4c05-4824-ac49-277d2e150d16",
     "ano": 2026,
     "mes": 5,
     "vol_fgts": 32617.13,
-    "vol_clt": 8458.41,
+    "vol_clt": 7938.63,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 41075.54
+    "vol_total": 40555.76
   },
   {
     "parceiro_id": "37d763dd-5182-4f88-b70a-3de92901afe2",
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 29800.59,
-    "vol_clt": 7223.11,
+    "vol_clt": 9853.7,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 37023.7
+    "vol_total": 39654.29
   },
   {
     "parceiro_id": "37d763dd-5182-4f88-b70a-3de92901afe2",
     "ano": 2026,
     "mes": 4,
     "vol_fgts": 21199.67,
-    "vol_clt": 25586.94,
+    "vol_clt": 1054.13,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 46786.61
+    "vol_total": 22253.8
   },
   {
     "parceiro_id": "37d763dd-5182-4f88-b70a-3de92901afe2",
     "ano": 2026,
     "mes": 5,
     "vol_fgts": 11763.86,
-    "vol_clt": 28528.23,
+    "vol_clt": 17622.31,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 40292.09
+    "vol_total": 29386.170000000002
   },
   {
     "parceiro_id": "c78f9994-47bf-460f-8228-0a471a005f0e",
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 13930.25,
-    "vol_clt": 30131.15,
+    "vol_clt": 18167.15,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 44061.4
+    "vol_total": 32097.4
   },
   {
     "parceiro_id": "c78f9994-47bf-460f-8228-0a471a005f0e",
     "ano": 2026,
     "mes": 4,
     "vol_fgts": 16923.43,
-    "vol_clt": 16282.06,
+    "vol_clt": 12932.59,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 33205.49
+    "vol_total": 29856.02
   },
   {
     "parceiro_id": "c78f9994-47bf-460f-8228-0a471a005f0e",
     "ano": 2026,
     "mes": 5,
     "vol_fgts": 13654.09,
-    "vol_clt": 0,
+    "vol_clt": 7545.56,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 13654.09
+    "vol_total": 21199.65
   },
   {
     "parceiro_id": "ff1a4160-b35c-4056-a0bb-de1e5af4296d",
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 17591.78,
-    "vol_clt": 19877.29,
+    "vol_clt": 4723.35,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 37469.07
+    "vol_total": 22315.129999999997
   },
   {
     "parceiro_id": "ff1a4160-b35c-4056-a0bb-de1e5af4296d",
     "ano": 2026,
     "mes": 4,
     "vol_fgts": 7696.77,
-    "vol_clt": 6444.92,
+    "vol_clt": 0,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 14141.69
+    "vol_total": 7696.77
   },
   {
     "parceiro_id": "ff1a4160-b35c-4056-a0bb-de1e5af4296d",
     "ano": 2026,
     "mes": 5,
     "vol_fgts": 12330.09,
-    "vol_clt": 7938.63,
+    "vol_clt": 2820.07,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 20268.72
+    "vol_total": 15150.16
   },
   {
     "parceiro_id": "010f986a-5f5e-4626-a39c-8a9c47339fb9",
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 13166.83,
-    "vol_clt": 9853.7,
+    "vol_clt": 4473.14,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 23020.53
+    "vol_total": 17639.97
   },
   {
     "parceiro_id": "010f986a-5f5e-4626-a39c-8a9c47339fb9",
     "ano": 2026,
     "mes": 4,
     "vol_fgts": 12761.88,
-    "vol_clt": 1054.13,
+    "vol_clt": 3610.24,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 13816.009999999998
+    "vol_total": 16372.119999999999
   },
   {
     "parceiro_id": "010f986a-5f5e-4626-a39c-8a9c47339fb9",
     "ano": 2026,
     "mes": 5,
     "vol_fgts": 11701.98,
-    "vol_clt": 17622.31,
+    "vol_clt": 0,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 29324.29
+    "vol_total": 11701.98
   },
   {
     "parceiro_id": "70dc7f4a-096d-468d-876a-3c3cfebcc60b",
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 15579.89,
-    "vol_clt": 8088.17,
+    "vol_clt": 0,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 23668.059999999998
+    "vol_total": 15579.89
   },
   {
     "parceiro_id": "70dc7f4a-096d-468d-876a-3c3cfebcc60b",
     "ano": 2026,
     "mes": 4,
     "vol_fgts": 12342.91,
-    "vol_clt": 5337.27,
+    "vol_clt": 0,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 17680.18
+    "vol_total": 12342.91
   },
   {
     "parceiro_id": "70dc7f4a-096d-468d-876a-3c3cfebcc60b",
     "ano": 2026,
     "mes": 5,
     "vol_fgts": 5747.99,
-    "vol_clt": 24742.66,
+    "vol_clt": 0,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 30490.65
+    "vol_total": 5747.99
   },
   {
     "parceiro_id": "4db8773f-c95c-4bfd-b432-321387d00713",
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 16909.63,
-    "vol_clt": 18167.15,
+    "vol_clt": 4961.14,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 35076.78
+    "vol_total": 21870.77
   },
   {
     "parceiro_id": "4db8773f-c95c-4bfd-b432-321387d00713",
     "ano": 2026,
     "mes": 4,
     "vol_fgts": 6035.51,
-    "vol_clt": 12932.59,
+    "vol_clt": 0,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 18968.1
+    "vol_total": 6035.51
   },
   {
     "parceiro_id": "4db8773f-c95c-4bfd-b432-321387d00713",
     "ano": 2026,
     "mes": 5,
     "vol_fgts": 9332.6,
-    "vol_clt": 7545.56,
+    "vol_clt": 0,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 16878.16
+    "vol_total": 9332.6
   },
   {
     "parceiro_id": "c12c2c6c-8132-4f27-9de5-002222452d89",
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 10211.74,
-    "vol_clt": 0,
+    "vol_clt": 3896.85,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 10211.74
+    "vol_total": 14108.59
   },
   {
     "parceiro_id": "c12c2c6c-8132-4f27-9de5-002222452d89",
     "ano": 2026,
     "mes": 4,
     "vol_fgts": 11348.64,
-    "vol_clt": 0,
+    "vol_clt": 1164.01,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 11348.64
+    "vol_total": 12512.65
   },
   {
     "parceiro_id": "c12c2c6c-8132-4f27-9de5-002222452d89",
     "ano": 2026,
     "mes": 5,
     "vol_fgts": 10243.02,
-    "vol_clt": 4976.97,
+    "vol_clt": 3089.36,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 15219.990000000002
+    "vol_total": 13332.380000000001
   },
   {
     "parceiro_id": "70037ebc-1c92-4ac9-a5e5-a70a8d3dd908",
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 15338.37,
-    "vol_clt": 18105.32,
+    "vol_clt": 0,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 33443.69
+    "vol_total": 15338.37
   },
   {
     "parceiro_id": "70037ebc-1c92-4ac9-a5e5-a70a8d3dd908",
     "ano": 2026,
     "mes": 4,
     "vol_fgts": 13998.14,
-    "vol_clt": 7112.24,
+    "vol_clt": 8490.89,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 21110.379999999997
+    "vol_total": 22489.03
   },
   {
     "parceiro_id": "70037ebc-1c92-4ac9-a5e5-a70a8d3dd908",
     "ano": 2026,
     "mes": 5,
     "vol_fgts": 4223.91,
-    "vol_clt": 1973.02,
+    "vol_clt": 0,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 6196.93
+    "vol_total": 4223.91
   },
   {
     "parceiro_id": "4ecb5db9-10ec-443f-9f54-ff9af31cb06d",
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 9865.42,
-    "vol_clt": 8983.16,
-    "vol_cgv": 0,
+    "vol_clt": 30131.15,
+    "vol_cgv": 26141,
     "vol_pix": 0,
-    "vol_total": 18848.58
+    "vol_total": 66137.57
   },
   {
     "parceiro_id": "4ecb5db9-10ec-443f-9f54-ff9af31cb06d",
     "ano": 2026,
     "mes": 4,
     "vol_fgts": 9206.02,
-    "vol_clt": 15910.59,
+    "vol_clt": 16282.06,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 25116.61
+    "vol_total": 25488.08
   },
   {
     "parceiro_id": "4ecb5db9-10ec-443f-9f54-ff9af31cb06d",
@@ -12431,140 +12431,140 @@ export const initialProducao: ProducaoMensal[] = [
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 9607.43,
-    "vol_clt": 12326.84,
+    "vol_clt": 14818.41,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 21934.27
+    "vol_total": 24425.84
   },
   {
     "parceiro_id": "dacb260f-42e0-4f7d-8d3d-1d5ce4e13747",
     "ano": 2026,
     "mes": 4,
     "vol_fgts": 7560.59,
-    "vol_clt": 6994.53,
+    "vol_clt": 13353.47,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 14555.119999999999
+    "vol_total": 20914.059999999998
   },
   {
     "parceiro_id": "dacb260f-42e0-4f7d-8d3d-1d5ce4e13747",
     "ano": 2026,
     "mes": 5,
     "vol_fgts": 7517.07,
-    "vol_clt": 1340.6,
+    "vol_clt": 19982.12,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 8857.67
+    "vol_total": 27499.19
   },
   {
     "parceiro_id": "bd9f20d5-f2a9-4723-a8b6-1b6e85cc02d7",
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 6896.82,
-    "vol_clt": 5000,
+    "vol_clt": 7227.79,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 11896.82
+    "vol_total": 14124.61
   },
   {
     "parceiro_id": "bd9f20d5-f2a9-4723-a8b6-1b6e85cc02d7",
     "ano": 2026,
     "mes": 4,
     "vol_fgts": 7421.68,
-    "vol_clt": 4295.17,
+    "vol_clt": 3030.5,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 11716.85
+    "vol_total": 10452.18
   },
   {
     "parceiro_id": "bd9f20d5-f2a9-4723-a8b6-1b6e85cc02d7",
     "ano": 2026,
     "mes": 5,
     "vol_fgts": 8669.18,
-    "vol_clt": 4243.96,
+    "vol_clt": 3007.36,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 12913.14
+    "vol_total": 11676.54
   },
   {
     "parceiro_id": "c6f2080f-dc4b-4365-82e9-0e685401f375",
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 6831.58,
-    "vol_clt": 15249.63,
+    "vol_clt": 9654.09,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 22081.21
+    "vol_total": 16485.67
   },
   {
     "parceiro_id": "c6f2080f-dc4b-4365-82e9-0e685401f375",
     "ano": 2026,
     "mes": 4,
     "vol_fgts": 6560.82,
-    "vol_clt": 5050.19,
+    "vol_clt": 0,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 11611.009999999998
+    "vol_total": 6560.82
   },
   {
     "parceiro_id": "c6f2080f-dc4b-4365-82e9-0e685401f375",
     "ano": 2026,
     "mes": 5,
     "vol_fgts": 8333.11,
-    "vol_clt": 0,
+    "vol_clt": 3084.55,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 8333.11
+    "vol_total": 11417.66
   },
   {
     "parceiro_id": "1bcad539-c931-4d0f-88c9-142631b3b7ee",
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 7768.96,
-    "vol_clt": 15684.03,
+    "vol_clt": 0,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 23452.99
+    "vol_total": 7768.96
   },
   {
     "parceiro_id": "1bcad539-c931-4d0f-88c9-142631b3b7ee",
     "ano": 2026,
     "mes": 4,
     "vol_fgts": 8341.42,
-    "vol_clt": 3066.5,
+    "vol_clt": 1500,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 11407.92
+    "vol_total": 9841.42
   },
   {
     "parceiro_id": "1bcad539-c931-4d0f-88c9-142631b3b7ee",
     "ano": 2026,
     "mes": 5,
     "vol_fgts": 2611.33,
-    "vol_clt": 0,
+    "vol_clt": 4233.84,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 2611.33
+    "vol_total": 6845.17
   },
   {
     "parceiro_id": "438acaf0-bc0c-470a-aa74-24046ddf9b17",
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 8126.86,
-    "vol_clt": 0,
+    "vol_clt": 524.05,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 8126.86
+    "vol_total": 8650.91
   },
   {
     "parceiro_id": "438acaf0-bc0c-470a-aa74-24046ddf9b17",
     "ano": 2026,
     "mes": 4,
     "vol_fgts": 8593.32,
-    "vol_clt": 17246.64,
+    "vol_clt": 0,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 25839.96
+    "vol_total": 8593.32
   },
   {
     "parceiro_id": "438acaf0-bc0c-470a-aa74-24046ddf9b17",
@@ -12581,20 +12581,20 @@ export const initialProducao: ProducaoMensal[] = [
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 10921.75,
-    "vol_clt": 14388.21,
+    "vol_clt": 0,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 25309.96
+    "vol_total": 10921.75
   },
   {
     "parceiro_id": "f34dbe2f-0912-4225-9186-43dc16fe7fc7",
     "ano": 2026,
     "mes": 4,
     "vol_fgts": 4476.31,
-    "vol_clt": 2000.12,
+    "vol_clt": 0,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 6476.43
+    "vol_total": 4476.31
   },
   {
     "parceiro_id": "f34dbe2f-0912-4225-9186-43dc16fe7fc7",
@@ -12641,10 +12641,10 @@ export const initialProducao: ProducaoMensal[] = [
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 10366.36,
-    "vol_clt": 6615.12,
+    "vol_clt": 0,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 16981.48
+    "vol_total": 10366.36
   },
   {
     "parceiro_id": "07f1d0f8-f268-44a7-b414-3e4feda2dc8f",
@@ -12661,30 +12661,30 @@ export const initialProducao: ProducaoMensal[] = [
     "ano": 2026,
     "mes": 5,
     "vol_fgts": 4109.55,
-    "vol_clt": 7603.85,
+    "vol_clt": 0,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 11713.400000000001
+    "vol_total": 4109.55
   },
   {
     "parceiro_id": "cbbc608d-5e1d-4e2e-841c-b75464bc5a66",
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 7784.3,
-    "vol_clt": 2441.16,
+    "vol_clt": 0,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 10225.46
+    "vol_total": 7784.3
   },
   {
     "parceiro_id": "cbbc608d-5e1d-4e2e-841c-b75464bc5a66",
     "ano": 2026,
     "mes": 4,
     "vol_fgts": 5176.29,
-    "vol_clt": 0,
+    "vol_clt": 1748.77,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 5176.29
+    "vol_total": 6925.0599999999995
   },
   {
     "parceiro_id": "cbbc608d-5e1d-4e2e-841c-b75464bc5a66",
@@ -12701,40 +12701,40 @@ export const initialProducao: ProducaoMensal[] = [
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 5253.58,
-    "vol_clt": 7227.79,
+    "vol_clt": 2482.84,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 12481.369999999999
+    "vol_total": 7736.42
   },
   {
     "parceiro_id": "4c627b9d-73af-437a-b1df-db143fd3c232",
     "ano": 2026,
     "mes": 4,
     "vol_fgts": 6349.41,
-    "vol_clt": 3030.5,
+    "vol_clt": 5680.47,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 9379.91
+    "vol_total": 12029.880000000001
   },
   {
     "parceiro_id": "4c627b9d-73af-437a-b1df-db143fd3c232",
     "ano": 2026,
     "mes": 5,
     "vol_fgts": 5084.32,
-    "vol_clt": 3007.36,
+    "vol_clt": 3173.7,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 8091.68
+    "vol_total": 8258.02
   },
   {
     "parceiro_id": "f5b4dd18-a29c-4449-bf5f-b389b5b6d685",
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 6688.07,
-    "vol_clt": 9654.09,
+    "vol_clt": 0,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 16342.16
+    "vol_total": 6688.07
   },
   {
     "parceiro_id": "f5b4dd18-a29c-4449-bf5f-b389b5b6d685",
@@ -12751,30 +12751,30 @@ export const initialProducao: ProducaoMensal[] = [
     "ano": 2026,
     "mes": 5,
     "vol_fgts": 2250.23,
-    "vol_clt": 3084.55,
+    "vol_clt": 0,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 5334.780000000001
+    "vol_total": 2250.23
   },
   {
     "parceiro_id": "3daf1858-05e3-4836-911f-a5b846a38418",
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 4661.99,
-    "vol_clt": 1978.45,
+    "vol_clt": 0,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 6640.44
+    "vol_total": 4661.99
   },
   {
     "parceiro_id": "3daf1858-05e3-4836-911f-a5b846a38418",
     "ano": 2026,
     "mes": 4,
     "vol_fgts": 6774.43,
-    "vol_clt": 3700,
+    "vol_clt": 0,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 10474.43
+    "vol_total": 6774.43
   },
   {
     "parceiro_id": "3daf1858-05e3-4836-911f-a5b846a38418",
@@ -12791,20 +12791,20 @@ export const initialProducao: ProducaoMensal[] = [
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 4455.57,
-    "vol_clt": 1485.83,
+    "vol_clt": 3378.97,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 5941.4
+    "vol_total": 7834.539999999999
   },
   {
     "parceiro_id": "a398227d-399d-43f4-9969-b429d55c4f7b",
     "ano": 2026,
     "mes": 4,
     "vol_fgts": 3338.13,
-    "vol_clt": 8099.94,
+    "vol_clt": 0,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 11438.07
+    "vol_total": 3338.13
   },
   {
     "parceiro_id": "a398227d-399d-43f4-9969-b429d55c4f7b",
@@ -12821,80 +12821,80 @@ export const initialProducao: ProducaoMensal[] = [
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 6404.38,
-    "vol_clt": 2482.84,
+    "vol_clt": 0,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 8887.220000000001
+    "vol_total": 6404.38
   },
   {
     "parceiro_id": "59341d8d-32aa-4bec-9dbe-40417af18ae2",
     "ano": 2026,
     "mes": 4,
     "vol_fgts": 2640.88,
-    "vol_clt": 5680.47,
+    "vol_clt": 0,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 8321.35
+    "vol_total": 2640.88
   },
   {
     "parceiro_id": "59341d8d-32aa-4bec-9dbe-40417af18ae2",
     "ano": 2026,
     "mes": 5,
     "vol_fgts": 1796.32,
-    "vol_clt": 3173.7,
+    "vol_clt": 0,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 4970.0199999999995
+    "vol_total": 1796.32
   },
   {
     "parceiro_id": "669c3969-19a9-4c7d-96e3-84f04f8126c5",
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 1848.79,
-    "vol_clt": 6374.16,
+    "vol_clt": 9343.16,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 8222.95
+    "vol_total": 11191.95
   },
   {
     "parceiro_id": "669c3969-19a9-4c7d-96e3-84f04f8126c5",
     "ano": 2026,
     "mes": 4,
     "vol_fgts": 5525.26,
-    "vol_clt": 0,
+    "vol_clt": 964.05,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 5525.26
+    "vol_total": 6489.31
   },
   {
     "parceiro_id": "669c3969-19a9-4c7d-96e3-84f04f8126c5",
     "ano": 2026,
     "mes": 5,
     "vol_fgts": 3154.01,
-    "vol_clt": 4300,
+    "vol_clt": 0,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 7454.01
+    "vol_total": 3154.01
   },
   {
     "parceiro_id": "fb3679e6-3583-4861-bc4f-8352b3bd6dac",
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 5441.45,
-    "vol_clt": 9343.16,
+    "vol_clt": 0,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 14784.61
+    "vol_total": 5441.45
   },
   {
     "parceiro_id": "fb3679e6-3583-4861-bc4f-8352b3bd6dac",
     "ano": 2026,
     "mes": 4,
     "vol_fgts": 4941.98,
-    "vol_clt": 964.05,
+    "vol_clt": 0,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 5906.03
+    "vol_total": 4941.98
   },
   {
     "parceiro_id": "fb3679e6-3583-4861-bc4f-8352b3bd6dac",
@@ -12911,10 +12911,10 @@ export const initialProducao: ProducaoMensal[] = [
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 3850.05,
-    "vol_clt": 0,
+    "vol_clt": 1472.36,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 3850.05
+    "vol_total": 5322.41
   },
   {
     "parceiro_id": "82d30eff-6bf1-4177-9287-21cd4ea67a25",
@@ -12931,30 +12931,30 @@ export const initialProducao: ProducaoMensal[] = [
     "ano": 2026,
     "mes": 5,
     "vol_fgts": 2490.81,
-    "vol_clt": 2436.13,
+    "vol_clt": 0,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 4926.9400000000005
+    "vol_total": 2490.81
   },
   {
     "parceiro_id": "92c11e87-6337-47c7-a750-b0bd74105ce7",
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 7351.06,
-    "vol_clt": 2407.5,
+    "vol_clt": 0,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 9758.560000000001
+    "vol_total": 7351.06
   },
   {
     "parceiro_id": "92c11e87-6337-47c7-a750-b0bd74105ce7",
     "ano": 2026,
     "mes": 4,
     "vol_fgts": 1354.63,
-    "vol_clt": 7001.68,
+    "vol_clt": 0,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 8356.310000000001
+    "vol_total": 1354.63
   },
   {
     "parceiro_id": "92c11e87-6337-47c7-a750-b0bd74105ce7",
@@ -12971,20 +12971,20 @@ export const initialProducao: ProducaoMensal[] = [
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 6160.39,
-    "vol_clt": 5489.01,
+    "vol_clt": 0,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 11649.400000000001
+    "vol_total": 6160.39
   },
   {
     "parceiro_id": "6d28cfd0-4cff-490c-9229-baa3647a3139",
     "ano": 2026,
     "mes": 4,
     "vol_fgts": 1722.23,
-    "vol_clt": 3607.31,
+    "vol_clt": 0,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 5329.54
+    "vol_total": 1722.23
   },
   {
     "parceiro_id": "6d28cfd0-4cff-490c-9229-baa3647a3139",
@@ -13001,40 +13001,40 @@ export const initialProducao: ProducaoMensal[] = [
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 3351.89,
-    "vol_clt": 0,
+    "vol_clt": 3150.87,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 3351.89
+    "vol_total": 6502.76
   },
   {
     "parceiro_id": "79bdcf77-7a88-47d2-877f-aea41c8177e9",
     "ano": 2026,
     "mes": 4,
     "vol_fgts": 3463.08,
-    "vol_clt": 0,
+    "vol_clt": 2765.31,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 3463.08
+    "vol_total": 6228.389999999999
   },
   {
     "parceiro_id": "79bdcf77-7a88-47d2-877f-aea41c8177e9",
     "ano": 2026,
     "mes": 5,
     "vol_fgts": 1033.49,
-    "vol_clt": 8540.14,
+    "vol_clt": 0,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 9573.63
+    "vol_total": 1033.49
   },
   {
     "parceiro_id": "8a588971-efb8-48e2-8e85-c721a354f4f2",
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 3885.73,
-    "vol_clt": 4723.35,
+    "vol_clt": 0,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 8609.08
+    "vol_total": 3885.73
   },
   {
     "parceiro_id": "8a588971-efb8-48e2-8e85-c721a354f4f2",
@@ -13051,40 +13051,40 @@ export const initialProducao: ProducaoMensal[] = [
     "ano": 2026,
     "mes": 5,
     "vol_fgts": 3030.25,
-    "vol_clt": 2820.07,
+    "vol_clt": 0,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 5850.32
+    "vol_total": 3030.25
   },
   {
     "parceiro_id": "4a8494c2-9ab0-4362-ae28-d634779d9aeb",
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 4400.04,
-    "vol_clt": 0,
+    "vol_clt": 12326.84,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 4400.04
+    "vol_total": 16726.88
   },
   {
     "parceiro_id": "4a8494c2-9ab0-4362-ae28-d634779d9aeb",
     "ano": 2026,
     "mes": 4,
     "vol_fgts": 3526.11,
-    "vol_clt": 8490.89,
+    "vol_clt": 6994.53,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 12017
+    "vol_total": 10520.64
   },
   {
     "parceiro_id": "4a8494c2-9ab0-4362-ae28-d634779d9aeb",
     "ano": 2026,
     "mes": 5,
     "vol_fgts": 1165.49,
-    "vol_clt": 0,
+    "vol_clt": 1340.6,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 1165.49
+    "vol_total": 2506.09
   },
   {
     "parceiro_id": "p_new_s4w61oxbf",
@@ -13101,10 +13101,10 @@ export const initialProducao: ProducaoMensal[] = [
     "ano": 2026,
     "mes": 4,
     "vol_fgts": 452.04,
-    "vol_clt": 2311.23,
+    "vol_clt": 0,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 2763.27
+    "vol_total": 452.04
   },
   {
     "parceiro_id": "p_new_s4w61oxbf",
@@ -13121,50 +13121,50 @@ export const initialProducao: ProducaoMensal[] = [
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 4971.88,
-    "vol_clt": 3896.85,
+    "vol_clt": 0,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 8868.73
+    "vol_total": 4971.88
   },
   {
     "parceiro_id": "83b2011c-e67d-413b-ad3a-407a8a386907",
     "ano": 2026,
     "mes": 4,
     "vol_fgts": 1868.29,
-    "vol_clt": 1164.01,
+    "vol_clt": 0,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 3032.3
+    "vol_total": 1868.29
   },
   {
     "parceiro_id": "83b2011c-e67d-413b-ad3a-407a8a386907",
     "ano": 2026,
     "mes": 5,
     "vol_fgts": 2395.89,
-    "vol_clt": 3089.36,
+    "vol_clt": 0,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 5485.25
+    "vol_total": 2395.89
   },
   {
     "parceiro_id": "bfd29f2c-13f5-4a57-98b6-547132fe170d",
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 7427.17,
-    "vol_clt": 4473.14,
+    "vol_clt": 1978.45,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 11900.310000000001
+    "vol_total": 9405.62
   },
   {
     "parceiro_id": "bfd29f2c-13f5-4a57-98b6-547132fe170d",
     "ano": 2026,
     "mes": 4,
     "vol_fgts": 1756.88,
-    "vol_clt": 3610.24,
+    "vol_clt": 3700,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 5367.12
+    "vol_total": 5456.88
   },
   {
     "parceiro_id": "bfd29f2c-13f5-4a57-98b6-547132fe170d",
@@ -13181,30 +13181,30 @@ export const initialProducao: ProducaoMensal[] = [
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 2438.27,
-    "vol_clt": 3040.72,
+    "vol_clt": 7223.11,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 5478.99
+    "vol_total": 9661.38
   },
   {
     "parceiro_id": "a016538c-e803-4e07-b067-98d2b34bb9b7",
     "ano": 2026,
     "mes": 4,
     "vol_fgts": 1020.38,
-    "vol_clt": 0,
+    "vol_clt": 25586.94,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 1020.38
+    "vol_total": 26607.32
   },
   {
     "parceiro_id": "a016538c-e803-4e07-b067-98d2b34bb9b7",
     "ano": 2026,
     "mes": 5,
     "vol_fgts": 4799.32,
-    "vol_clt": 5000,
+    "vol_clt": 28528.23,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 9799.32
+    "vol_total": 33327.55
   },
   {
     "parceiro_id": "0c2caba7-56db-4b19-a645-362f5dc3eb9b",
@@ -13231,10 +13231,10 @@ export const initialProducao: ProducaoMensal[] = [
     "ano": 2026,
     "mes": 5,
     "vol_fgts": 1458.01,
-    "vol_clt": 5595.96,
+    "vol_clt": 0,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 7053.97
+    "vol_total": 1458.01
   },
   {
     "parceiro_id": "b8c8a8e4-75d5-4983-ba3f-de9560cffe3e",
@@ -13261,40 +13261,40 @@ export const initialProducao: ProducaoMensal[] = [
     "ano": 2026,
     "mes": 5,
     "vol_fgts": 1076.78,
-    "vol_clt": 6260.65,
+    "vol_clt": 0,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 7337.429999999999
+    "vol_total": 1076.78
   },
   {
     "parceiro_id": "p_new_14i28zq01",
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 7585.52,
-    "vol_clt": 0,
+    "vol_clt": 135103.24,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 7585.52
+    "vol_total": 142688.75999999998
   },
   {
     "parceiro_id": "p_new_14i28zq01",
     "ano": 2026,
     "mes": 4,
     "vol_fgts": 0,
-    "vol_clt": 0,
+    "vol_clt": 53908.54,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 0
+    "vol_total": 53908.54
   },
   {
     "parceiro_id": "p_new_14i28zq01",
     "ano": 2026,
     "mes": 5,
     "vol_fgts": 0,
-    "vol_clt": 0,
+    "vol_clt": 58701.8,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 0
+    "vol_total": 58701.8
   },
   {
     "parceiro_id": "7e3b851a-3ab7-4e12-ba4a-d3b5c6271eba",
@@ -13331,20 +13331,20 @@ export const initialProducao: ProducaoMensal[] = [
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 3827.62,
-    "vol_clt": 6547.07,
+    "vol_clt": 0,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 10374.689999999999
+    "vol_total": 3827.62
   },
   {
     "parceiro_id": "0ea1c4dc-f579-4918-9af7-429518d90eeb",
     "ano": 2026,
     "mes": 4,
     "vol_fgts": 1410.29,
-    "vol_clt": 0,
+    "vol_clt": 2311.23,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 1410.29
+    "vol_total": 3721.52
   },
   {
     "parceiro_id": "0ea1c4dc-f579-4918-9af7-429518d90eeb",
@@ -13381,30 +13381,30 @@ export const initialProducao: ProducaoMensal[] = [
     "ano": 2026,
     "mes": 5,
     "vol_fgts": 2406.34,
-    "vol_clt": 6035.77,
+    "vol_clt": 0,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 8442.11
+    "vol_total": 2406.34
   },
   {
     "parceiro_id": "659b90d1-3f42-47e2-b9ff-c5a90dc15b68",
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 2655.02,
-    "vol_clt": 3150.87,
+    "vol_clt": 0,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 5805.889999999999
+    "vol_total": 2655.02
   },
   {
     "parceiro_id": "659b90d1-3f42-47e2-b9ff-c5a90dc15b68",
     "ano": 2026,
     "mes": 4,
     "vol_fgts": 903.49,
-    "vol_clt": 2765.31,
+    "vol_clt": 0,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 3668.8
+    "vol_total": 903.49
   },
   {
     "parceiro_id": "659b90d1-3f42-47e2-b9ff-c5a90dc15b68",
@@ -13421,10 +13421,10 @@ export const initialProducao: ProducaoMensal[] = [
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 1363.84,
-    "vol_clt": 2621.92,
+    "vol_clt": 0,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 3985.76
+    "vol_total": 1363.84
   },
   {
     "parceiro_id": "c64c0462-e153-495a-bd70-0d466b27e008",
@@ -13461,30 +13461,30 @@ export const initialProducao: ProducaoMensal[] = [
     "ano": 2026,
     "mes": 4,
     "vol_fgts": 1446.4,
-    "vol_clt": 1500,
+    "vol_clt": 0,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 2946.4
+    "vol_total": 1446.4
   },
   {
     "parceiro_id": "2e0dd415-d883-4326-9614-572b7a762d53",
     "ano": 2026,
     "mes": 5,
     "vol_fgts": 221,
-    "vol_clt": 4233.84,
+    "vol_clt": 0,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 4454.84
+    "vol_total": 221
   },
   {
     "parceiro_id": "2f1fdf84-d843-497f-bcc5-7baa2cad71a6",
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 2794.09,
-    "vol_clt": 5292.87,
+    "vol_clt": 0,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 8086.96
+    "vol_total": 2794.09
   },
   {
     "parceiro_id": "2f1fdf84-d843-497f-bcc5-7baa2cad71a6",
@@ -13511,10 +13511,10 @@ export const initialProducao: ProducaoMensal[] = [
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 1176.21,
-    "vol_clt": 4961.14,
+    "vol_clt": 2549.74,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 6137.35
+    "vol_total": 3725.95
   },
   {
     "parceiro_id": "644a9334-7908-42ca-ae08-ba762a63713a",
@@ -13541,10 +13541,10 @@ export const initialProducao: ProducaoMensal[] = [
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 1082.94,
-    "vol_clt": 1472.36,
+    "vol_clt": 0,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 2555.3
+    "vol_total": 1082.94
   },
   {
     "parceiro_id": "5eb63722-7958-4200-843d-10f634b763ca",
@@ -13571,40 +13571,40 @@ export const initialProducao: ProducaoMensal[] = [
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 2178.97,
-    "vol_clt": 3378.97,
+    "vol_clt": 5000,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 5557.94
+    "vol_total": 7178.969999999999
   },
   {
     "parceiro_id": "8568992c-b7b0-40cb-b1e5-5be545dfee0d",
     "ano": 2026,
     "mes": 4,
     "vol_fgts": 390.94,
-    "vol_clt": 0,
+    "vol_clt": 4295.17,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 390.94
+    "vol_total": 4686.11
   },
   {
     "parceiro_id": "8568992c-b7b0-40cb-b1e5-5be545dfee0d",
     "ano": 2026,
     "mes": 5,
     "vol_fgts": 1142.67,
-    "vol_clt": 0,
+    "vol_clt": 4243.96,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 1142.67
+    "vol_total": 5386.63
   },
   {
     "parceiro_id": "82cdf3ba-7611-4af4-85da-a3d49ef72ae8",
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 2891.59,
-    "vol_clt": 3260,
+    "vol_clt": 0,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 6151.59
+    "vol_total": 2891.59
   },
   {
     "parceiro_id": "82cdf3ba-7611-4af4-85da-a3d49ef72ae8",
@@ -13631,20 +13631,20 @@ export const initialProducao: ProducaoMensal[] = [
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 605.86,
-    "vol_clt": 0,
+    "vol_clt": 1485.83,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 605.86
+    "vol_total": 2091.69
   },
   {
     "parceiro_id": "0ddabc39-fdc7-42d3-9a55-5765271fecdd",
     "ano": 2026,
     "mes": 4,
     "vol_fgts": 1796.17,
-    "vol_clt": 0,
+    "vol_clt": 8099.94,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 1796.17
+    "vol_total": 9896.11
   },
   {
     "parceiro_id": "0ddabc39-fdc7-42d3-9a55-5765271fecdd",
@@ -13681,10 +13681,10 @@ export const initialProducao: ProducaoMensal[] = [
     "ano": 2026,
     "mes": 5,
     "vol_fgts": 1188.5,
-    "vol_clt": 2945,
+    "vol_clt": 0,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 4133.5
+    "vol_total": 1188.5
   },
   {
     "parceiro_id": "24fa7e0d-a542-431a-9d16-41c77a87041c",
@@ -13701,10 +13701,10 @@ export const initialProducao: ProducaoMensal[] = [
     "ano": 2026,
     "mes": 4,
     "vol_fgts": 2507.89,
-    "vol_clt": 2682.71,
+    "vol_clt": 0,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 5190.6
+    "vol_total": 2507.89
   },
   {
     "parceiro_id": "24fa7e0d-a542-431a-9d16-41c77a87041c",
@@ -13721,10 +13721,10 @@ export const initialProducao: ProducaoMensal[] = [
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 1768.2,
-    "vol_clt": 2549.74,
+    "vol_clt": 1232.55,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 4317.94
+    "vol_total": 3000.75
   },
   {
     "parceiro_id": "ecd2be52-313e-466c-b8f6-f9bd11c8e903",
@@ -13751,60 +13751,60 @@ export const initialProducao: ProducaoMensal[] = [
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 3244.56,
-    "vol_clt": 0,
+    "vol_clt": 18105.32,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 3244.56
+    "vol_total": 21349.88
   },
   {
     "parceiro_id": "f6c0cacc-38eb-4a53-abcb-5777c9ebaa6d",
     "ano": 2026,
     "mes": 4,
     "vol_fgts": 251.17,
-    "vol_clt": 0,
+    "vol_clt": 7112.24,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 251.17
+    "vol_total": 7363.41
   },
   {
     "parceiro_id": "f6c0cacc-38eb-4a53-abcb-5777c9ebaa6d",
     "ano": 2026,
     "mes": 5,
     "vol_fgts": 421.1,
-    "vol_clt": 0,
+    "vol_clt": 1973.02,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 421.1
+    "vol_total": 2394.12
   },
   {
     "parceiro_id": "683f2acc-ff05-43ce-84ff-747026ad4136",
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 2079.39,
-    "vol_clt": 0,
+    "vol_clt": 3040.72,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 2079.39
+    "vol_total": 5120.11
   },
   {
     "parceiro_id": "683f2acc-ff05-43ce-84ff-747026ad4136",
     "ano": 2026,
     "mes": 4,
     "vol_fgts": 1399.59,
-    "vol_clt": 1834.63,
+    "vol_clt": 0,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 3234.2200000000003
+    "vol_total": 1399.59
   },
   {
     "parceiro_id": "683f2acc-ff05-43ce-84ff-747026ad4136",
     "ano": 2026,
     "mes": 5,
     "vol_fgts": 451.3,
-    "vol_clt": 0,
+    "vol_clt": 5000,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 451.3
+    "vol_total": 5451.3
   },
   {
     "parceiro_id": "9d9baec6-e552-4aa2-ad0f-90e47b580acf",
@@ -13821,30 +13821,30 @@ export const initialProducao: ProducaoMensal[] = [
     "ano": 2026,
     "mes": 4,
     "vol_fgts": 943.14,
-    "vol_clt": 1748.77,
+    "vol_clt": 0,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 2691.91
+    "vol_total": 943.14
   },
   {
     "parceiro_id": "9d9baec6-e552-4aa2-ad0f-90e47b580acf",
     "ano": 2026,
     "mes": 5,
     "vol_fgts": 707.94,
-    "vol_clt": 0,
+    "vol_clt": 8540.14,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 707.94
+    "vol_total": 9248.08
   },
   {
     "parceiro_id": "f118f95e-1ad3-4c7b-843c-3886444af5d5",
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 3394.82,
-    "vol_clt": 1656.75,
+    "vol_clt": 0,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 5051.57
+    "vol_total": 3394.82
   },
   {
     "parceiro_id": "f118f95e-1ad3-4c7b-843c-3886444af5d5",
@@ -13901,10 +13901,10 @@ export const initialProducao: ProducaoMensal[] = [
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 216.37,
-    "vol_clt": 1232.55,
+    "vol_clt": 0,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 1448.92
+    "vol_total": 216.37
   },
   {
     "parceiro_id": "a26bc8eb-e0ee-4fc9-8a03-7526f935e8a5",
@@ -13931,30 +13931,30 @@ export const initialProducao: ProducaoMensal[] = [
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 615.11,
-    "vol_clt": 0,
+    "vol_clt": 8983.16,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 615.11
+    "vol_total": 9598.27
   },
   {
     "parceiro_id": "1083d2ea-fc84-4b30-8c3a-e04cbba9bcf5",
     "ano": 2026,
     "mes": 4,
     "vol_fgts": 525.67,
-    "vol_clt": 0,
+    "vol_clt": 15910.59,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 525.67
+    "vol_total": 16436.26
   },
   {
     "parceiro_id": "1083d2ea-fc84-4b30-8c3a-e04cbba9bcf5",
     "ano": 2026,
     "mes": 5,
     "vol_fgts": 1229.89,
-    "vol_clt": 1177.62,
+    "vol_clt": 0,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 2407.51
+    "vol_total": 1229.89
   },
   {
     "parceiro_id": "d091014f-82bc-4aca-b785-50d8e4c0cac7",
@@ -13991,10 +13991,10 @@ export const initialProducao: ProducaoMensal[] = [
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 1997.66,
-    "vol_clt": 0,
+    "vol_clt": 3260,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 1997.66
+    "vol_total": 5257.66
   },
   {
     "parceiro_id": "95275d3e-0f7a-4e70-95d8-381ea7d3d23e",
@@ -14021,20 +14021,20 @@ export const initialProducao: ProducaoMensal[] = [
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 793.97,
-    "vol_clt": 524.05,
+    "vol_clt": 15684.03,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 1318.02
+    "vol_total": 16478
   },
   {
     "parceiro_id": "7658d123-c25c-4290-b690-b93f7b02fad5",
     "ano": 2026,
     "mes": 4,
     "vol_fgts": 1205.02,
-    "vol_clt": 0,
+    "vol_clt": 3066.5,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 1205.02
+    "vol_total": 4271.52
   },
   {
     "parceiro_id": "7658d123-c25c-4290-b690-b93f7b02fad5",
@@ -14171,10 +14171,10 @@ export const initialProducao: ProducaoMensal[] = [
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 0,
-    "vol_clt": 0,
+    "vol_clt": 6374.16,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 0
+    "vol_total": 6374.16
   },
   {
     "parceiro_id": "79d837c9-49a5-47c3-96ed-c8298acc9333",
@@ -14191,20 +14191,20 @@ export const initialProducao: ProducaoMensal[] = [
     "ano": 2026,
     "mes": 5,
     "vol_fgts": 0,
-    "vol_clt": 0,
+    "vol_clt": 4300,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 0
+    "vol_total": 4300
   },
   {
     "parceiro_id": "c2a24619-42e2-494d-9782-8f9a8563ff89",
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 0,
-    "vol_clt": 0,
+    "vol_clt": 2621.92,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 0
+    "vol_total": 2621.92
   },
   {
     "parceiro_id": "c2a24619-42e2-494d-9782-8f9a8563ff89",
@@ -14231,10 +14231,10 @@ export const initialProducao: ProducaoMensal[] = [
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 306.25,
-    "vol_clt": 0,
+    "vol_clt": 1656.75,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 306.25
+    "vol_total": 1963
   },
   {
     "parceiro_id": "7e74566a-4870-44f4-a436-3045f62c5f79",
@@ -14361,10 +14361,10 @@ export const initialProducao: ProducaoMensal[] = [
     "ano": 2026,
     "mes": 4,
     "vol_fgts": 628.41,
-    "vol_clt": 0,
+    "vol_clt": 2682.71,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 628.41
+    "vol_total": 3311.12
   },
   {
     "parceiro_id": "04318b83-2e7c-4529-b753-5d0d3f19461a",
@@ -14491,10 +14491,10 @@ export const initialProducao: ProducaoMensal[] = [
     "ano": 2026,
     "mes": 5,
     "vol_fgts": 51.4,
-    "vol_clt": 0,
+    "vol_clt": 1177.62,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 51.4
+    "vol_total": 1229.02
   },
   {
     "parceiro_id": "6457ce81-f17d-4690-b387-0311e4eb2563",
@@ -14561,10 +14561,10 @@ export const initialProducao: ProducaoMensal[] = [
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 53.33,
-    "vol_clt": 0,
+    "vol_clt": 6615.12,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 53.33
+    "vol_total": 6668.45
   },
   {
     "parceiro_id": "bd947135-3db5-4853-aaa3-57ea91f8bb62",
@@ -14581,10 +14581,10 @@ export const initialProducao: ProducaoMensal[] = [
     "ano": 2026,
     "mes": 5,
     "vol_fgts": 0,
-    "vol_clt": 0,
+    "vol_clt": 7603.85,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 0
+    "vol_total": 7603.85
   },
   {
     "parceiro_id": "61831ee2-9948-46da-9468-9e40612169d1",
@@ -14651,20 +14651,20 @@ export const initialProducao: ProducaoMensal[] = [
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 515.39,
-    "vol_clt": 0,
+    "vol_clt": 86349.79,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 515.39
+    "vol_total": 86865.18
   },
   {
     "parceiro_id": "7bbe12bc-e1a4-4cdb-af41-6befbd737556",
     "ano": 2026,
     "mes": 4,
     "vol_fgts": 66,
-    "vol_clt": 0,
+    "vol_clt": 26911.6,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 66
+    "vol_total": 26977.6
   },
   {
     "parceiro_id": "7bbe12bc-e1a4-4cdb-af41-6befbd737556",
@@ -14681,10 +14681,10 @@ export const initialProducao: ProducaoMensal[] = [
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 618.47,
-    "vol_clt": 0,
+    "vol_clt": 5292.87,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 618.47
+    "vol_total": 5911.34
   },
   {
     "parceiro_id": "p_new_9tustyh53",
@@ -14831,20 +14831,20 @@ export const initialProducao: ProducaoMensal[] = [
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 315.35,
-    "vol_clt": 0,
+    "vol_clt": 5489.01,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 315.35
+    "vol_total": 5804.360000000001
   },
   {
     "parceiro_id": "efc9b240-7517-49a3-a5af-f07223008acd",
     "ano": 2026,
     "mes": 4,
     "vol_fgts": 0,
-    "vol_clt": 0,
+    "vol_clt": 3607.31,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 0
+    "vol_total": 3607.31
   },
   {
     "parceiro_id": "efc9b240-7517-49a3-a5af-f07223008acd",
@@ -14951,10 +14951,10 @@ export const initialProducao: ProducaoMensal[] = [
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 0,
-    "vol_clt": 0,
+    "vol_clt": 2441.16,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 0
+    "vol_total": 2441.16
   },
   {
     "parceiro_id": "p_new_7exfahza2",
@@ -15001,10 +15001,10 @@ export const initialProducao: ProducaoMensal[] = [
     "ano": 2026,
     "mes": 5,
     "vol_fgts": 32.44,
-    "vol_clt": 0,
+    "vol_clt": 4976.97,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 32.44
+    "vol_total": 5009.41
   },
   {
     "parceiro_id": "p_new_1zfinvjav",
@@ -18221,10 +18221,10 @@ export const initialProducao: ProducaoMensal[] = [
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 0,
-    "vol_clt": 0,
+    "vol_clt": 6547.07,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 0
+    "vol_total": 6547.07
   },
   {
     "parceiro_id": "e6594d80-b6df-435e-95f5-94cac34c3052",
@@ -19621,10 +19621,10 @@ export const initialProducao: ProducaoMensal[] = [
     "ano": 2026,
     "mes": 5,
     "vol_fgts": 0,
-    "vol_clt": 0,
+    "vol_clt": 6260.65,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 0
+    "vol_total": 6260.65
   },
   {
     "parceiro_id": "p_new_1gq9qrlu7",
@@ -22481,20 +22481,20 @@ export const initialProducao: ProducaoMensal[] = [
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 0,
-    "vol_clt": 0,
+    "vol_clt": 15249.63,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 0
+    "vol_total": 15249.63
   },
   {
     "parceiro_id": "a5e5ee26-4300-4ea8-aa13-339f7d8a4712",
     "ano": 2026,
     "mes": 4,
     "vol_fgts": 0,
-    "vol_clt": 0,
+    "vol_clt": 5050.19,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 0
+    "vol_total": 5050.19
   },
   {
     "parceiro_id": "a5e5ee26-4300-4ea8-aa13-339f7d8a4712",
@@ -26161,10 +26161,10 @@ export const initialProducao: ProducaoMensal[] = [
     "ano": 2026,
     "mes": 5,
     "vol_fgts": 0,
-    "vol_clt": 0,
+    "vol_clt": 6035.77,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 0
+    "vol_total": 6035.77
   },
   {
     "parceiro_id": "p_new_d3z9w7o5j",
@@ -26491,10 +26491,10 @@ export const initialProducao: ProducaoMensal[] = [
     "ano": 2026,
     "mes": 5,
     "vol_fgts": 0,
-    "vol_clt": 0,
+    "vol_clt": 5595.96,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 0
+    "vol_total": 5595.96
   },
   {
     "parceiro_id": "p_new_c5enggtt2",
@@ -26831,20 +26831,20 @@ export const initialProducao: ProducaoMensal[] = [
     "ano": 2026,
     "mes": 3,
     "vol_fgts": 0,
-    "vol_clt": 0,
+    "vol_clt": 2407.5,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 0
+    "vol_total": 2407.5
   },
   {
     "parceiro_id": "5090c0f1-99c6-49df-9836-5c8c19771e91",
     "ano": 2026,
     "mes": 4,
     "vol_fgts": 0,
-    "vol_clt": 0,
+    "vol_clt": 7001.68,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 0
+    "vol_total": 7001.68
   },
   {
     "parceiro_id": "5090c0f1-99c6-49df-9836-5c8c19771e91",
@@ -27181,10 +27181,10 @@ export const initialProducao: ProducaoMensal[] = [
     "ano": 2026,
     "mes": 5,
     "vol_fgts": 0,
-    "vol_clt": 0,
+    "vol_clt": 2436.13,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 0
+    "vol_total": 2436.13
   },
   {
     "parceiro_id": "b91f537e-8c33-4683-b9f9-64862ad5fa78",
@@ -27571,10 +27571,10 @@ export const initialProducao: ProducaoMensal[] = [
     "ano": 2026,
     "mes": 5,
     "vol_fgts": 0,
-    "vol_clt": 0,
+    "vol_clt": 2945,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 0
+    "vol_total": 2945
   },
   {
     "parceiro_id": "p_new_nue1jjx0g",
@@ -27741,10 +27741,10 @@ export const initialProducao: ProducaoMensal[] = [
     "ano": 2026,
     "mes": 4,
     "vol_fgts": 0,
-    "vol_clt": 0,
+    "vol_clt": 17246.64,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 0
+    "vol_total": 17246.64
   },
   {
     "parceiro_id": "bd0b742d-754d-4f39-bd35-b825826854fb",
@@ -27801,10 +27801,10 @@ export const initialProducao: ProducaoMensal[] = [
     "ano": 2026,
     "mes": 4,
     "vol_fgts": 0,
-    "vol_clt": 0,
+    "vol_clt": 1834.63,
     "vol_cgv": 0,
     "vol_pix": 0,
-    "vol_total": 0
+    "vol_total": 1834.63
   },
   {
     "parceiro_id": "808849f0-1588-4ea5-b23a-544e175bba1a",
