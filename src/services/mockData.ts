@@ -18,8 +18,8 @@ export const initialParceiros: Parceiro[] = [
     "vol_total_mensal": 0,
     "vol_prata_mensal": 669883.61,
     "status": "Ativo",
-    "score_comercial": 55,
-    "classificacao": "Crescimento"
+    "score_comercial": 35,
+    "classificacao": "Desenvolvimento"
   },
   {
     "id": "a106d268-bcfd-47e1-92f0-692f2ae6e259",
@@ -37,8 +37,8 @@ export const initialParceiros: Parceiro[] = [
     "vol_total_mensal": 0,
     "vol_prata_mensal": 1362962.3599999999,
     "status": "Ativo",
-    "score_comercial": 52,
-    "classificacao": "Crescimento"
+    "score_comercial": 32,
+    "classificacao": "Desenvolvimento"
   },
   {
     "id": "96fea052-30fb-4edd-9466-fb3a7098c5e6",
@@ -57,8 +57,8 @@ export const initialParceiros: Parceiro[] = [
     "vol_total_mensal": 0,
     "vol_prata_mensal": 81630.23,
     "status": "Ativo",
-    "score_comercial": 45,
-    "classificacao": "Crescimento"
+    "score_comercial": 35,
+    "classificacao": "Desenvolvimento"
   },
   {
     "id": "3ede5148-a42b-4959-b13d-1eabd3dc1f49",
@@ -76,8 +76,8 @@ export const initialParceiros: Parceiro[] = [
     "vol_total_mensal": 0,
     "vol_prata_mensal": 324472.99,
     "status": "Ativo",
-    "score_comercial": 52,
-    "classificacao": "Crescimento"
+    "score_comercial": 32,
+    "classificacao": "Desenvolvimento"
   },
   {
     "id": "f64c9c42-710c-43ee-81aa-b804328c44ff",
@@ -95,7 +95,7 @@ export const initialParceiros: Parceiro[] = [
     "vol_total_mensal": 0,
     "vol_prata_mensal": 63263.869999999995,
     "status": "Ativo",
-    "score_comercial": 37,
+    "score_comercial": 32,
     "classificacao": "Desenvolvimento"
   },
   {
@@ -114,7 +114,7 @@ export const initialParceiros: Parceiro[] = [
     "vol_total_mensal": 0,
     "vol_prata_mensal": 39066.759999999995,
     "status": "Ativo",
-    "score_comercial": 37,
+    "score_comercial": 32,
     "classificacao": "Desenvolvimento"
   },
   {
@@ -190,7 +190,7 @@ export const initialParceiros: Parceiro[] = [
     "vol_total_mensal": 0,
     "vol_prata_mensal": 40555.76,
     "status": "Ativo",
-    "score_comercial": 37,
+    "score_comercial": 32,
     "classificacao": "Desenvolvimento"
   },
   {
@@ -855,7 +855,7 @@ export const initialParceiros: Parceiro[] = [
     "vol_total_mensal": 0,
     "vol_prata_mensal": 33327.55,
     "status": "Ativo",
-    "score_comercial": 37,
+    "score_comercial": 32,
     "classificacao": "Desenvolvimento"
   },
   {
@@ -911,7 +911,7 @@ export const initialParceiros: Parceiro[] = [
     "vol_total_mensal": 0,
     "vol_prata_mensal": 58701.8,
     "status": "Reativação",
-    "score_comercial": 33,
+    "score_comercial": 28,
     "classificacao": "Desenvolvimento"
   },
   {
