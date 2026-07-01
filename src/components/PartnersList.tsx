@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { dataService } from '../services/dataService';
+import { dataService, getDefaultPeriod, getPeriodOptions } from '../services/dataService';
 import { Parceiro, ProducaoMensal, CriteriosConfig } from '../types';
 import { Search, Plus, Edit2, Trash2, FileSpreadsheet } from 'lucide-react';
 import PartnerFormModal from './PartnerFormModal';
@@ -15,7 +15,7 @@ export default function PartnersList({ onSelectPartner }: PartnersListProps) {
   const [parceiros, setParceiros] = useState<Parceiro[]>([]);
   const [allProducoes, setAllProducoes] = useState<ProducaoMensal[]>([]);
   const [criterios, setCriterios] = useState<CriteriosConfig | null>(null);
-  const [selectedPeriod, setSelectedPeriod] = useState<string>('maio_2026');
+  const [selectedPeriod, setSelectedPeriod] = useState<string>(getDefaultPeriod());
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
@@ -188,14 +188,9 @@ export default function PartnersList({ onSelectPartner }: PartnersListProps) {
               className="form-input"
               style={{ fontSize: '0.85rem', padding: '0.4rem 2rem 0.4rem 0.75rem', width: 'auto', margin: 0, height: '36px', borderRadius: 'var(--radius-sm)' }}
             >
-              <option value="junho_2026">Junho/2026 (Mês Atual)</option>
-              <option value="maio_2026">Maio/2026</option>
-              <option value="abril_2026">Abril/2026</option>
-              <option value="marco_2026">Março/2026</option>
-              <option value="fevereiro_2026">Fevereiro/2026</option>
-              <option value="janeiro_2026">Janeiro/2026</option>
-              <option value="ultimos_3_meses">Últimos 3 meses (Média)</option>
-              <option value="ultimos_6_meses">Últimos 6 meses (Média)</option>
+              {getPeriodOptions().map(opt => (
+                <option key={opt.value} value={opt.value}>{opt.label}</option>
+              ))}
             </select>
           </div>
 

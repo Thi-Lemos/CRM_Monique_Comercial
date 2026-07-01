@@ -1174,7 +1174,7 @@ export const dataService = {
       antAno -= 1;
     }
 
-    const periodStrMesAnterior = `${antMes === 1 ? 'janeiro' : antMes === 2 ? 'fevereiro' : antMes === 3 ? 'marco' : antMes === 4 ? 'abril' : antMes === 5 ? 'maio' : 'junho'}_${antAno}`;
+    const periodStrMesAnterior = `${antAno}-${antMes}`;
     const parceirosNoMesAnterior = this.getParceirosComStatusNoPeriodo(parceiros, allProducoes, periodStrMesAnterior, limitesConfig);
 
     // Filtrar parceiros que estavam no status 'Reativação' no mês anterior
@@ -1203,51 +1203,100 @@ export const dataService = {
   }
 };
 
+// --- Sistema de Períodos Dinâmico (baseado na data real do sistema) ---
+// Chave de mês individual usa o formato "AAAA-M" (ex: "2026-7"), gerado e
+// interpretado dinamicamente. Não há mais listas fixas de meses/anos: a cada
+// virada de mês, o "mês atual" e as opções do seletor se atualizam sozinhos.
+
+const NOMES_MES_COMPLETO = [
+  'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+  'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+];
+
+const NOMES_MES_ABREV = [
+  'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun',
+  'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'
+];
+
+// Referência de "hoje" segundo o relógio do sistema. Isolado em uma função
+// própria para que todo o resto do módulo dependa de uma única fonte de verdade.
+export const getCurrentPeriodRef = () => {
+  const now = new Date();
+  return { ano: now.getFullYear(), mes: now.getMonth() + 1 };
+};
+
+// Desloca um mês/ano em `delta` meses (aceita negativos). Ex: shiftMonth(2026, 1, -1) => {ano: 2025, mes: 12}
+export const shiftMonth = (ano: number, mes: number, delta: number) => {
+  const totalMeses = ano * 12 + (mes - 1) + delta;
+  const novoAno = Math.floor(totalMeses / 12);
+  const novoMes = ((totalMeses % 12) + 12) % 12 + 1;
+  return { ano: novoAno, mes: novoMes };
+};
+
+const buildMonthKey = (ano: number, mes: number) => `${ano}-${mes}`;
+
+export const getMonthShortLabel = (ano: number, mes: number) => `${NOMES_MES_ABREV[mes - 1]}/${ano}`;
+
+const parseMonthKey = (period: string): { ano: number; mes: number } | null => {
+  const match = /^(\d{4})-(\d{1,2})$/.exec(period);
+  if (!match) return null;
+  return { ano: parseInt(match[1], 10), mes: parseInt(match[2], 10) };
+};
+
 export const getMonthsForPeriod = (period: string) => {
-  switch (period) {
-    case 'junho_2026':
-      return [{ ano: 2026, mes: 6 }];
-    case 'maio_2026':
-      return [{ ano: 2026, mes: 5 }];
-    case 'abril_2026':
-      return [{ ano: 2026, mes: 4 }];
-    case 'marco_2026':
-      return [{ ano: 2026, mes: 3 }];
-    case 'fevereiro_2026':
-      return [{ ano: 2026, mes: 2 }];
-    case 'janeiro_2026':
-      return [{ ano: 2026, mes: 1 }];
-    case 'ultimos_3_meses':
-      return [
-        { ano: 2026, mes: 6 },
-        { ano: 2026, mes: 5 },
-        { ano: 2026, mes: 4 }
-      ];
-    case 'ultimos_6_meses':
-      return [
-        { ano: 2026, mes: 6 },
-        { ano: 2026, mes: 5 },
-        { ano: 2026, mes: 4 },
-        { ano: 2026, mes: 3 },
-        { ano: 2026, mes: 2 },
-        { ano: 2026, mes: 1 }
-      ];
-    default:
-      return [{ ano: 2026, mes: 6 }];
+  const atual = getCurrentPeriodRef();
+
+  if (period === 'ultimos_3_meses') {
+    return [0, -1, -2].map(d => shiftMonth(atual.ano, atual.mes, d));
   }
+  if (period === 'ultimos_6_meses') {
+    return [0, -1, -2, -3, -4, -5].map(d => shiftMonth(atual.ano, atual.mes, d));
+  }
+
+  const parsed = parseMonthKey(period);
+  if (parsed) return [parsed];
+
+  // Fallback: mês atual real
+  return [atual];
 };
 
 export const getPeriodLabel = (period: string) => {
-  switch (period) {
-    case 'junho_2026': return 'Jun/2026';
-    case 'maio_2026': return 'Mai/2026';
-    case 'abril_2026': return 'Abr/2026';
-    case 'marco_2026': return 'Mar/2026';
-    case 'fevereiro_2026': return 'Fev/2026';
-    case 'janeiro_2026': return 'Jan/2026';
-    case 'ultimos_3_meses': return 'Média - Safras Recentes';
-    case 'ultimos_6_meses': return 'Média - Semestre';
-    default: return 'Jun/2026';
+  if (period === 'ultimos_3_meses') return 'Média - Safras Recentes';
+  if (period === 'ultimos_6_meses') return 'Média - Semestre';
+
+  const parsed = parseMonthKey(period);
+  if (parsed) return getMonthShortLabel(parsed.ano, parsed.mes);
+
+  const atual = getCurrentPeriodRef();
+  return getMonthShortLabel(atual.ano, atual.mes);
+};
+
+// Período padrão ao carregar a tela: o mês imediatamente anterior ao atual
+// (mês fechado mais recente, com dados completos).
+export const getDefaultPeriod = () => {
+  const atual = getCurrentPeriodRef();
+  const anterior = shiftMonth(atual.ano, atual.mes, -1);
+  return buildMonthKey(anterior.ano, anterior.mes);
+};
+
+// Gera as opções do seletor de período dinamicamente: mês atual + 5 meses
+// anteriores, mais as médias agregadas. Nada fixo — recalculado a cada render.
+export const getPeriodOptions = () => {
+  const atual = getCurrentPeriodRef();
+  const opcoes: { value: string; label: string }[] = [];
+
+  for (let d = 0; d >= -5; d--) {
+    const { ano, mes } = shiftMonth(atual.ano, atual.mes, d);
+    const nomeCompleto = `${NOMES_MES_COMPLETO[mes - 1]}/${ano}`;
+    opcoes.push({
+      value: buildMonthKey(ano, mes),
+      label: d === 0 ? `${nomeCompleto} (Mês Atual)` : nomeCompleto
+    });
   }
+
+  opcoes.push({ value: 'ultimos_3_meses', label: 'Últimos 3 meses (Média)' });
+  opcoes.push({ value: 'ultimos_6_meses', label: 'Últimos 6 meses (Média)' });
+
+  return opcoes;
 };
 

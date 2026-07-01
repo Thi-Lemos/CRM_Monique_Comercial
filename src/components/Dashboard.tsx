@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { dataService, getMonthsForPeriod, getPeriodLabel } from '../services/dataService';
+import { dataService, getMonthsForPeriod, getPeriodLabel, getDefaultPeriod, getPeriodOptions, shiftMonth, getMonthShortLabel } from '../services/dataService';
 import { Parceiro, SemafaroStatus, CrmLog, ProducaoMensal, CriteriosConfig } from '../types';
 import ExcelImporter from './ExcelImporter';
 import { 
@@ -19,6 +19,17 @@ function gerarAlertasDinamicos(pList: Parceiro[], lList: CrmLog[], allProds: Pro
   const activeAlerts: any[] = [];
   const hoje = new Date();
 
+  // Mês de referência = mês fechado mais recente (mês imediatamente anterior ao
+  // atual, presumido completo). Mês de comparação = mês anterior a esse.
+  // Calculados dinamicamente a partir da data real do sistema — não ficam mais
+  // presos a um mês/ano fixo no código.
+  const anoAtualNum = hoje.getFullYear();
+  const mesAtualNum = hoje.getMonth() + 1;
+  const mesRef = shiftMonth(anoAtualNum, mesAtualNum, -1);
+  const mesComparacao = shiftMonth(anoAtualNum, mesAtualNum, -2);
+  const labelMesRef = getMonthShortLabel(mesRef.ano, mesRef.mes);
+  const labelMesComparacao = getMonthShortLabel(mesComparacao.ano, mesComparacao.mes);
+
   const prodsMap: { [key: string]: ProducaoMensal[] } = {};
   for (const prod of allProds) {
     if (!prodsMap[prod.parceiro_id]) {
@@ -27,11 +38,11 @@ function gerarAlertasDinamicos(pList: Parceiro[], lList: CrmLog[], allProds: Pro
     prodsMap[prod.parceiro_id].push(prod);
   }
 
-  // Faturamento consolidado total no mês anterior (Maio/2026) por estar completo
-  const faturamentoTotalPrataMai = pList.reduce((sum, p) => {
+  // Faturamento consolidado total no mês de referência (mês fechado mais recente)
+  const faturamentoTotalPrataRef = pList.reduce((sum, p) => {
     const prods = prodsMap[p.id] || [];
-    const prMai = prods.find(pr => pr.ano === 2026 && pr.mes === 5);
-    const vol = prMai ? (prMai.vol_fgts || 0) + (prMai.vol_clt || 0) + (prMai.vol_cgv || 0) + (prMai.vol_pix || 0) : 0;
+    const prRef = prods.find(pr => pr.ano === mesRef.ano && pr.mes === mesRef.mes);
+    const vol = prRef ? (prRef.vol_fgts || 0) + (prRef.vol_clt || 0) + (prRef.vol_cgv || 0) + (prRef.vol_pix || 0) : 0;
     return sum + vol;
   }, 0) || 1;
 
@@ -42,36 +53,36 @@ function gerarAlertasDinamicos(pList: Parceiro[], lList: CrmLog[], allProds: Pro
       : null;
     
     const producoes = prodsMap[p.id] || [];
-    const prodMai = producoes.find(pr => pr.ano === 2026 && pr.mes === 5);
-    const volPrataMai = prodMai ? (prodMai.vol_fgts || 0) + (prodMai.vol_clt || 0) + (prodMai.vol_cgv || 0) + (prodMai.vol_pix || 0) : 0;
+    const prodRef = producoes.find(pr => pr.ano === mesRef.ano && pr.mes === mesRef.mes);
+    const volPrataRef = prodRef ? (prodRef.vol_fgts || 0) + (prodRef.vol_clt || 0) + (prodRef.vol_cgv || 0) + (prodRef.vol_pix || 0) : 0;
 
-    // Alerta A: Risco de Concentração Sistêmica (usando dados de Maio/2026)
-    const sharePortfol = (volPrataMai / faturamentoTotalPrataMai) * 100;
+    // Alerta A: Risco de Concentração Sistêmica (usando dados do mês de referência)
+    const sharePortfol = (volPrataRef / faturamentoTotalPrataRef) * 100;
     if (p.status === 'Ativo' && sharePortfol >= 30) {
       activeAlerts.push({
         id: 'alert_conc_sist_' + p.id,
         parceiro: p.nome,
         parceiroId: p.id,
-        mensagem: `Risco de Concentração Sistêmica (Ref: Mai/26): O parceiro representou ${sharePortfol.toFixed(1)}% do faturamento consolidado do Prata Digital no mês anterior.`,
+        mensagem: `Risco de Concentração Sistêmica (Ref: ${labelMesRef}): O parceiro representou ${sharePortfol.toFixed(1)}% do faturamento consolidado do Prata Digital no mês anterior.`,
         prioridade: 'Alta',
         ultimaInteracao: dataUltima ? dataUltima.toLocaleDateString('pt-BR') : 'Sem registro'
       });
     }
 
-    // Alerta B: Early Warning (comparando safra de Maio/2026 com Abril/2026 por estarem fechadas)
-    const prodAbr = producoes.find(pr => pr.ano === 2026 && pr.mes === 4);
+    // Alerta B: Queda Consolidada (comparando o mês de referência com o mês anterior, ambos fechados)
+    const prodComparacao = producoes.find(pr => pr.ano === mesComparacao.ano && pr.mes === mesComparacao.mes);
     
-    if (p.status === 'Ativo' && prodMai && prodAbr) {
-      const volAbr = (prodAbr.vol_fgts || 0) + (prodAbr.vol_clt || 0) + (prodAbr.vol_cgv || 0) + (prodAbr.vol_pix || 0);
+    if (p.status === 'Ativo' && prodRef && prodComparacao) {
+      const volComparacao = (prodComparacao.vol_fgts || 0) + (prodComparacao.vol_clt || 0) + (prodComparacao.vol_cgv || 0) + (prodComparacao.vol_pix || 0);
       
-      if (volAbr > 0) {
-        const queda = ((volAbr - volPrataMai) / volAbr) * 100;
+      if (volComparacao > 0) {
+        const queda = ((volComparacao - volPrataRef) / volComparacao) * 100;
         if (queda >= 40) {
           activeAlerts.push({
             id: 'alert_early_warn_' + p.id,
             parceiro: p.nome,
             parceiroId: p.id,
-            mensagem: `Early Warning (Queda Consolidada): Redução de ${queda.toFixed(1)}% no faturamento consolidado de Maio em relação a Abril (de R$ ${volAbr.toLocaleString('pt-BR')} para R$ ${volPrataMai.toLocaleString('pt-BR')}).`,
+            mensagem: `Redução de ${queda.toFixed(1)}% no faturamento consolidado de ${labelMesRef} em relação a ${labelMesComparacao} (de R$ ${volComparacao.toLocaleString('pt-BR')} para R$ ${volPrataRef.toLocaleString('pt-BR')}).`,
             prioridade: 'Alta',
             ultimaInteracao: dataUltima ? dataUltima.toLocaleDateString('pt-BR') : 'Sem registro'
           });
@@ -154,13 +165,13 @@ function gerarAlertasDinamicos(pList: Parceiro[], lList: CrmLog[], allProds: Pro
       });
     }
 
-    const shareMercadoMai = p.vol_total_mensal > 0 ? (volPrataMai / p.vol_total_mensal) : 0;
-    if (p.status === 'Ativo' && p.vol_total_mensal > 150000 && shareMercadoMai < 0.25) {
+    const shareMercadoRef = p.vol_total_mensal > 0 ? (volPrataRef / p.vol_total_mensal) : 0;
+    if (p.status === 'Ativo' && p.vol_total_mensal > 150000 && shareMercadoRef < 0.25) {
       activeAlerts.push({
         id: 'alert_opp_conc_' + p.id,
         parceiro: p.nome,
         parceiroId: p.id,
-        mensagem: `Concentração no Prata abaixo de 25% no mês de Maio (${(shareMercadoMai * 100).toFixed(0)}%) — grande volume de mercado captável.`,
+        mensagem: `Concentração no Prata abaixo de 25% no mês de ${labelMesRef} (${(shareMercadoRef * 100).toFixed(0)}%) — grande volume de mercado captável.`,
         prioridade: 'Média',
         ultimaInteracao: dataUltima ? dataUltima.toLocaleDateString('pt-BR') : 'Sem registro'
       });
@@ -180,7 +191,7 @@ export default function Dashboard({ onSelectPartner }: { onSelectPartner?: (id: 
   const [cicloAtivacao, setCicloAtivacao] = useState(6);
   const [selectedKpi, setSelectedKpi] = useState<string | null>(null);
   const [lastWeeklyUploadDate, setLastWeeklyUploadDate] = useState<string>('');
-  const [selectedPeriod, setSelectedPeriod] = useState<string>('maio_2026');
+  const [selectedPeriod, setSelectedPeriod] = useState<string>(getDefaultPeriod());
   const [criterios, setCriterios] = useState<CriteriosConfig | null>(null);
 
   // Alertas gerados dinamicamente
@@ -281,7 +292,7 @@ export default function Dashboard({ onSelectPartner }: { onSelectPartner?: (id: 
     let somaPix = 0;
 
     activeMonths.forEach(m => {
-      const mesPeriodStr = `${m.mes === 1 ? 'janeiro' : m.mes === 2 ? 'fevereiro' : m.mes === 3 ? 'marco' : m.mes === 4 ? 'abril' : m.mes === 5 ? 'maio' : 'junho'}_${m.ano}`;
+      const mesPeriodStr = `${m.ano}-${m.mes}`;
       const pNoMes = dataService.getParceirosComStatusNoPeriodo(parceiros, allProducoes, mesPeriodStr, criterios?.limites);
       
       const ativosNoMes = pNoMes.filter(p => p.status === 'Ativo');
@@ -372,8 +383,12 @@ export default function Dashboard({ onSelectPartner }: { onSelectPartner?: (id: 
   );
 
 
+  // Média de Produtos por Parceiro: considera apenas parceiros com status "Ativo"
+  // no período selecionado (parceiros em Reativação/Onboarding são excluídos do
+  // numerador e do denominador, para não distorcer o indicador de cross-sell).
   let totalProdutosOperados = 0;
-  parceirosNoPeriodo.forEach(p => {
+  const parceirosAtivosNoPeriodo = parceirosNoPeriodo.filter(p => p.status === 'Ativo');
+  parceirosAtivosNoPeriodo.forEach(p => {
     const prodData = parceiroProdMap[p.id];
     if (prodData) {
       let count = 0;
@@ -384,7 +399,7 @@ export default function Dashboard({ onSelectPartner }: { onSelectPartner?: (id: 
       totalProdutosOperados += count;
     }
   });
-  const mediaProdutos = parceirosNoPeriodo.length > 0 ? totalProdutosOperados / parceirosNoPeriodo.length : 0;
+  const mediaProdutos = parceirosAtivosNoPeriodo.length > 0 ? totalProdutosOperados / parceirosAtivosNoPeriodo.length : 0;
 
   // Formatar Moeda
   const formatCurrency = (val: number) => {
@@ -413,14 +428,9 @@ export default function Dashboard({ onSelectPartner }: { onSelectPartner?: (id: 
               className="form-input"
               style={{ fontSize: '0.85rem', padding: '0.4rem 2rem 0.4rem 0.75rem', width: 'auto', margin: 0, height: '36px', borderRadius: 'var(--radius-sm)' }}
             >
-              <option value="junho_2026">Junho/2026 (Mês Atual)</option>
-              <option value="maio_2026">Maio/2026</option>
-              <option value="abril_2026">Abril/2026</option>
-              <option value="marco_2026">Março/2026</option>
-              <option value="fevereiro_2026">Fevereiro/2026</option>
-              <option value="janeiro_2026">Janeiro/2026</option>
-              <option value="ultimos_3_meses">Últimos 3 meses (Média)</option>
-              <option value="ultimos_6_meses">Últimos 6 meses (Média)</option>
+              {getPeriodOptions().map(opt => (
+                <option key={opt.value} value={opt.value}>{opt.label}</option>
+              ))}
             </select>
           </div>
 
@@ -1059,7 +1069,7 @@ function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs, se
             antAno -= 1;
           }
 
-          const periodStrMesAnterior = `${antMes === 1 ? 'janeiro' : antMes === 2 ? 'fevereiro' : antMes === 3 ? 'marco' : antMes === 4 ? 'abril' : antMes === 5 ? 'maio' : 'junho'}_${antAno}`;
+          const periodStrMesAnterior = `${antAno}-${antMes}`;
           const parceirosNoMesAnterior = dataService.getParceirosComStatusNoPeriodo(parceiros, allProducoes, periodStrMesAnterior);
           const parceirosEmReativacao = parceirosNoMesAnterior.filter(p => p.status === 'Reativação');
 
@@ -1337,8 +1347,11 @@ function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs, se
       </table>
     );
   } else if (kpiType === 'media-produtos') {
-    title = `Mix de Produtos Comercializados por Parceiro (${getPeriodLabel(selectedPeriod)})`;
-    const rows = [...parceiros]
+    title = `Mix de Produtos Comercializados por Parceiro Ativo (${getPeriodLabel(selectedPeriod)})`;
+    // Mesmo filtro do card de KPI: só parceiros Ativos no período, para o
+    // detalhamento não contradizer o número exibido no card.
+    const rows = parceiros
+      .filter(p => p.status === 'Ativo')
       .map(p => {
         const ops = getProdutosOperados(p.id);
         return {
