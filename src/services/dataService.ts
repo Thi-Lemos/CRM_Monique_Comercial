@@ -35,6 +35,46 @@ interface LocalDB {
   producoes_semanais?: ProducaoSemanal[];
 }
 
+// Busca TODAS as linhas de uma tabela no Supabase, paginando automaticamente.
+//
+// Por quê isso existe: o Supabase/PostgREST impõe um teto de linhas por
+// requisição configurado no próprio projeto (hoje 1000 — Dashboard > Settings
+// > API > Max Rows). Esse teto SOBREPÕE qualquer `.range()` maior pedido pelo
+// cliente: pedir `.range(0, 9999)` não garante 10 mil linhas, garante "até o
+// teto do projeto", silenciosamente, sem erro. Enquanto uma tabela tem menos
+// linhas que o teto, isso passa despercebido — e o bug reaparece sozinho,
+// sem nenhuma mudança de código, assim que a tabela cresce além dele.
+//
+// Esta função elimina essa classe de bug: busca em lotes de PAGE_SIZE e só
+// para quando uma página vier incompleta (ou vazia), então sempre traz 100%
+// dos dados, não importa quantas linhas a tabela tenha hoje ou vier a ter.
+async function fetchAllRows<T>(table: string, selectClause: string = '*'): Promise<T[]> {
+  if (!supabase) return [];
+  const PAGE_SIZE = 1000;
+  let allRows: T[] = [];
+  let from = 0;
+
+  while (true) {
+    const { data, error } = await supabase
+      .from(table)
+      .select(selectClause)
+      .range(from, from + PAGE_SIZE - 1);
+
+    if (error) {
+      console.warn(`Falha ao paginar tabela "${table}" no Supabase:`, error);
+      break;
+    }
+    if (!data || data.length === 0) break;
+
+    allRows = allRows.concat(data as T[]);
+
+    if (data.length < PAGE_SIZE) break; // última página (incompleta = fim dos dados)
+    from += PAGE_SIZE;
+  }
+
+  return allRows;
+}
+
 function getLocalDB(): LocalDB {
   const data = localStorage.getItem(LOCAL_STORAGE_KEY);
   if (!data) {
@@ -180,20 +220,11 @@ export const dataService = {
   // --- PARCEIROS ---
   async getParceiros(): Promise<Parceiro[]> {
     let list: Parceiro[] = [];
-    if (supabase) {
-      try {
-        const { data, error } = await supabase
-          .from('parceiros')
-          .select('*')
-          .range(0, 9999)
-          .order('nome', { ascending: true });
-        
-        if (!error && data) {
-          list = data as Parceiro[];
-        }
-      } catch (err) {
-        console.warn('Falha ao conectar no Supabase, usando banco local:', err);
-      }
+    try {
+      list = await fetchAllRows<Parceiro>('parceiros');
+      list.sort((a, b) => a.nome.localeCompare(b.nome));
+    } catch (err) {
+      console.warn('Falha ao conectar no Supabase, usando banco local:', err);
     }
     if (list.length === 0) {
       list = getLocalDB().parceiros;
@@ -240,20 +271,12 @@ export const dataService = {
 
     const config = await this.getCriterios();
     
-    // Otimização N+1: Carregar todas as produções em lote em uma única consulta
+    // Otimização N+1: Carregar todas as produções em lote (paginado, ver fetchAllRows)
     let allProds: ProducaoMensal[] = [];
-    if (supabase) {
-      try {
-        const { data, error } = await supabase
-          .from('producao')
-          .select('*')
-          .range(0, 9999);
-        if (!error && data) {
-          allProds = data as ProducaoMensal[];
-        }
-      } catch (err) {
-        console.warn('Erro ao obter todas as produções do Supabase, usando local:', err);
-      }
+    try {
+      allProds = await fetchAllRows<ProducaoMensal>('producao');
+    } catch (err) {
+      console.warn('Erro ao obter todas as produções do Supabase, usando local:', err);
     }
     if (allProds.length === 0) {
       allProds = getLocalDB().producao;
@@ -600,13 +623,20 @@ export const dataService = {
   async getLogs(parceiroId?: string): Promise<CrmLog[]> {
     if (supabase) {
       try {
-        let query = supabase.from('crm_logs').select('*');
         if (parceiroId) {
-          query = query.eq('parceiro_id', parceiroId);
+          // Filtrado por parceiro: volume sempre pequeno, não precisa paginar.
+          const { data, error } = await supabase
+            .from('crm_logs')
+            .select('*')
+            .eq('parceiro_id', parceiroId)
+            .order('data_contato', { ascending: false });
+          if (error) throw error;
+          return data as CrmLog[];
         }
-        const { data, error } = await query.order('data_contato', { ascending: false });
-        if (error) throw error;
-        return data as CrmLog[];
+        // Sem filtro: busca em massa, sujeita ao teto de linhas do projeto
+        // Supabase caso a tabela cresça — paginar para trazer 100% dos dados.
+        const allLogs = await fetchAllRows<CrmLog>('crm_logs');
+        return allLogs.sort((a, b) => b.data_contato.localeCompare(a.data_contato));
       } catch (err) {
         console.warn('Falha ao ler logs no Supabase, usando banco local:', err);
       }
@@ -764,18 +794,11 @@ export const dataService = {
   },
 
   async getAllProducao(): Promise<ProducaoMensal[]> {
-    if (supabase) {
-      try {
-        const { data, error } = await supabase
-          .from('producao')
-          .select('*')
-          .range(0, 9999);
-        if (!error && data) {
-          return data as ProducaoMensal[];
-        }
-      } catch (err) {
-        console.warn('Erro ao obter todas as produções do Supabase:', err);
-      }
+    try {
+      const allProds = await fetchAllRows<ProducaoMensal>('producao');
+      if (allProds.length > 0) return allProds;
+    } catch (err) {
+      console.warn('Erro ao obter todas as produções do Supabase:', err);
     }
     return getLocalDB().producao;
   },
