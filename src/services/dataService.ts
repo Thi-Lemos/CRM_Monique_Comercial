@@ -998,45 +998,6 @@ export const dataService = {
     }
   },
 
-  async getCicloAtivacaoHunter(preloadedParceiros?: Parceiro[], preloadedProducoes?: ProducaoMensal[]): Promise<number> {
-    const parceiros = preloadedParceiros || await this.getParceiros();
-    let totalDias = 0;
-    let totalContasAtivas = 0;
-
-    // Criar mapa de produções por parceiro para evitar consultas repetidas
-    const prodsMap: { [key: string]: ProducaoMensal[] } = {};
-    if (preloadedProducoes) {
-      for (const pr of preloadedProducoes) {
-        if (!prodsMap[pr.parceiro_id]) {
-          prodsMap[pr.parceiro_id] = [];
-        }
-        prodsMap[pr.parceiro_id].push(pr);
-      }
-    }
-
-    for (const p of parceiros) {
-      const producoes = preloadedProducoes ? (prodsMap[p.id] || []) : await this.getProducao(p.id);
-      const comProd = producoes.filter(pr => ((pr.vol_fgts || 0) + (pr.vol_clt || 0) + (pr.vol_cgv || 0) + (pr.vol_pix || 0)) > 0);
-      
-      if (comProd.length > 0) {
-        const sortedProd = [...comProd].sort((a,b) => (a.ano !== b.ano ? a.ano - b.ano : a.mes - b.mes));
-        const primeiraProd = sortedProd[0];
-        
-        const dataPrimeiraProd = new Date(primeiraProd.ano, primeiraProd.mes - 1, 15);
-        const dataCriacao = p.created_at ? new Date(p.created_at) : new Date(2026, 4, 1);
-        
-        const diffTempo = dataPrimeiraProd.getTime() - dataCriacao.getTime();
-        const diffDias = Math.max(1, Math.round(diffTempo / (1000 * 60 * 60 * 24)));
-        
-        totalDias += diffDias;
-        totalContasAtivas++;
-      }
-    }
-
-    if (totalContasAtivas === 0) return 6;
-    return Math.round(totalDias / totalContasAtivas);
-  },
-
   async getTaxaReativacao(preloadedParceiros?: Parceiro[], preloadedLogs?: CrmLog[]): Promise<number> {
     const logs = preloadedLogs || await this.getLogs();
     const parceiros = preloadedParceiros || await this.getParceiros();

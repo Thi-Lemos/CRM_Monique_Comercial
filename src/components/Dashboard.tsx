@@ -188,7 +188,6 @@ export default function Dashboard({ onSelectPartner }: { onSelectPartner?: (id: 
   const [semaforo, setSemaforo] = useState<SemafaroStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [showImporter, setShowImporter] = useState(false);
-  const [cicloAtivacao, setCicloAtivacao] = useState(6);
   const [selectedKpi, setSelectedKpi] = useState<string | null>(null);
   const [lastWeeklyUploadDate, setLastWeeklyUploadDate] = useState<string>('');
   const [selectedPeriod, setSelectedPeriod] = useState<string>(getDefaultPeriod());
@@ -216,14 +215,12 @@ export default function Dashboard({ onSelectPartner }: { onSelectPartner?: (id: 
         ]);
 
         const sem = await dataService.getSemafaroStatus(pList, lList);
-        const ciclo = await dataService.getCicloAtivacaoHunter(pList, allProds);
         const uploadDate = dataService.getLastWeeklyUploadDate();
         
         setParceiros(pList);
         setLogs(lList);
         setAllProducoes(allProds);
         setSemaforo(sem);
-        setCicloAtivacao(ciclo);
         setLastWeeklyUploadDate(uploadDate);
         setCriterios(config);
 
@@ -512,14 +509,6 @@ export default function Dashboard({ onSelectPartner }: { onSelectPartner?: (id: 
           <span style={{ fontSize: '0.7rem', color: mediaProdutos >= 2 ? 'var(--success)' : 'var(--danger)', fontWeight: 500 }}>
             Meta: &ge; 2
           </span>
-        </div>
-
-        <div className="card kpi-card" style={{ padding: '1rem 1.25rem' }} onClick={() => setSelectedKpi('ciclo-ativacao')}>
-          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>CICLO ATIVAÇÃO HUNTER</span>
-          <div style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--secondary-color)', margin: '0.2rem 0' }}>
-            {cicloAtivacao} dias
-          </div>
-          <span style={{ fontSize: '0.7rem', color: cicloAtivacao <= 7 ? 'var(--success)' : 'var(--danger)', fontWeight: 500 }}>Meta: &le; 7 dias</span>
         </div>
 
         <div className="card kpi-card" style={{ padding: '1rem 1.25rem' }} onClick={() => setSelectedKpi('taxa-reativacao')}>
@@ -939,12 +928,10 @@ export default function Dashboard({ onSelectPartner }: { onSelectPartner?: (id: 
               ]);
 
               const sem = await dataService.getSemafaroStatus(pList, lList);
-              const ciclo = await dataService.getCicloAtivacaoHunter(pList, allProds);
               
               setParceiros(pList);
               setLogs(lList);
               setAllProducoes(allProds);
-              setCicloAtivacao(ciclo);
               setSemaforo(sem);
 
               // Atualizar alertas
@@ -1008,47 +995,7 @@ function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs, se
   };
 
   useEffect(() => {
-    if (kpiType === 'ciclo-ativacao') {
-      setLoading(true);
-      async function calc() {
-        try {
-          const list: any[] = [];
-          const prodsMap: { [key: string]: ProducaoMensal[] } = {};
-          for (const pr of allProducoes) {
-            if (!prodsMap[pr.parceiro_id]) {
-              prodsMap[pr.parceiro_id] = [];
-            }
-            prodsMap[pr.parceiro_id].push(pr);
-          }
-
-          for (const p of parceiros) {
-            const prods = prodsMap[p.id] || [];
-            const comProd = prods.filter(pr => ((pr.vol_fgts || 0) + (pr.vol_clt || 0) + (pr.vol_cgv || 0) + (pr.vol_pix || 0)) > 0);
-            if (comProd.length > 0) {
-              const sorted = [...comProd].sort((a,b) => (a.ano !== b.ano ? a.ano - b.ano : a.mes - b.mes));
-              const primeira = sorted[0];
-              const dataPrimeira = new Date(primeira.ano, primeira.mes - 1, 15);
-              const dataCriacao = p.created_at ? new Date(p.created_at) : new Date(2026, 4, 1);
-              const diffTempo = dataPrimeira.getTime() - dataCriacao.getTime();
-              const dias = Math.max(1, Math.round(diffTempo / (1000 * 60 * 60 * 24)));
-              list.push({
-                nome: p.nome,
-                criacao: dataCriacao.toLocaleDateString('pt-BR'),
-                primeiraProd: `${primeira.mes < 10 ? '0' + primeira.mes : primeira.mes}/${primeira.ano}`,
-                vol: (primeira.vol_fgts || 0) + (primeira.vol_clt || 0) + (primeira.vol_cgv || 0) + (primeira.vol_pix || 0),
-                dias
-              });
-            }
-          }
-          setDetails(list.sort((a,b) => a.dias - b.dias));
-        } catch (e) {
-          console.error(e);
-        } finally {
-          setLoading(false);
-        }
-      }
-      calc();
-    } else if (kpiType === 'taxa-reativacao') {
+    if (kpiType === 'taxa-reativacao') {
       setLoading(true);
       async function calc() {
         try {
@@ -1385,34 +1332,6 @@ function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs, se
                 </div>
               </td>
               <td style={{ textAlign: 'right' }}>{formatCurrency(p.volPrataPeriodo)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    );
-  } else if (kpiType === 'ciclo-ativacao') {
-    title = 'Origem: Ciclo de Ativação Hunter (Dias para Primeira Produção)';
-    content = loading ? (
-      <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>Processando faturamentos históricos...</div>
-    ) : (
-      <table className="table">
-        <thead>
-          <tr>
-            <th>Parceiro Hunter</th>
-            <th>Data de Cadastro</th>
-            <th>Mês Primeira Produção</th>
-            <th style={{ textAlign: 'right' }}>Faturamento Inicial</th>
-            <th style={{ textAlign: 'center' }}>Dias para Ativação</th>
-          </tr>
-        </thead>
-        <tbody>
-          {details.map((p, i) => (
-            <tr key={i}>
-              <td style={{ fontWeight: 600 }}>{p.nome}</td>
-              <td>{p.criacao}</td>
-              <td>{p.primeiraProd}</td>
-              <td style={{ textAlign: 'right' }}>{formatCurrency(p.vol)}</td>
-              <td style={{ textAlign: 'center', fontWeight: 700, color: p.dias <= 7 ? 'var(--success)' : 'var(--warning)' }}>{p.dias} dias</td>
             </tr>
           ))}
         </tbody>
