@@ -6,6 +6,16 @@ import { calculateScoreAndClassification } from './scoreCalculator';
 const LOCAL_STORAGE_KEY = 'crm_prata_digital_db';
 const LOCAL_CRITERIOS_KEY = 'crm_prata_digital_criterios';
 
+// Toda a base de 724 parceiros legados foi carregada em massa no Supabase entre
+// 31/05/2026 e 30/06/2026 — created_at deles reflete a data da importação, não a
+// data real de entrada como parceiro (essa informação não existe para a base legada).
+// A partir de 01/07/2026, cadastro passou a ser feito manualmente e direto no CRM,
+// então created_at passa a refletir a data real de cadastro.
+// Por isso, a regra de Onboarding (janela de dias_conversao_hunter) só pode ser
+// aplicada a parceiros criados a partir deste corte — antes dele, sem produção
+// válida sempre cai em Reativação, nunca em Onboarding.
+const DATA_CORTE_CONFIABILIDADE_CADASTRO = new Date('2026-07-01T00:00:00Z');
+
 const DEFAULT_CRITERIOS: CriteriosConfig = {
   metas: {
     hunter_novos_ativos_semana: 2,
@@ -326,7 +336,7 @@ export const dataService = {
       }
 
       if (!temProducaoRecente) {
-        if (diferencaCriacaoDias <= diasLimites.dias_conversao_hunter) {
+        if (dataCriacao >= DATA_CORTE_CONFIABILIDADE_CADASTRO && diferencaCriacaoDias <= diasLimites.dias_conversao_hunter) {
           statusCalculado = 'Onboarding';
         } else {
           statusCalculado = 'Reativação';
@@ -1129,7 +1139,7 @@ export const dataService = {
         }
 
         if (!temProducaoRecente) {
-          if (diferencaCriacaoDias < 0 || diferencaCriacaoDias <= limites.dias_conversao_hunter) {
+          if (createdDate >= DATA_CORTE_CONFIABILIDADE_CADASTRO && (diferencaCriacaoDias < 0 || diferencaCriacaoDias <= limites.dias_conversao_hunter)) {
             statusCalculado = 'Onboarding';
           } else {
             statusCalculado = 'Reativação';
