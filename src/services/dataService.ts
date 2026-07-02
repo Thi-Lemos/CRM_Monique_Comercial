@@ -291,45 +291,6 @@ export const dataService = {
       prodsMap[prod.parceiro_id].push(prod);
     }
 
-    // Migração de auto-cura: Ajustar data de criação de parceiros sem produção recentes ou como Onboarding para 30 dias atrás
-    const hoje = new Date();
-    let migrouAlgum = false;
-    for (let p of list) {
-      const parceiroProds = prodsMap[p.id] || [];
-      const temProducao = parceiroProds.some(pr => {
-        const vol = (pr.vol_fgts || 0) + (pr.vol_clt || 0) + (pr.vol_cgv || 0) + (pr.vol_pix || 0);
-        return vol > 0;
-      });
-
-      if (!temProducao && (p.status === 'Onboarding' && !p.inserido_manualmente)) {
-        p.created_at = new Date(hoje.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString();
-        p.status = 'Reativação';
-        migrouAlgum = true;
-        
-        if (supabase) {
-          supabase
-            .from('parceiros')
-            .update({ created_at: p.created_at, status: 'Reativação' })
-            .eq('id', p.id)
-            .then(({ error }) => {
-              if (error) console.error('Erro ao atualizar created_at no Supabase:', error);
-            });
-        }
-      }
-    }
-
-    if (migrouAlgum) {
-      const db = getLocalDB();
-      list.forEach(p => {
-        const idx = db.parceiros.findIndex(x => x.id === p.id);
-        if (idx !== -1) {
-          db.parceiros[idx].created_at = p.created_at;
-          db.parceiros[idx].status = p.status;
-        }
-      });
-      saveLocalDB(db);
-    }
-
     const finalParceiros: Parceiro[] = [];
     const fmtCur = (val: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(val);
 
@@ -365,7 +326,7 @@ export const dataService = {
       }
 
       if (!temProducaoRecente) {
-        if (p.inserido_manualmente && diferencaCriacaoDias <= diasLimites.dias_conversao_hunter) {
+        if (diferencaCriacaoDias <= diasLimites.dias_conversao_hunter) {
           statusCalculado = 'Onboarding';
         } else {
           statusCalculado = 'Reativação';
@@ -391,7 +352,8 @@ export const dataService = {
             proxima_acao: 'Acompanhar produção e estreitar contato',
             data_proxima_acao: new Date(hoje.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString().substring(0, 10),
             classificacao_pos_contato: p.classificacao,
-            crm_atualizado: true
+            crm_atualizado: true,
+            origem: 'sistema'
           }).catch(console.error);
         }
 
@@ -662,6 +624,7 @@ export const dataService = {
   async saveLog(log: CrmLog): Promise<CrmLog> {
     const logItem = {
       ...log,
+      origem: log.origem || 'manual',
       created_at: new Date().toISOString()
     };
 
@@ -1166,7 +1129,7 @@ export const dataService = {
         }
 
         if (!temProducaoRecente) {
-          if (p.inserido_manualmente && (diferencaCriacaoDias < 0 || diferencaCriacaoDias <= limites.dias_conversao_hunter)) {
+          if (diferencaCriacaoDias < 0 || diferencaCriacaoDias <= limites.dias_conversao_hunter) {
             statusCalculado = 'Onboarding';
           } else {
             statusCalculado = 'Reativação';

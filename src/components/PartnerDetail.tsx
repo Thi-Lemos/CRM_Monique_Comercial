@@ -54,7 +54,10 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
         const prodData = await dataService.getProducao(partnerId);
         setProducao(prodData);
         const logData = await dataService.getLogs(partnerId);
-        setLogs(logData);
+        // Histórico de Interações Comerciais mostra apenas contatos registrados manualmente
+        // pela Monique; transições automáticas de status (origem 'sistema') não entram aqui,
+        // mas continuam contando para os KPIs de Hunter que dependem delas.
+        setLogs(logData.filter(l => l.origem !== 'sistema'));
 
         // Produção Semanal
         const semanasData = await dataService.getProducoesSemanais(partnerId);

@@ -4,8 +4,9 @@ import { Parceiro, ProducaoMensal, CriteriosConfig } from '../types';
 import { Search, Plus, Edit2, Trash2, FileSpreadsheet } from 'lucide-react';
 import PartnerFormModal from './PartnerFormModal';
 
-
-
+// Cadastro de parceiros passou a ser feito diretamente no CRM. Import em massa via
+// planilha fica desativado na UI (mas preservado no código para uso pontual por dev).
+const IMPORTACAO_XLSX_HABILITADA = false;
 
 interface PartnersListProps {
   onSelectPartner: (id: string) => void;
@@ -123,7 +124,6 @@ export default function PartnersList({ onSelectPartner }: PartnersListProps) {
               produtos_ativos: produtos,
               propostas_pagas_semana: propostasPagas,
               status: 'Reativação',
-              inserido_manualmente: false,
               created_at: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
             });
             importados++;
@@ -194,15 +194,17 @@ export default function PartnersList({ onSelectPartner }: PartnersListProps) {
             </select>
           </div>
 
-          <label className="btn btn-secondary" style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0, height: '36px' }}>
-            <FileSpreadsheet size={16} /> Importar XLSX
-            <input 
-              type="file" 
-              accept=".xlsx, .xls" 
-              onChange={handleImportXLSX} 
-              style={{ display: 'none' }} 
-            />
-          </label>
+          {IMPORTACAO_XLSX_HABILITADA && (
+            <label className="btn btn-secondary" style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0, height: '36px' }}>
+              <FileSpreadsheet size={16} /> Importar XLSX
+              <input 
+                type="file" 
+                accept=".xlsx, .xls" 
+                onChange={handleImportXLSX} 
+                style={{ display: 'none' }} 
+              />
+            </label>
+          )}
           <button className="btn btn-primary" onClick={openAddModal} style={{ height: '36px', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <Plus size={18} /> Adicionar Parceiro
           </button>

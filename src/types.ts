@@ -17,7 +17,6 @@ export interface Parceiro {
   propostas_pagas_semana?: number;
   created_at?: string;
   updated_at?: string;
-  inserido_manualmente?: boolean;
   vol_total_detalhes?: {
     mes1: string;
     valor1: number;
@@ -53,6 +52,7 @@ export interface CrmLog {
   classificacao_pos_contato: 'Estratégico' | 'Crescimento' | 'Desenvolvimento';
   crm_atualizado: boolean;
   score_no_momento?: number;
+  origem?: 'manual' | 'sistema'; // 'sistema' = gerado automaticamente por transição de status; 'manual' = registrado pela Monique
   
   // Questionário Pós-Reunião (Módulo 5/Blocos 1, 2 e 3)
   diagnostico_causa?: string;

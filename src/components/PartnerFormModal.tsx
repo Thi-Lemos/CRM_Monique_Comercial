@@ -147,7 +147,7 @@ export default function PartnerFormModal({ isOpen, onClose, partner, onSave }: P
       const payload = {
         ...formData,
         vol_total_mensal: media,
-        ...(partner ? { id: partner.id } : { inserido_manualmente: true })
+        ...(partner ? { id: partner.id } : {})
       };
       await dataService.saveParceiro(payload);
       onSave();
@@ -248,7 +248,7 @@ export default function PartnerFormModal({ isOpen, onClose, partner, onSave }: P
           </div>
 
           <div style={{ padding: '1rem', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-sm)', marginBottom: '1.25rem', backgroundColor: 'rgba(255, 255, 255, 0.4)' }}>
-            <label className="form-label" style={{ fontWeight: 700, marginBottom: '0.75rem' }}>Subdivisão de Volumes dos Últimos 3 Meses</label>
+            <label className="form-label" style={{ fontWeight: 700, marginBottom: '0.75rem' }}>Volumes TOTAL dos Últimos 3 Meses</label>
             
             {/* Mes 1 */}
             <div className="form-row" style={{ marginBottom: '0.75rem', alignItems: 'center' }}>
