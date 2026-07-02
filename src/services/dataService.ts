@@ -566,9 +566,15 @@ export const dataService = {
     // Atualizar localmente o parceiro
     const partnerIdx = db.parceiros.findIndex(p => p.id === prod.parceiro_id);
     if (partnerIdx !== -1) {
-      // Usar a produção consolidada de referência de Maio de 2026 (mês anterior completo)
+      // Usa o mês fechado mais recente (mês anterior ao atual) como referência;
+      // se esse mês ainda não tiver produção lançada, cai para o registro mais
+      // recente disponível até essa referência (nunca fixo, sempre dinâmico).
       const partnerProds = db.producao.filter(pr => pr.parceiro_id === prod.parceiro_id);
-      const consolidado = partnerProds.find(pr => pr.ano === 2026 && pr.mes === 5);
+      const refAtual = getCurrentPeriodRef();
+      const referencia = shiftMonth(refAtual.ano, refAtual.mes, -1);
+      const consolidado = partnerProds
+        .filter(pr => pr.ano < referencia.ano || (pr.ano === referencia.ano && pr.mes <= referencia.mes))
+        .sort((a, b) => (b.ano * 12 + b.mes) - (a.ano * 12 + a.mes))[0];
       if (consolidado) {
         db.parceiros[partnerIdx].vol_prata_mensal = (consolidado.vol_fgts || 0) + (consolidado.vol_clt || 0) + (consolidado.vol_cgv || 0) + (consolidado.vol_pix || 0);
         // Recalcular score
@@ -584,13 +590,18 @@ export const dataService = {
 
   async recalculateParceiroPrataVolume(parceiroId: string) {
     if (!supabase) return;
-    // Pega a produção consolidada de referência de Maio de 2026 (mês anterior completo)
+    // Usa o mês fechado mais recente (mês anterior ao atual) como referência;
+    // se esse mês ainda não tiver produção lançada, cai para o registro mais
+    // recente disponível até essa referência (nunca fixo, sempre dinâmico).
+    const refAtual = getCurrentPeriodRef();
+    const referencia = shiftMonth(refAtual.ano, refAtual.mes, -1);
     const { data: prods } = await supabase
       .from('producao')
       .select('*')
       .eq('parceiro_id', parceiroId)
-      .eq('ano', 2026)
-      .eq('mes', 5)
+      .or(`ano.lt.${referencia.ano},and(ano.eq.${referencia.ano},mes.lte.${referencia.mes})`)
+      .order('ano', { ascending: false })
+      .order('mes', { ascending: false })
       .limit(1);
 
     if (prods && prods.length > 0) {
