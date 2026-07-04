@@ -115,12 +115,12 @@ export default function WorkRoutine() {
     });
 
     // Win-back: inativos pendentes de diagnóstico
-    const inativosWinback = pList.filter(p => p.status === 'Reativação');
+    const inativosWinback = pList.filter(p => p.status === 'Inativo');
     inativosWinback.slice(0, 3).forEach(p => {
       const id = `dyn_winback_diag_${p.id}`;
       dynamicTasks.push({
         id,
-        title: `Win-back: Contato diagnóstico com ${p.nome} (em Reativação) para apurar causa real`,
+        title: `Win-back: Contato diagnóstico com ${p.nome} (em Inativo) para apurar causa real`,
         dayOfWeek: 'Terça',
         done: dynamicDoneStates.includes(id),
         isDynamic: true,
@@ -138,7 +138,7 @@ export default function WorkRoutine() {
     });
     dynamicTasks.push({
       id: 'dyn_winback_decision',
-      title: 'Decisão Win-back: Revisar parceiros em Reativação sem resposta por 15+ dias para arquivamento temporário',
+      title: 'Decisão Win-back: Revisar parceiros em Inativo sem resposta por 15+ dias para arquivamento temporário',
       dayOfWeek: 'Sexta',
       done: dynamicDoneStates.includes('dyn_winback_decision'),
       isDynamic: true

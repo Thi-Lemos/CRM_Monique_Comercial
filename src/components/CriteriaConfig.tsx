@@ -260,7 +260,7 @@ export default function CriteriaConfig() {
                   onChange={(e) => handleInputChange('limites', 'dias_inatividade_winback', parseInt(e.target.value) || 0)}
                 />
                 <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.15rem' }}>
-                  Dias com produção zerada que alteram o status para "Reativação" automaticamente.
+                  Dias com produção zerada que alteram o status de Ativo para "Inativo" automaticamente.
                 </span>
               </div>
               <div className="form-group">
@@ -274,7 +274,7 @@ export default function CriteriaConfig() {
                   onChange={(e) => handleInputChange('limites', 'dias_conversao_hunter', parseInt(e.target.value) || 0)}
                 />
                 <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.15rem' }}>
-                  Dias tolerados para um novo parceiro cadastrado registrar a primeira produção antes de virar "Reativação".
+                  Dias tolerados para um novo parceiro cadastrado registrar a primeira produção antes de virar "Inativo".
                 </span>
               </div>
             </div>

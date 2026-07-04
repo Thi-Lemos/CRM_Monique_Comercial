@@ -371,7 +371,8 @@ export default function PartnerFormModal({ isOpen, onClose, partner, onSave }: P
               <select className="form-input" value={formData.status} onChange={(e) => setFormData(prev => ({ ...prev, status: e.target.value as any }))}>
                 <option value="Ativo">Ativo</option>
                 <option value="Onboarding">Onboarding</option>
-                <option value="Reativação">Reativação</option>
+                <option value="Reativado">Reativado</option>
+                <option value="Inativo">Inativo</option>
               </select>
             </div>
           </div>

@@ -95,7 +95,7 @@ export default function InteractionForm({ initialPartnerId, onSave, onCancel }: 
     // Derivar Processo Comercial
     const processoDerivado: CrmLog['processo'] = 
       selected.status === 'Onboarding' ? 'Hunter' :
-      selected.status === 'Reativação' ? 'Win-back' : 'Farmer';
+      (selected.status === 'Inativo' || selected.status === 'Reativado') ? 'Win-back' : 'Farmer';
 
     try {
       const logToSave: CrmLog = {

@@ -135,7 +135,8 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
               <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--secondary-color)' }}>{partner.nome}</h2>
               <span className={`badge ${
                 partner.status === 'Ativo' ? 'badge-success' : 
-                partner.status === 'Reativação' ? 'badge-danger' : 'badge-info'
+                partner.status === 'Inativo' ? 'badge-danger' :
+                partner.status === 'Reativado' ? 'badge-warning' : 'badge-info'
               }`} style={{ fontSize: '0.7rem' }}>
                 {partner.status}
               </span>

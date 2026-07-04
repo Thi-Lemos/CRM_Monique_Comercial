@@ -13,7 +13,7 @@ const LOCAL_CRITERIOS_KEY = 'crm_prata_digital_criterios';
 // então created_at passa a refletir a data real de cadastro.
 // Por isso, a regra de Onboarding (janela de dias_conversao_hunter) só pode ser
 // aplicada a parceiros criados a partir deste corte — antes dele, sem produção
-// válida sempre cai em Reativação, nunca em Onboarding.
+// válida sempre cai em Inativo, nunca em Onboarding.
 const DATA_CORTE_CONFIABILIDADE_CADASTRO = new Date('2026-07-01T00:00:00Z');
 
 const DEFAULT_CRITERIOS: CriteriosConfig = {
@@ -43,6 +43,174 @@ interface LocalDB {
   producao: ProducaoMensal[];
   logs: CrmLog[];
   producoes_semanais?: ProducaoSemanal[];
+}
+
+// --- MÁQUINA DE ESTADOS DE STATUS (Onboarding / Ativo / Inativo / Reativado) ---
+//
+// Máquina de estados confirmada com o negócio:
+//   Onboarding → Ativo     : produziu dentro da janela de dias_conversao_hunter
+//   Onboarding → Inativo   : passou da janela sem produzir
+//   Ativo      → Inativo   : 60+ dias sem produção (decaimento por data, não por mês)
+//   Inativo    → Reativado : produziu no mês M (qualquer volume > 0)
+//   Reativado  → Ativo     : produziu também no mês M+1 (confirma a reativação)
+//   Reativado  → Inativo   : não produziu no mês M+1 (não confirmou)
+//
+// Diferente do cálculo anterior (que olhava só o instante presente), "Reativado"
+// exige memória: só existe se o parceiro esteve em Inativo antes. Por isso o status
+// é obtido simulando mês a mês, desde o início observável da história do parceiro
+// até o mês de referência desejado — não há mais como calcular olhando só "agora".
+//
+// Início observável da história ("mês 1" da simulação):
+//   • Parceiro novo (created_at >= DATA_CORTE_CONFIABILIDADE_CADASTRO): começa em
+//     Onboarding no mês de criação.
+//   • Parceiro legado (created_at < corte, cadastro em massa): created_at não reflete
+//     a data real de entrada. A simulação começa no mês mais antigo entre created_at
+//     e o primeiro mês em que existe QUALQUER registro de produção para ele. Nesse
+//     mês inicial: se já havia produção > 0, presumimos que já era parceiro
+//     estabelecido e ele começa direto como Ativo (não passa pela cerimônia
+//     Inativo → Reativado só por não termos dados anteriores a março/2026); se não
+//     havia produção, começa como Inativo (sem evidência de atividade).
+export interface StatusTimelineEntry {
+  ano: number;
+  mes: number;
+  status: Parceiro['status'];
+}
+
+const shiftMonthRaw = (ano: number, mes: number, delta: number) => {
+  const totalMeses = ano * 12 + (mes - 1) + delta;
+  const novoAno = Math.floor(totalMeses / 12);
+  const novoMes = ((totalMeses % 12) + 12) % 12 + 1;
+  return { ano: novoAno, mes: novoMes };
+};
+
+export function computeStatusTimeline(
+  createdAt: string | undefined,
+  parceiroProds: ProducaoMensal[],
+  limites: { dias_inatividade_winback: number; dias_conversao_hunter: number },
+  uptoAno: number,
+  uptoMes: number
+): StatusTimelineEntry[] {
+  const createdDate = createdAt ? new Date(createdAt) : new Date(2026, 4, 1);
+  const isLegacy = createdDate < DATA_CORTE_CONFIABILIDADE_CADASTRO;
+
+  const volByMonth = new Map<string, number>();
+  parceiroProds.forEach(p => {
+    const vol = (p.vol_fgts || 0) + (p.vol_clt || 0) + (p.vol_cgv || 0) + (p.vol_pix || 0);
+    const key = `${p.ano}-${p.mes}`;
+    volByMonth.set(key, (volByMonth.get(key) || 0) + vol);
+  });
+
+  let earliestProdMonth: { ano: number; mes: number } | null = null;
+  parceiroProds.forEach(p => {
+    if (!earliestProdMonth || p.ano < earliestProdMonth.ano || (p.ano === earliestProdMonth.ano && p.mes < earliestProdMonth.mes)) {
+      earliestProdMonth = { ano: p.ano, mes: p.mes };
+    }
+  });
+
+  let startAno = createdDate.getFullYear();
+  let startMes = createdDate.getMonth() + 1;
+  if (isLegacy && earliestProdMonth) {
+    const ep = earliestProdMonth as { ano: number; mes: number };
+    if (ep.ano < startAno || (ep.ano === startAno && ep.mes < startMes)) {
+      startAno = ep.ano;
+      startMes = ep.mes;
+    }
+  }
+
+  // Se o mês de referência pedido for anterior ao início observável da história
+  // do parceiro (ex.: parceiro criado depois do mês de referência), não há o que
+  // simular — devolve o status inicial "cru" nesse mês de referência.
+  if (uptoAno < startAno || (uptoAno === startAno && uptoMes < startMes)) {
+    const fallback: Parceiro['status'] = isLegacy ? 'Inativo' : 'Onboarding';
+    return [{ ano: uptoAno, mes: uptoMes, status: fallback }];
+  }
+
+  let status: Parceiro['status'];
+  if (isLegacy) {
+    const firstVol = volByMonth.get(`${startAno}-${startMes}`) || 0;
+    status = firstVol > 0 ? 'Ativo' : 'Inativo';
+  } else {
+    status = 'Onboarding';
+  }
+
+  const timeline: StatusTimelineEntry[] = [];
+  let lastProdMonth: { ano: number; mes: number } | null = null;
+  let reativadoTriggerMonth: { ano: number; mes: number } | null = null;
+
+  let curAno = startAno;
+  let curMes = startMes;
+  let isFirstMonth = true;
+
+  while (curAno < uptoAno || (curAno === uptoAno && curMes <= uptoMes)) {
+    const vol = volByMonth.get(`${curAno}-${curMes}`) || 0;
+    const hasProd = vol > 0;
+    if (hasProd) lastProdMonth = { ano: curAno, mes: curMes };
+
+    if (!isFirstMonth) {
+      switch (status) {
+        case 'Onboarding': {
+          const monthEndDate = new Date(curAno, curMes, 0);
+          const diasDesdeCriacao = (monthEndDate.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24);
+          if (hasProd) {
+            status = 'Ativo';
+          } else if (diasDesdeCriacao > limites.dias_conversao_hunter) {
+            status = 'Inativo';
+          }
+          break;
+        }
+        case 'Ativo': {
+          if (lastProdMonth) {
+            const monthEndDate = new Date(curAno, curMes, 0);
+            const lastProdEndDate = new Date(lastProdMonth.ano, lastProdMonth.mes, 0);
+            const diasSemProd = (monthEndDate.getTime() - lastProdEndDate.getTime()) / (1000 * 60 * 60 * 24);
+            if (diasSemProd > limites.dias_inatividade_winback) {
+              status = 'Inativo';
+            }
+          }
+          break;
+        }
+        case 'Inativo': {
+          if (hasProd) {
+            status = 'Reativado';
+            reativadoTriggerMonth = { ano: curAno, mes: curMes };
+          }
+          break;
+        }
+        case 'Reativado': {
+          if (reativadoTriggerMonth) {
+            const nextMonth = shiftMonthRaw(reativadoTriggerMonth.ano, reativadoTriggerMonth.mes, 1);
+            if (curAno === nextMonth.ano && curMes === nextMonth.mes) {
+              status = hasProd ? 'Ativo' : 'Inativo';
+              reativadoTriggerMonth = null;
+            }
+          }
+          break;
+        }
+      }
+    }
+
+    timeline.push({ ano: curAno, mes: curMes, status });
+    isFirstMonth = false;
+
+    const next = shiftMonthRaw(curAno, curMes, 1);
+    curAno = next.ano;
+    curMes = next.mes;
+  }
+
+  return timeline;
+}
+
+// Retorna apenas o status vigente em um mês de referência específico (último
+// item da simulação até aquele mês).
+export function computeStatusAtMonth(
+  createdAt: string | undefined,
+  parceiroProds: ProducaoMensal[],
+  limites: { dias_inatividade_winback: number; dias_conversao_hunter: number },
+  refAno: number,
+  refMes: number
+): Parceiro['status'] {
+  const timeline = computeStatusTimeline(createdAt, parceiroProds, limites, refAno, refMes);
+  return timeline[timeline.length - 1].status;
 }
 
 // Busca TODAS as linhas de uma tabela no Supabase, paginando automaticamente.
@@ -303,63 +471,73 @@ export const dataService = {
 
     const finalParceiros: Parceiro[] = [];
     const fmtCur = (val: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(val);
+    const hoje = new Date();
+    // Referência de "status vigente agora": o mês fechado mais recente (mês anterior
+    // ao atual). Evita que o meio do mês em curso, sem produção lançada ainda,
+    // dispare transições precoces (ex.: Reativado -> Inativo antes mesmo do mês
+    // seguinte ter sido consolidado).
+    const refAgora = shiftMonthRaw(hoje.getFullYear(), hoje.getMonth() + 1, -1);
 
     for (let p of list) {
       p.propostas_pagas_semana = p.propostas_pagas_semana !== undefined && p.propostas_pagas_semana !== null ? p.propostas_pagas_semana : 0;
-      
+
       // Otimização: Ler do mapa em memória ao invés de bater no banco para cada parceiro
       const prods = prodsMap[p.id] || [];
       const diasLimites = config.limites;
-      const hoje = new Date();
-      const dataCriacao = p.created_at ? new Date(p.created_at) : hoje;
-      const diferencaCriacaoDias = (hoje.getTime() - dataCriacao.getTime()) / (1000 * 60 * 60 * 24);
 
-      const sortedProds = [...prods].sort((a, b) => (b.ano !== a.ano ? b.ano - a.ano : b.mes - a.mes));
-      const ultimaProd = sortedProds[0];
-      
-      let statusCalculado: Parceiro['status'] = 'Onboarding';
-      let temProducaoRecente = false;
-
-      if (ultimaProd) {
-        const volTotalUltimo = (ultimaProd.vol_fgts || 0) + (ultimaProd.vol_clt || 0) + (ultimaProd.vol_cgv || 0) + (ultimaProd.vol_pix || 0);
-        if (volTotalUltimo > 0) {
-          temProducaoRecente = true;
-          const dataUltimaProd = new Date(ultimaProd.ano, ultimaProd.mes - 1, 28);
-          const diasSemProd = (hoje.getTime() - dataUltimaProd.getTime()) / (1000 * 60 * 60 * 24);
-
-          if (diasSemProd > diasLimites.dias_inatividade_winback) {
-            statusCalculado = 'Reativação';
-          } else {
-            statusCalculado = 'Ativo';
-          }
-        }
-      }
-
-      if (!temProducaoRecente) {
-        if (dataCriacao >= DATA_CORTE_CONFIABILIDADE_CADASTRO && diferencaCriacaoDias <= diasLimites.dias_conversao_hunter) {
-          statusCalculado = 'Onboarding';
-        } else {
-          statusCalculado = 'Reativação';
-        }
-      }
+      const statusCalculado = computeStatusAtMonth(p.created_at, prods, diasLimites, refAgora.ano, refAgora.mes);
 
       if (p.status !== statusCalculado) {
         const statusAnterior = p.status;
         p.status = statusCalculado;
 
-        if (statusCalculado === 'Ativo') {
-          const processo = statusAnterior === 'Onboarding' ? 'Hunter' : 'Win-back';
-          const resumo = statusAnterior === 'Onboarding'
-            ? `Ativação automática: Novo parceiro ativado após registrar produção ativa de ${fmtCur(p.vol_prata_mensal)}.`
-            : `Reativação automática: Parceiro reativado após registrar nova produção de ${fmtCur(p.vol_prata_mensal)}.`;
-
+        if (statusCalculado === 'Ativo' && statusAnterior === 'Onboarding') {
           this.saveLog({
             parceiro_id: p.id,
             data_contato: new Date().toISOString(),
             canal: 'WhatsApp',
-            processo: (processo === 'Win-back' ? 'Win-back' : processo === 'Hunter' ? 'Hunter' : 'Farmer'),
-            resumo,
+            processo: 'Hunter',
+            resumo: `Ativação automática: Novo parceiro ativado após registrar produção ativa de ${fmtCur(p.vol_prata_mensal)}.`,
             proxima_acao: 'Acompanhar produção e estreitar contato',
+            data_proxima_acao: new Date(hoje.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString().substring(0, 10),
+            classificacao_pos_contato: p.classificacao,
+            crm_atualizado: true,
+            origem: 'sistema'
+          }).catch(console.error);
+        } else if (statusCalculado === 'Reativado' && statusAnterior === 'Inativo') {
+          this.saveLog({
+            parceiro_id: p.id,
+            data_contato: new Date().toISOString(),
+            canal: 'WhatsApp',
+            processo: 'Win-back',
+            resumo: `Reativação automática: Parceiro voltou a produzir e passou para Reativado (produção de ${fmtCur(p.vol_prata_mensal)}).`,
+            proxima_acao: 'Confirmar manutenção da produção no mês seguinte',
+            data_proxima_acao: new Date(hoje.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString().substring(0, 10),
+            classificacao_pos_contato: p.classificacao,
+            crm_atualizado: true,
+            origem: 'sistema'
+          }).catch(console.error);
+        } else if (statusCalculado === 'Ativo' && statusAnterior === 'Reativado') {
+          this.saveLog({
+            parceiro_id: p.id,
+            data_contato: new Date().toISOString(),
+            canal: 'WhatsApp',
+            processo: 'Farmer',
+            resumo: 'Consolidação automática: Parceiro manteve produção no mês seguinte à reativação e passou para Ativo.',
+            proxima_acao: 'Manter acompanhamento de rotina',
+            data_proxima_acao: new Date(hoje.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString().substring(0, 10),
+            classificacao_pos_contato: p.classificacao,
+            crm_atualizado: true,
+            origem: 'sistema'
+          }).catch(console.error);
+        } else if (statusCalculado === 'Inativo' && statusAnterior === 'Reativado') {
+          this.saveLog({
+            parceiro_id: p.id,
+            data_contato: new Date().toISOString(),
+            canal: 'WhatsApp',
+            processo: 'Win-back',
+            resumo: 'Parceiro reativado não manteve produção no mês seguinte e retornou para Inativo.',
+            proxima_acao: 'Reavaliar estratégia de reativação',
             data_proxima_acao: new Date(hoje.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString().substring(0, 10),
             classificacao_pos_contato: p.classificacao,
             crm_atualizado: true,
@@ -998,30 +1176,6 @@ export const dataService = {
     }
   },
 
-  async getTaxaReativacao(preloadedParceiros?: Parceiro[], preloadedLogs?: CrmLog[]): Promise<number> {
-    const logs = preloadedLogs || await this.getLogs();
-    const parceiros = preloadedParceiros || await this.getParceiros();
-    
-    const winbackPartners = new Set<string>();
-    logs.forEach(log => {
-      if (log.processo === 'Win-back') {
-        winbackPartners.add(log.parceiro_id);
-      }
-    });
-
-    if (winbackPartners.size === 0) return 25.0;
-
-    let reativados = 0;
-    winbackPartners.forEach(pId => {
-      const partner = parceiros.find(p => p.id === pId);
-      if (partner && partner.status === 'Ativo') {
-        reativados++;
-      }
-    });
-
-    return Math.round((reativados / winbackPartners.size) * 1000) / 10;
-  },
-
   getParceirosComStatusNoPeriodo(
     parceiros: Parceiro[],
     allProducoes: ProducaoMensal[],
@@ -1040,9 +1194,6 @@ export const dataService = {
       }
     });
 
-    // Último dia do mês de referência
-    const refDate = new Date(refAno, refMes, 0);
-
     // Mapear produções por parceiro
     const prodsMap: Record<string, ProducaoMensal[]> = {};
     allProducoes.forEach(prod => {
@@ -1053,27 +1204,20 @@ export const dataService = {
     });
 
     const limites = limitesConfig || { dias_inatividade_winback: 60, dias_conversao_hunter: 7 };
+    const numMonths = activeMonths.length;
 
     return parceiros
       .map(p => {
-        const createdDate = p.created_at ? new Date(p.created_at) : new Date(2026, 4, 1);
-        const diffCriacaoTempo = refDate.getTime() - createdDate.getTime();
-        const diferencaCriacaoDias = diffCriacaoTempo / (1000 * 60 * 60 * 24);
-
         const prods = prodsMap[p.id] || [];
 
-        // Apenas produções anteriores ou iguais à referência
-        const sortedProdsValidos = prods
-          .filter(pr => (pr.ano < refAno) || (pr.ano === refAno && pr.mes <= refMes))
-          .sort((a, b) => (b.ano !== a.ano ? b.ano - a.ano : b.mes - a.mes));
+        // Apenas produções anteriores ou iguais à referência entram na simulação —
+        // isso garante que "status no período X" nunca enxergue produção futura.
+        const prodsAteReferencia = prods.filter(pr => (pr.ano < refAno) || (pr.ano === refAno && pr.mes <= refMes));
 
-        // Achar a produção mais recente que tenha volume > 0
-        let statusCalculado: Parceiro['status'] = 'Onboarding';
-        let temProducaoRecente = false;
+        const statusCalculado = computeStatusAtMonth(p.created_at, prodsAteReferencia, limites, refAno, refMes);
 
         // Calcular volume do parceiro específico no período selecionado (média mensal do período)
         let volAcumuladoPeriodo = 0;
-        const numMonths = activeMonths.length;
         activeMonths.forEach(m => {
           const matchProd = prods.find(pr => pr.ano === m.ano && pr.mes === m.mes);
           if (matchProd) {
@@ -1081,31 +1225,6 @@ export const dataService = {
           }
         });
         const volPrataMensalPeriodo = volAcumuladoPeriodo / numMonths;
-
-        const ultimaProdValida = sortedProdsValidos.find(pr => {
-          const vol = (pr.vol_fgts || 0) + (pr.vol_clt || 0) + (pr.vol_cgv || 0) + (pr.vol_pix || 0);
-          return vol > 0;
-        });
-
-        if (ultimaProdValida) {
-          temProducaoRecente = true;
-          const dataProd = new Date(ultimaProdValida.ano, ultimaProdValida.mes, 0);
-          const diasSemProd = (refDate.getTime() - dataProd.getTime()) / (1000 * 60 * 60 * 24);
-
-          if (diasSemProd > limites.dias_inatividade_winback) {
-            statusCalculado = 'Reativação';
-          } else {
-            statusCalculado = 'Ativo';
-          }
-        }
-
-        if (!temProducaoRecente) {
-          if (createdDate >= DATA_CORTE_CONFIABILIDADE_CADASTRO && (diferencaCriacaoDias < 0 || diferencaCriacaoDias <= limites.dias_conversao_hunter)) {
-            statusCalculado = 'Onboarding';
-          } else {
-            statusCalculado = 'Reativação';
-          }
-        }
 
         return {
           ...p,
@@ -1116,6 +1235,13 @@ export const dataService = {
       });
   },
 
+  // Taxa Reativação = quantidade de parceiros que transicionaram de Inativo para
+  // Reativado durante o período, dividido pelo total de parceiros que estavam em
+  // Inativo no mês imediatamente anterior ao início do período.
+  //
+  // Não depende de "produzir em todos os meses" nem de qualquer outra regra ligada
+  // ao seletor — depende exclusivamente de a transição Inativo -> Reativado ter
+  // ocorrido em algum ponto da linha do tempo dentro do período selecionado.
   getTaxaReativacaoNoPeriodo(
     parceiros: Parceiro[],
     allProducoes: ProducaoMensal[],
@@ -1123,51 +1249,52 @@ export const dataService = {
     limitesConfig?: { dias_inatividade_winback: number; dias_conversao_hunter: number }
   ): number {
     const activeMonths = getMonthsForPeriod(period);
-    
-    // Achar o menor mês/ano do período selecionado
-    let minAno = 9999;
-    let minMes = 13;
+    const limites = limitesConfig || { dias_inatividade_winback: 60, dias_conversao_hunter: 7 };
+
+    // Achar o menor e o maior mês/ano do período selecionado
+    let minAno = 9999, minMes = 13, maxAno = 0, maxMes = 0;
     activeMonths.forEach(m => {
-      if (m.ano < minAno || (m.ano === minAno && m.mes < minMes)) {
-        minAno = m.ano;
-        minMes = m.mes;
-      }
+      if (m.ano < minAno || (m.ano === minAno && m.mes < minMes)) { minAno = m.ano; minMes = m.mes; }
+      if (m.ano > maxAno || (m.ano === maxAno && m.mes > maxMes)) { maxAno = m.ano; maxMes = m.mes; }
     });
 
-    // Mês anterior ao início do período
-    let antAno = minAno;
-    let antMes = minMes - 1;
-    if (antMes === 0) {
-      antMes = 12;
-      antAno -= 1;
-    }
+    // Mês imediatamente anterior ao início do período — universo de base da taxa.
+    const mesBase = shiftMonth(minAno, minMes, -1);
 
-    const periodStrMesAnterior = `${antAno}-${antMes}`;
-    const parceirosNoMesAnterior = this.getParceirosComStatusNoPeriodo(parceiros, allProducoes, periodStrMesAnterior, limitesConfig);
+    const prodsMap: Record<string, ProducaoMensal[]> = {};
+    allProducoes.forEach(prod => {
+      if (!prodsMap[prod.parceiro_id]) prodsMap[prod.parceiro_id] = [];
+      prodsMap[prod.parceiro_id].push(prod);
+    });
 
-    // Filtrar parceiros que estavam no status 'Reativação' no mês anterior
-    const parceirosEmReativacao = parceirosNoMesAnterior.filter(p => p.status === 'Reativação');
+    // Universo: parceiros cujo status simulado no mês base é Inativo
+    const parceirosEmInativo = parceiros.filter(p => {
+      const prods = (prodsMap[p.id] || []).filter(pr =>
+        (pr.ano < mesBase.ano) || (pr.ano === mesBase.ano && pr.mes <= mesBase.mes)
+      );
+      return computeStatusAtMonth(p.created_at, prods, limites, mesBase.ano, mesBase.mes) === 'Inativo';
+    });
 
-    if (parceirosEmReativacao.length === 0) return 0;
+    if (parceirosEmInativo.length === 0) return 0;
 
-    // Verificar quantos deles produziram no período selecionado
+    // Para cada parceiro do universo, simula a linha do tempo até o fim do período
+    // e verifica se em algum mês DENTRO do período o status virou 'Reativado'.
+    // Como o mês base confirma 'Inativo', a primeira ocorrência de 'Reativado'
+    // dentro do período é, por construção, a transição Inativo -> Reativado.
     let reativados = 0;
-    parceirosEmReativacao.forEach(p => {
-      const temProducaoNoPeriodo = allProducoes.some(prod => {
-        const matchMes = activeMonths.some(m => m.ano === prod.ano && m.mes === prod.mes);
-        if (matchMes && prod.parceiro_id === p.id) {
-          const vol = (prod.vol_fgts || 0) + (prod.vol_clt || 0) + (prod.vol_cgv || 0) + (prod.vol_pix || 0);
-          return vol > 0;
-        }
-        return false;
-      });
-
-      if (temProducaoNoPeriodo) {
-        reativados++;
-      }
+    parceirosEmInativo.forEach(p => {
+      const prods = (prodsMap[p.id] || []).filter(pr =>
+        (pr.ano < maxAno) || (pr.ano === maxAno && pr.mes <= maxMes)
+      );
+      const timeline = computeStatusTimeline(p.created_at, prods, limites, maxAno, maxMes);
+      const transicionou = timeline.some(entry =>
+        entry.status === 'Reativado' &&
+        activeMonths.some(m => m.ano === entry.ano && m.mes === entry.mes)
+      );
+      if (transicionou) reativados++;
     });
 
-    return Math.round((reativados / parceirosEmReativacao.length) * 1000) / 10;
+    return Math.round((reativados / parceirosEmInativo.length) * 1000) / 10;
   }
 };
 

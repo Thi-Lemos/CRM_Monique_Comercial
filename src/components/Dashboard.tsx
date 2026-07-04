@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { dataService, getMonthsForPeriod, getPeriodLabel, getDefaultPeriod, getPeriodOptions, shiftMonth, getMonthShortLabel } from '../services/dataService';
+import { dataService, getMonthsForPeriod, getPeriodLabel, getDefaultPeriod, getPeriodOptions, shiftMonth, getMonthShortLabel, computeStatusTimeline, computeStatusAtMonth } from '../services/dataService';
 import { Parceiro, SemafaroStatus, CrmLog, ProducaoMensal, CriteriosConfig } from '../types';
 import ExcelImporter from './ExcelImporter';
 import { 
@@ -124,32 +124,32 @@ function gerarAlertasDinamicos(pList: Parceiro[], lList: CrmLog[], allProds: Pro
     }
 
 
-    // Regra 3: Parceiro com queda brusca de produção (Volume Prata = 0 ou em Reativação, com inatividade real de 60+ dias)
-    if (p.status === 'Reativação' && p.vol_total_mensal > 0) {
-      const dataCriacao = p.created_at ? new Date(p.created_at) : new Date();
-      const diferencaCriacaoDias = (hoje.getTime() - dataCriacao.getTime()) / (1000 * 60 * 60 * 24);
-      
+    // Regra 3: Parceiro Inativo com histórico real de produção (queda, não ausência
+    // desde sempre) e inatividade de 60+ dias desde a última produção válida.
+    // Usa o histórico real de produção (allProds), não mais vol_total_mensal — esse
+    // campo é autodeclarado no cadastro e raramente atualizado, o que fazia o alerta
+    // deixar de disparar para a maioria dos parceiros em Inativo mesmo com histórico.
+    if (p.status === 'Inativo') {
       const sortedProds = [...producoes].sort((a, b) => (b.ano !== a.ano ? b.ano - a.ano : b.mes - a.mes));
       const ultimaProd = sortedProds.find(pr => {
         const vol = (pr.vol_fgts || 0) + (pr.vol_clt || 0) + (pr.vol_cgv || 0) + (pr.vol_pix || 0);
         return vol > 0;
       });
-      
-      let diasSemProducao = diferencaCriacaoDias;
+
       if (ultimaProd) {
         const dataUltimaProd = new Date(ultimaProd.ano, ultimaProd.mes, 0);
-        diasSemProducao = (hoje.getTime() - dataUltimaProd.getTime()) / (1000 * 60 * 60 * 24);
-      }
+        const diasSemProducao = (hoje.getTime() - dataUltimaProd.getTime()) / (1000 * 60 * 60 * 24);
 
-      if (diasSemProducao >= 60) {
-        activeAlerts.push({
-          id: 'alert_inactive_' + p.id,
-          parceiro: p.nome,
-          parceiroId: p.id,
-          mensagem: 'Produção zerada há 60+ dias — processo Win-back deve ser iniciado.',
-          prioridade: 'Alta',
-          ultimaInteracao: dataUltima ? dataUltima.toLocaleDateString('pt-BR') : 'Sem registro'
-        });
+        if (diasSemProducao >= 60) {
+          activeAlerts.push({
+            id: 'alert_inactive_' + p.id,
+            parceiro: p.nome,
+            parceiroId: p.id,
+            mensagem: 'Produção zerada há 60+ dias — processo Win-back deve ser iniciado.',
+            prioridade: 'Alta',
+            ultimaInteracao: dataUltima ? dataUltima.toLocaleDateString('pt-BR') : 'Sem registro'
+          });
+        }
       }
     }
 
@@ -315,8 +315,8 @@ export default function Dashboard({ onSelectPartner }: { onSelectPartner?: (id: 
 
       somaAtivos += qtdAtivosNoMes;
       somaTaxaAtivos += pNoMes.length > 0 ? (qtdAtivosNoMes / pNoMes.length) * 100 : 0;
-      somaInativos += pNoMes.filter(p => p.status === 'Reativação').length;
-      somaChurnRate += pNoMes.length > 0 ? (pNoMes.filter(p => p.status === 'Reativação').length / pNoMes.length) * 100 : 0;
+      somaInativos += pNoMes.filter(p => p.status === 'Inativo').length;
+      somaChurnRate += pNoMes.length > 0 ? (pNoMes.filter(p => p.status === 'Inativo').length / pNoMes.length) * 100 : 0;
       
       somaFgts += fgtsAtivosNoMes;
       somaClt += cltAtivosNoMes;
@@ -341,7 +341,7 @@ export default function Dashboard({ onSelectPartner }: { onSelectPartner?: (id: 
 
     parceirosAtivos = qtdAtivos;
     taxaAtivos = parceirosNoPeriodo.length > 0 ? (parceirosAtivos / parceirosNoPeriodo.length) * 100 : 0;
-    inativos = parceirosNoPeriodo.filter(p => p.status === 'Reativação').length;
+    inativos = parceirosNoPeriodo.filter(p => p.status === 'Inativo').length;
     churnRate = parceirosNoPeriodo.length > 0 ? (inativos / parceirosNoPeriodo.length) * 100 : 0;
     
     let fgtsAtivos = 0;
@@ -381,7 +381,7 @@ export default function Dashboard({ onSelectPartner }: { onSelectPartner?: (id: 
 
 
   // Média de Produtos por Parceiro: considera apenas parceiros com status "Ativo"
-  // no período selecionado (parceiros em Reativação/Onboarding são excluídos do
+  // no período selecionado (parceiros em Inativo/Reativado/Onboarding são excluídos do
   // numerador e do denominador, para não distorcer o indicador de cross-sell).
   let totalProdutosOperados = 0;
   const parceirosAtivosNoPeriodo = parceirosNoPeriodo.filter(p => p.status === 'Ativo');
@@ -619,7 +619,7 @@ export default function Dashboard({ onSelectPartner }: { onSelectPartner?: (id: 
             {/* Hunter */}
             <div className={`card semaforo-card ${semaforo.hunter}`}>
               <div className="semaforo-header">
-                <span style={{ fontWeight: 600, color: 'var(--text-muted)', fontSize: '0.85rem', textTransform: 'uppercase' }}>PROSPECÇÃO / HUNTER</span>
+                <span style={{ fontWeight: 600, color: 'var(--text-muted)', fontSize: '0.85rem', textTransform: 'uppercase' }}>WINBACK / HUNTER</span>
                 <div className="semaforo-indicator">
                   <span className={`semaforo-dot ${semaforo.hunter}`}></span>
                   <span style={{ color: semaforo.hunter === 'Verde' ? 'var(--success)' : 'var(--danger)' }}>{semaforo.hunter}</span>
@@ -628,7 +628,7 @@ export default function Dashboard({ onSelectPartner }: { onSelectPartner?: (id: 
               <div style={{ margin: '1rem 0' }}>
                 <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Meta Semanal:</span>
                 <p style={{ fontWeight: 600, fontSize: '0.95rem', color: 'var(--secondary-color)' }}>
-                  2 novos parceiros ativados OU 1 nova reativação (win-back)
+                  2 conversões Onboarding → Ativo OU 1 transição Inativo → Reativado
                 </p>
               </div>
               <div style={{ padding: '0.75rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(0, 0, 0, 0.25)', border: '1px solid var(--border-color)', fontSize: '0.85rem' }}>
@@ -999,34 +999,41 @@ function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs, se
       setLoading(true);
       async function calc() {
         try {
-          // Achar o menor mês/ano do período selecionado
-          let minAno = 9999;
-          let minMes = 13;
+          // Achar o menor e o maior mês/ano do período selecionado
+          let minAno = 9999, minMes = 13, maxAno = 0, maxMes = 0;
           activeMonths.forEach(m => {
-            if (m.ano < minAno || (m.ano === minAno && m.mes < minMes)) {
-              minAno = m.ano;
-              minMes = m.mes;
-            }
+            if (m.ano < minAno || (m.ano === minAno && m.mes < minMes)) { minAno = m.ano; minMes = m.mes; }
+            if (m.ano > maxAno || (m.ano === maxAno && m.mes > maxMes)) { maxAno = m.ano; maxMes = m.mes; }
           });
 
-          let antAno = minAno;
-          let antMes = minMes - 1;
-          if (antMes === 0) {
-            antMes = 12;
-            antAno -= 1;
-          }
+          const mesBase = shiftMonth(minAno, minMes, -1);
+          const limites = { dias_inatividade_winback: 60, dias_conversao_hunter: 7 };
 
-          const periodStrMesAnterior = `${antAno}-${antMes}`;
-          const parceirosNoMesAnterior = dataService.getParceirosComStatusNoPeriodo(parceiros, allProducoes, periodStrMesAnterior);
-          const parceirosEmReativacao = parceirosNoMesAnterior.filter(p => p.status === 'Reativação');
+          const prodsMap: Record<string, ProducaoMensal[]> = {};
+          allProducoes.forEach(prod => {
+            if (!prodsMap[prod.parceiro_id]) prodsMap[prod.parceiro_id] = [];
+            prodsMap[prod.parceiro_id].push(prod);
+          });
 
-          const list = parceirosEmReativacao.map(p => {
+          // Universo: parceiros cujo status simulado no mês anterior ao período é Inativo
+          const parceirosEmInativo = parceiros.filter(p => {
+            const prods = (prodsMap[p.id] || []).filter(pr => (pr.ano < mesBase.ano) || (pr.ano === mesBase.ano && pr.mes <= mesBase.mes));
+            return computeStatusAtMonth(p.created_at, prods, limites, mesBase.ano, mesBase.mes) === 'Inativo';
+          });
+
+          const list = parceirosEmInativo.map(p => {
+            const prods = (prodsMap[p.id] || []).filter(pr => (pr.ano < maxAno) || (pr.ano === maxAno && pr.mes <= maxMes));
+            const timeline = computeStatusTimeline(p.created_at, prods, limites, maxAno, maxMes);
+            const transicionou = timeline.some(entry =>
+              entry.status === 'Reativado' && activeMonths.some(m => m.ano === entry.ano && m.mes === entry.mes)
+            );
+            const statusAtual = timeline[timeline.length - 1].status;
             const volPrataPeriodo = (parceiroProdMap[p.id]?.total || 0) / numMonths;
-            const reativado = volPrataPeriodo > 0;
             return {
               nome: p.nome,
-              inicioWinback: `Ref: ${antMes < 10 ? '0' + antMes : antMes}/${antAno}`,
-              status: reativado ? 'Ativo' : 'Reativação',
+              inicioWinback: `Base: ${mesBase.mes < 10 ? '0' + mesBase.mes : mesBase.mes}/${mesBase.ano} (Inativo)`,
+              transicionou,
+              statusAtual,
               classificacao: p.classificacao,
               score: p.score_comercial,
               volPrata: volPrataPeriodo
@@ -1071,7 +1078,7 @@ function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs, se
             <tr key={p.id}>
               <td style={{ fontWeight: 600 }}>{p.nome}</td>
               <td>
-                <span className={`badge ${p.status === 'Ativo' ? 'badge-success' : p.status === 'Reativação' ? 'badge-danger' : p.status === 'Onboarding' ? 'badge-info' : 'badge-info'}`}>
+                <span className={`badge ${p.status === 'Ativo' ? 'badge-success' : p.status === 'Inativo' ? 'badge-danger' : p.status === 'Reativado' ? 'badge-warning' : 'badge-info'}`}>
                   {p.status}
                 </span>
               </td>
@@ -1118,7 +1125,7 @@ function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs, se
               <tr key={p.id}>
                 <td style={{ fontWeight: 600 }}>{p.nome}</td>
                 <td>
-                  <span className={`badge ${p.status === 'Ativo' ? 'badge-success' : p.status === 'Reativação' ? 'badge-danger' : 'badge-info'}`}>
+                  <span className={`badge ${p.status === 'Ativo' ? 'badge-success' : p.status === 'Inativo' ? 'badge-danger' : p.status === 'Reativado' ? 'badge-warning' : 'badge-info'}`}>
                     {p.status}
                   </span>
                 </td>
@@ -1225,7 +1232,7 @@ function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs, se
     const rows = [...parceiros].sort((a, b) => a.status.localeCompare(b.status));
     content = (
       <div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginBottom: '1.5rem', textAlign: 'center' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem', marginBottom: '1.5rem', textAlign: 'center' }}>
           <div style={{ padding: '0.75rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(16, 185, 129, 0.1)' }}>
             <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>ATIVOS</span>
             <div style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--success)' }}>{statusCounts['Ativo'] || 0}</div>
@@ -1234,9 +1241,13 @@ function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs, se
             <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>ONBOARDING</span>
             <div style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--info)' }}>{statusCounts['Onboarding'] || 0}</div>
           </div>
+          <div style={{ padding: '0.75rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(245, 158, 11, 0.1)' }}>
+            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>REATIVADO</span>
+            <div style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--warning)' }}>{statusCounts['Reativado'] || 0}</div>
+          </div>
           <div style={{ padding: '0.75rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(239, 68, 68, 0.1)' }}>
-            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>REATIVAÇÃO</span>
-            <div style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--danger)' }}>{statusCounts['Reativação'] || 0}</div>
+            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>INATIVO</span>
+            <div style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--danger)' }}>{statusCounts['Inativo'] || 0}</div>
           </div>
         </div>
         <table className="table">
@@ -1254,8 +1265,9 @@ function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs, se
                 <td style={{ fontWeight: 600 }}>{p.nome}</td>
                 <td>
                   <span className={`badge ${
-                    p.status === 'Ativo' ? 'badge-success' : 
-                    p.status === 'Reativação' ? 'badge-danger' : 'badge-info'
+                    p.status === 'Ativo' ? 'badge-success' :
+                    p.status === 'Inativo' ? 'badge-danger' :
+                    p.status === 'Reativado' ? 'badge-warning' : 'badge-info'
                   }`}>
                     {p.status}
                   </span>
@@ -1269,8 +1281,8 @@ function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs, se
       </div>
     );
   } else if (kpiType === 'churn') {
-    title = 'Churn da Carteira (Parceiros em Reativação)';
-    const rows = parceiros.filter(p => p.status === 'Reativação').sort((a,b) => b.vol_total_mensal - a.vol_total_mensal);
+    title = 'Churn da Carteira (Parceiros Inativos)';
+    const rows = parceiros.filter(p => p.status === 'Inativo').sort((a,b) => b.vol_total_mensal - a.vol_total_mensal);
     content = (
       <table className="table">
         <thead>
@@ -1338,7 +1350,7 @@ function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs, se
       </table>
     );
   } else if (kpiType === 'taxa-reativacao') {
-    title = 'Origem: Taxa de Reativação da Carteira (Processo Win-back)';
+    title = 'Origem: Taxa de Reativação da Carteira (Transição Inativo → Reativado)';
     content = loading ? (
       <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>Buscando contatos e históricos comerciais...</div>
     ) : (
@@ -1346,10 +1358,11 @@ function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs, se
         <thead>
           <tr>
             <th>Parceiro Win-back</th>
-            <th>Início Win-back</th>
+            <th>Situação de Base</th>
+            <th>Transicionou no Período?</th>
             <th>Status Atual</th>
             <th>Classificação</th>
-            <th style={{ textAlign: 'right' }}>Faturamento Atual</th>
+            <th style={{ textAlign: 'right' }}>Faturamento no Período</th>
           </tr>
         </thead>
         <tbody>
@@ -1358,8 +1371,17 @@ function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs, se
               <td style={{ fontWeight: 600 }}>{p.nome}</td>
               <td>{p.inicioWinback}</td>
               <td>
-                <span className={`badge ${p.status === 'Ativo' ? 'badge-success' : 'badge-danger'}`}>
-                  {p.status === 'Ativo' ? 'Reativado' : 'Pendente de Reativação'}
+                <span className={`badge ${p.transicionou ? 'badge-success' : 'badge-danger'}`}>
+                  {p.transicionou ? 'Sim' : 'Não'}
+                </span>
+              </td>
+              <td>
+                <span className={`badge ${
+                  p.statusAtual === 'Ativo' ? 'badge-success' :
+                  p.statusAtual === 'Inativo' ? 'badge-danger' :
+                  p.statusAtual === 'Reativado' ? 'badge-warning' : 'badge-info'
+                }`}>
+                  {p.statusAtual}
                 </span>
               </td>
               <td>{p.classificacao}</td>

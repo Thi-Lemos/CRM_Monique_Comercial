@@ -123,7 +123,7 @@ export default function PartnersList({ onSelectPartner }: PartnersListProps) {
               vol_prata_mensal: volPrata,
               produtos_ativos: produtos,
               propostas_pagas_semana: propostasPagas,
-              status: 'Reativação',
+              status: 'Inativo',
               created_at: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
             });
             importados++;
@@ -234,7 +234,8 @@ export default function PartnersList({ onSelectPartner }: PartnersListProps) {
             <option value="">Todos Status</option>
             <option value="Ativo">Ativo</option>
             <option value="Onboarding">Onboarding</option>
-            <option value="Reativação">Reativação</option>
+            <option value="Reativado">Reativado</option>
+            <option value="Inativo">Inativo</option>
           </select>
         </div>
 
@@ -335,7 +336,8 @@ export default function PartnersList({ onSelectPartner }: PartnersListProps) {
                     <td>
                       <span className={`badge ${
                         p.status === 'Ativo' ? 'badge-success' : 
-                        p.status === 'Reativação' ? 'badge-danger' : 'badge-info'
+                        p.status === 'Inativo' ? 'badge-danger' :
+                        p.status === 'Reativado' ? 'badge-warning' : 'badge-info'
                       }`}>
                         {p.status}
                       </span>

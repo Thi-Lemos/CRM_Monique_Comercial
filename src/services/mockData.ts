@@ -910,7 +910,7 @@ export const initialParceiros: Parceiro[] = [
     ],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 58701.8,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 28,
     "classificacao": "Desenvolvimento"
   },
@@ -1433,7 +1433,7 @@ export const initialParceiros: Parceiro[] = [
     ],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 12,
     "classificacao": "Desenvolvimento"
   },
@@ -1485,7 +1485,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -1629,7 +1629,7 @@ export const initialParceiros: Parceiro[] = [
     ],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 12,
     "classificacao": "Desenvolvimento"
   },
@@ -1665,7 +1665,7 @@ export const initialParceiros: Parceiro[] = [
     ],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 12,
     "classificacao": "Desenvolvimento"
   },
@@ -1681,7 +1681,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -1733,7 +1733,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -1769,7 +1769,7 @@ export const initialParceiros: Parceiro[] = [
     ],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 12,
     "classificacao": "Desenvolvimento"
   },
@@ -1787,7 +1787,7 @@ export const initialParceiros: Parceiro[] = [
     ],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 12,
     "classificacao": "Desenvolvimento"
   },
@@ -1805,7 +1805,7 @@ export const initialParceiros: Parceiro[] = [
     ],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 12,
     "classificacao": "Desenvolvimento"
   },
@@ -1823,7 +1823,7 @@ export const initialParceiros: Parceiro[] = [
     ],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 12,
     "classificacao": "Desenvolvimento"
   },
@@ -1841,7 +1841,7 @@ export const initialParceiros: Parceiro[] = [
     ],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 12,
     "classificacao": "Desenvolvimento"
   },
@@ -1859,7 +1859,7 @@ export const initialParceiros: Parceiro[] = [
     ],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 12,
     "classificacao": "Desenvolvimento"
   },
@@ -1877,7 +1877,7 @@ export const initialParceiros: Parceiro[] = [
     ],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 12,
     "classificacao": "Desenvolvimento"
   },
@@ -1893,7 +1893,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -1927,7 +1927,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -1961,7 +1961,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -1977,7 +1977,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -1993,7 +1993,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2009,7 +2009,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2025,7 +2025,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2041,7 +2041,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2057,7 +2057,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2073,7 +2073,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2089,7 +2089,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2105,7 +2105,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2121,7 +2121,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2137,7 +2137,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2153,7 +2153,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2169,7 +2169,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2185,7 +2185,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2201,7 +2201,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2217,7 +2217,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2233,7 +2233,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2249,7 +2249,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2265,7 +2265,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2281,7 +2281,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2297,7 +2297,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2313,7 +2313,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2329,7 +2329,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2345,7 +2345,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2361,7 +2361,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2377,7 +2377,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2393,7 +2393,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2409,7 +2409,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2425,7 +2425,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2441,7 +2441,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2457,7 +2457,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2473,7 +2473,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2489,7 +2489,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2505,7 +2505,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2521,7 +2521,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2537,7 +2537,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2553,7 +2553,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2569,7 +2569,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2585,7 +2585,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2601,7 +2601,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2617,7 +2617,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2633,7 +2633,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2649,7 +2649,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2665,7 +2665,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2681,7 +2681,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2697,7 +2697,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2713,7 +2713,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2729,7 +2729,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2745,7 +2745,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2761,7 +2761,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2777,7 +2777,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2793,7 +2793,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2809,7 +2809,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2825,7 +2825,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2841,7 +2841,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2857,7 +2857,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2873,7 +2873,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2889,7 +2889,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2905,7 +2905,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2921,7 +2921,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2937,7 +2937,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2953,7 +2953,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2969,7 +2969,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -2985,7 +2985,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3001,7 +3001,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3017,7 +3017,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3033,7 +3033,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3049,7 +3049,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3065,7 +3065,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3081,7 +3081,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3097,7 +3097,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3113,7 +3113,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3129,7 +3129,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3145,7 +3145,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3161,7 +3161,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3177,7 +3177,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3193,7 +3193,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3209,7 +3209,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3225,7 +3225,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3241,7 +3241,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3257,7 +3257,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3273,7 +3273,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3289,7 +3289,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3305,7 +3305,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3321,7 +3321,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3337,7 +3337,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3353,7 +3353,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3369,7 +3369,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3385,7 +3385,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3401,7 +3401,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3417,7 +3417,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3433,7 +3433,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3449,7 +3449,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3465,7 +3465,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3481,7 +3481,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3497,7 +3497,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3513,7 +3513,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3529,7 +3529,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3545,7 +3545,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3561,7 +3561,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3577,7 +3577,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3593,7 +3593,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3609,7 +3609,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3625,7 +3625,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3641,7 +3641,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3657,7 +3657,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3673,7 +3673,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3689,7 +3689,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3705,7 +3705,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3721,7 +3721,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3737,7 +3737,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3753,7 +3753,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3769,7 +3769,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3785,7 +3785,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3801,7 +3801,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3817,7 +3817,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3833,7 +3833,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3849,7 +3849,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3865,7 +3865,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3881,7 +3881,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3897,7 +3897,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3913,7 +3913,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3929,7 +3929,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3945,7 +3945,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3961,7 +3961,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3977,7 +3977,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -3993,7 +3993,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4009,7 +4009,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4025,7 +4025,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4041,7 +4041,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4057,7 +4057,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4073,7 +4073,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4089,7 +4089,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4105,7 +4105,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4121,7 +4121,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4137,7 +4137,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4153,7 +4153,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4169,7 +4169,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4185,7 +4185,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4201,7 +4201,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4217,7 +4217,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4233,7 +4233,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4249,7 +4249,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4265,7 +4265,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4281,7 +4281,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4297,7 +4297,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4313,7 +4313,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4329,7 +4329,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4345,7 +4345,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4361,7 +4361,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4377,7 +4377,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4393,7 +4393,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4409,7 +4409,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 6260.65,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 26,
     "classificacao": "Desenvolvimento"
   },
@@ -4425,7 +4425,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4441,7 +4441,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4457,7 +4457,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4473,7 +4473,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4489,7 +4489,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4505,7 +4505,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4521,7 +4521,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4537,7 +4537,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4553,7 +4553,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4569,7 +4569,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4585,7 +4585,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4601,7 +4601,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4617,7 +4617,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4633,7 +4633,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4649,7 +4649,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4665,7 +4665,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4681,7 +4681,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4697,7 +4697,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4713,7 +4713,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4729,7 +4729,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4745,7 +4745,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4761,7 +4761,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4777,7 +4777,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4793,7 +4793,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4809,7 +4809,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4825,7 +4825,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4841,7 +4841,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4857,7 +4857,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4873,7 +4873,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4889,7 +4889,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4905,7 +4905,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4921,7 +4921,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4937,7 +4937,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4953,7 +4953,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4969,7 +4969,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -4985,7 +4985,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5001,7 +5001,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5017,7 +5017,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5033,7 +5033,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5049,7 +5049,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5065,7 +5065,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5081,7 +5081,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5097,7 +5097,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5113,7 +5113,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5129,7 +5129,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5145,7 +5145,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5161,7 +5161,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5177,7 +5177,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5193,7 +5193,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5209,7 +5209,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5225,7 +5225,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5241,7 +5241,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5257,7 +5257,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5273,7 +5273,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5289,7 +5289,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5305,7 +5305,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5321,7 +5321,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5337,7 +5337,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5353,7 +5353,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5369,7 +5369,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5385,7 +5385,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5401,7 +5401,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5417,7 +5417,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5433,7 +5433,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5449,7 +5449,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5465,7 +5465,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5481,7 +5481,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5497,7 +5497,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5513,7 +5513,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5529,7 +5529,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5545,7 +5545,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5561,7 +5561,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5577,7 +5577,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5593,7 +5593,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5609,7 +5609,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5625,7 +5625,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5641,7 +5641,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5657,7 +5657,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5673,7 +5673,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5689,7 +5689,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5705,7 +5705,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5721,7 +5721,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5737,7 +5737,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5753,7 +5753,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5769,7 +5769,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5785,7 +5785,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5801,7 +5801,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5817,7 +5817,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5833,7 +5833,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5849,7 +5849,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5865,7 +5865,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5881,7 +5881,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5897,7 +5897,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5913,7 +5913,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5929,7 +5929,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5945,7 +5945,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5961,7 +5961,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5977,7 +5977,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -5993,7 +5993,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6009,7 +6009,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6025,7 +6025,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6041,7 +6041,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6057,7 +6057,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6073,7 +6073,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6089,7 +6089,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6105,7 +6105,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6121,7 +6121,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6137,7 +6137,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6153,7 +6153,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6169,7 +6169,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6185,7 +6185,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6201,7 +6201,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6217,7 +6217,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6233,7 +6233,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6249,7 +6249,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6265,7 +6265,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6281,7 +6281,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6297,7 +6297,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6313,7 +6313,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6329,7 +6329,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6345,7 +6345,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6361,7 +6361,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6377,7 +6377,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6393,7 +6393,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6409,7 +6409,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6425,7 +6425,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6441,7 +6441,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6457,7 +6457,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6473,7 +6473,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6489,7 +6489,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6505,7 +6505,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6521,7 +6521,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6537,7 +6537,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6553,7 +6553,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6569,7 +6569,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6585,7 +6585,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6601,7 +6601,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6617,7 +6617,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6633,7 +6633,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6649,7 +6649,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6665,7 +6665,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6681,7 +6681,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6697,7 +6697,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6713,7 +6713,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6729,7 +6729,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6745,7 +6745,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6761,7 +6761,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6777,7 +6777,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6793,7 +6793,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6809,7 +6809,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6825,7 +6825,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6841,7 +6841,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6857,7 +6857,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6873,7 +6873,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6889,7 +6889,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6905,7 +6905,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6921,7 +6921,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6937,7 +6937,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6953,7 +6953,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6969,7 +6969,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -6985,7 +6985,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7001,7 +7001,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7017,7 +7017,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7033,7 +7033,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7049,7 +7049,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7065,7 +7065,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7081,7 +7081,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7097,7 +7097,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7113,7 +7113,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7129,7 +7129,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7145,7 +7145,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7161,7 +7161,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7177,7 +7177,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7193,7 +7193,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7209,7 +7209,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7225,7 +7225,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7241,7 +7241,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7257,7 +7257,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7273,7 +7273,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7289,7 +7289,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7305,7 +7305,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7321,7 +7321,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7337,7 +7337,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7353,7 +7353,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7369,7 +7369,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7385,7 +7385,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7401,7 +7401,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7417,7 +7417,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7433,7 +7433,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7449,7 +7449,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7465,7 +7465,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7481,7 +7481,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7497,7 +7497,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7513,7 +7513,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7529,7 +7529,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7545,7 +7545,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7561,7 +7561,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7577,7 +7577,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7593,7 +7593,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7609,7 +7609,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7625,7 +7625,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7641,7 +7641,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7657,7 +7657,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7673,7 +7673,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7689,7 +7689,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7705,7 +7705,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7721,7 +7721,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7737,7 +7737,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7753,7 +7753,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7769,7 +7769,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7785,7 +7785,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7801,7 +7801,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7817,7 +7817,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7833,7 +7833,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7849,7 +7849,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7865,7 +7865,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7881,7 +7881,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7897,7 +7897,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 6035.77,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 26,
     "classificacao": "Desenvolvimento"
   },
@@ -7913,7 +7913,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7929,7 +7929,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7945,7 +7945,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7961,7 +7961,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7977,7 +7977,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -7993,7 +7993,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -8009,7 +8009,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -8025,7 +8025,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -8041,7 +8041,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -8057,7 +8057,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -8073,7 +8073,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 5595.96,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 26,
     "classificacao": "Desenvolvimento"
   },
@@ -8089,7 +8089,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -8105,7 +8105,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -8121,7 +8121,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -8137,7 +8137,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -8153,7 +8153,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -8169,7 +8169,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -8185,7 +8185,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -8201,7 +8201,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -8217,7 +8217,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -8233,7 +8233,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -8249,7 +8249,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -8265,7 +8265,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -8281,7 +8281,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -8297,7 +8297,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -8313,7 +8313,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -8329,7 +8329,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -8345,7 +8345,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -8361,7 +8361,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -8377,7 +8377,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -8393,7 +8393,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -8409,7 +8409,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -8425,7 +8425,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -8441,7 +8441,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 2436.13,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 26,
     "classificacao": "Desenvolvimento"
   },
@@ -8457,7 +8457,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -8473,7 +8473,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -8489,7 +8489,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -8505,7 +8505,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -8521,7 +8521,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -8537,7 +8537,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -8553,7 +8553,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -8569,7 +8569,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -8585,7 +8585,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -8601,7 +8601,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -8617,7 +8617,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -8633,7 +8633,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -8649,7 +8649,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 2945,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 26,
     "classificacao": "Desenvolvimento"
   },
@@ -8665,7 +8665,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -8681,7 +8681,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -8697,7 +8697,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -8713,7 +8713,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -8729,7 +8729,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -8745,7 +8745,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -8761,7 +8761,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -8777,7 +8777,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -8793,7 +8793,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -8809,7 +8809,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -8825,7 +8825,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -8841,7 +8841,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -8857,7 +8857,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -8873,7 +8873,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 10,
     "classificacao": "Desenvolvimento"
   },
@@ -8889,7 +8889,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -8905,7 +8905,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -8921,7 +8921,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -8937,7 +8937,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -8953,7 +8953,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -8969,7 +8969,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -8985,7 +8985,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9001,7 +9001,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9017,7 +9017,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9033,7 +9033,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9049,7 +9049,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9065,7 +9065,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9081,7 +9081,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9097,7 +9097,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9113,7 +9113,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9129,7 +9129,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9145,7 +9145,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9161,7 +9161,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9177,7 +9177,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9193,7 +9193,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9209,7 +9209,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9225,7 +9225,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9241,7 +9241,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9257,7 +9257,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9273,7 +9273,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9289,7 +9289,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9305,7 +9305,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9321,7 +9321,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9337,7 +9337,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9353,7 +9353,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9369,7 +9369,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9385,7 +9385,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9401,7 +9401,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9417,7 +9417,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9433,7 +9433,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9449,7 +9449,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9465,7 +9465,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9481,7 +9481,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9497,7 +9497,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9513,7 +9513,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9529,7 +9529,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9545,7 +9545,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9561,7 +9561,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9577,7 +9577,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9593,7 +9593,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9609,7 +9609,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9625,7 +9625,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9641,7 +9641,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9657,7 +9657,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9673,7 +9673,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9689,7 +9689,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9705,7 +9705,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9721,7 +9721,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9737,7 +9737,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9753,7 +9753,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9769,7 +9769,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9785,7 +9785,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9801,7 +9801,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9817,7 +9817,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9833,7 +9833,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9849,7 +9849,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9865,7 +9865,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9881,7 +9881,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9897,7 +9897,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9913,7 +9913,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9929,7 +9929,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9945,7 +9945,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9961,7 +9961,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9977,7 +9977,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -9993,7 +9993,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10009,7 +10009,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10025,7 +10025,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10041,7 +10041,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10057,7 +10057,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10073,7 +10073,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10089,7 +10089,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10105,7 +10105,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10121,7 +10121,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10137,7 +10137,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10153,7 +10153,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10169,7 +10169,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10185,7 +10185,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10201,7 +10201,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10217,7 +10217,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10233,7 +10233,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10249,7 +10249,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10265,7 +10265,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10281,7 +10281,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10297,7 +10297,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10313,7 +10313,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10329,7 +10329,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10345,7 +10345,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10361,7 +10361,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10377,7 +10377,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10393,7 +10393,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10409,7 +10409,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10425,7 +10425,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10441,7 +10441,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10457,7 +10457,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10473,7 +10473,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10489,7 +10489,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10505,7 +10505,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10521,7 +10521,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10537,7 +10537,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10553,7 +10553,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10569,7 +10569,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10585,7 +10585,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10601,7 +10601,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10617,7 +10617,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10633,7 +10633,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10649,7 +10649,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10665,7 +10665,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10681,7 +10681,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10697,7 +10697,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10713,7 +10713,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10729,7 +10729,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10745,7 +10745,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10761,7 +10761,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10777,7 +10777,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10793,7 +10793,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10809,7 +10809,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10825,7 +10825,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10841,7 +10841,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10857,7 +10857,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10873,7 +10873,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10889,7 +10889,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10905,7 +10905,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10921,7 +10921,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10937,7 +10937,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10953,7 +10953,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10969,7 +10969,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -10985,7 +10985,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -11001,7 +11001,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -11017,7 +11017,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -11033,7 +11033,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -11049,7 +11049,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -11065,7 +11065,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -11081,7 +11081,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -11097,7 +11097,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -11113,7 +11113,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -11129,7 +11129,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -11145,7 +11145,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -11161,7 +11161,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -11177,7 +11177,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -11193,7 +11193,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -11209,7 +11209,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -11225,7 +11225,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -11241,7 +11241,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -11257,7 +11257,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -11273,7 +11273,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -11289,7 +11289,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -11305,7 +11305,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -11321,7 +11321,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -11337,7 +11337,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -11353,7 +11353,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -11369,7 +11369,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -11385,7 +11385,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -11401,7 +11401,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -11417,7 +11417,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -11433,7 +11433,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -11449,7 +11449,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -11465,7 +11465,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -11481,7 +11481,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -11497,7 +11497,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -11513,7 +11513,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -11529,7 +11529,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -11545,7 +11545,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -11561,7 +11561,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -11577,7 +11577,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -11593,7 +11593,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -11609,7 +11609,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -11625,7 +11625,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -11641,7 +11641,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -11657,7 +11657,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -11673,7 +11673,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -11689,7 +11689,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -11705,7 +11705,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -11721,7 +11721,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -11737,7 +11737,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -11753,7 +11753,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -11769,7 +11769,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -11785,7 +11785,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -11801,7 +11801,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -11817,7 +11817,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -11833,7 +11833,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   },
@@ -11849,7 +11849,7 @@ export const initialParceiros: Parceiro[] = [
     "produtos_ativos": [],
     "vol_total_mensal": 0,
     "vol_prata_mensal": 0,
-    "status": "Reativação",
+    "status": "Inativo",
     "score_comercial": 0,
     "classificacao": "Desenvolvimento"
   }
