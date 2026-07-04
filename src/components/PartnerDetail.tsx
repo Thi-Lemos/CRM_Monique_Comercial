@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { dataService } from '../services/dataService';
+import { dataService, getVolPrataUltimaProducao } from '../services/dataService';
 import { calculateCriteriaNotes } from '../services/scoreCalculator';
 import { Parceiro, ProducaoMensal, CrmLog, ProducaoSemanal } from '../types';
 import { 
@@ -27,6 +27,7 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
   const [logs, setLogs] = useState<CrmLog[]>([]);
   const [semanas, setSemanas] = useState<ProducaoSemanal[]>([]);
   const [sharePortfolio, setSharePortfolio] = useState(0);
+  const [volPrataAtual, setVolPrataAtual] = useState(0);
   const [loading, setLoading] = useState(true);
 
   // Form de Lançamento de Produção
@@ -53,6 +54,7 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
         setPartner(current);
         const prodData = await dataService.getProducao(partnerId);
         setProducao(prodData);
+        setVolPrataAtual(getVolPrataUltimaProducao(prodData));
         const logData = await dataService.getLogs(partnerId);
         // Histórico de Interações Comerciais mostra apenas contatos registrados manualmente
         // pela Monique; transições automáticas de status (origem 'sistema') não entram aqui,
@@ -171,7 +173,7 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
           </div>
           <div>
             <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>VOL. PRATA ATUAL</span>
-            <p style={{ fontWeight: 700, color: 'var(--primary-color)', fontSize: '1.1rem', marginTop: '0.15rem' }}>{formatCurrency(partner.vol_prata_mensal)}</p>
+            <p style={{ fontWeight: 700, color: 'var(--primary-color)', fontSize: '1.1rem', marginTop: '0.15rem' }}>{formatCurrency(volPrataAtual)}</p>
             <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>de {formatCurrency(partner.vol_total_mensal)}</p>
           </div>
           <div>
@@ -210,10 +212,10 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
           <div>
             <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>PRODUTOS ATIVOS</span>
             <div style={{ display: 'flex', gap: '0.25rem', flexWrap: 'wrap', marginTop: '0.25rem' }}>
-              {partner.produtos_ativos.map(p => (
+              {(partner.produtos_ativos || []).map(p => (
                 <span key={p} className="badge badge-info" style={{ fontSize: '0.65rem', padding: '0.15rem 0.45rem' }}>{p}</span>
               ))}
-              {partner.produtos_ativos.length === 0 && <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Nenhum ativo</span>}
+              {(partner.produtos_ativos || []).length === 0 && <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Nenhum ativo</span>}
             </div>
           </div>
         </div>
@@ -254,11 +256,11 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
             {[
               { label: 'Volume total mensal (25%)', note: notes.n1, desc: 'Declarado' },
               { label: 'Concentração atual no Prata (20%)', note: notes.n2, desc: partner.vol_total_mensal > 0 ? `${((partner.vol_prata_mensal / partner.vol_total_mensal) * 100).toFixed(0)}%` : 'NVT' },
-              { label: 'Estrutura / Nº Vendedores (15%)', note: notes.n3, desc: `${partner.num_vendedores} vend.` },
-              { label: 'Abrangência geográfica (15%)', note: notes.n4, desc: partner.area_geografica },
-              { label: 'Produtos ativos no Prata (10%)', note: notes.n5, desc: `${partner.produtos_ativos.length} prod.` },
-              { label: 'Modelo de atuação (10%)', note: notes.n6, desc: partner.modelo_atuacao },
-              { label: 'Risco de dependência de produto único (5%)', note: notes.n7, desc: `${partner.produtos_ativos.length} prod.` }
+              { label: 'Estrutura / Nº Vendedores (15%)', note: notes.n3, desc: `${partner.num_vendedores || 0} vend.` },
+              { label: 'Abrangência geográfica (15%)', note: notes.n4, desc: partner.area_geografica || 'Local' },
+              { label: 'Produtos ativos no Prata (10%)', note: notes.n5, desc: `${(partner.produtos_ativos || []).length} prod.` },
+              { label: 'Modelo de atuação (10%)', note: notes.n6, desc: partner.modelo_atuacao || 'Físico' },
+              { label: 'Risco de dependência de produto único (5%)', note: notes.n7, desc: `${(partner.produtos_ativos || []).length} prod.` }
             ].map((c, i) => (
               <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.78rem', paddingBottom: '0.35rem', borderBottom: '1px solid var(--border-color)' }}>
                 <span style={{ color: 'var(--text-main)', fontWeight: 500 }}>{c.label}</span>

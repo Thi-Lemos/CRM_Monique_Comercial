@@ -154,7 +154,7 @@ function gerarAlertasDinamicos(pList: Parceiro[], lList: CrmLog[], allProds: Pro
     }
 
     // Oportunidades (Prioridade Média)
-    if (p.status === 'Ativo' && !p.produtos_ativos.includes('CGV') && p.num_vendedores >= 4) {
+    if (p.status === 'Ativo' && !(p.produtos_ativos || []).includes('CGV') && (p.num_vendedores || 0) >= 4) {
       activeAlerts.push({
         id: 'alert_opp_cgv_' + p.id,
         parceiro: p.nome,

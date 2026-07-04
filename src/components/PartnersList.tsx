@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { dataService, getDefaultPeriod, getPeriodOptions } from '../services/dataService';
-import { Parceiro, ProducaoMensal, CriteriosConfig } from '../types';
+import { dataService, getVolPrataUltimaProducao } from '../services/dataService';
+import { Parceiro, ProducaoMensal } from '../types';
 import { Search, Plus, Edit2, Trash2, FileSpreadsheet } from 'lucide-react';
 import PartnerFormModal from './PartnerFormModal';
 
@@ -15,8 +15,6 @@ interface PartnersListProps {
 export default function PartnersList({ onSelectPartner }: PartnersListProps) {
   const [parceiros, setParceiros] = useState<Parceiro[]>([]);
   const [allProducoes, setAllProducoes] = useState<ProducaoMensal[]>([]);
-  const [criterios, setCriterios] = useState<CriteriosConfig | null>(null);
-  const [selectedPeriod, setSelectedPeriod] = useState<string>(getDefaultPeriod());
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
@@ -30,14 +28,12 @@ export default function PartnersList({ onSelectPartner }: PartnersListProps) {
   const loadPartners = async () => {
     try {
       setLoading(true);
-      const [list, prods, config] = await Promise.all([
+      const [list, prods] = await Promise.all([
         dataService.getParceiros(),
-        dataService.getAllProducao(),
-        dataService.getCriterios()
+        dataService.getAllProducao()
       ]);
       setParceiros(list);
       setAllProducoes(prods);
-      setCriterios(config);
     } catch (e) {
       console.error('Erro ao ler parceiros:', e);
     } finally {
@@ -140,14 +136,22 @@ export default function PartnersList({ onSelectPartner }: PartnersListProps) {
     reader.readAsBinaryString(file);
   };
 
-  const parceirosNoPeriodo = dataService.getParceirosComStatusNoPeriodo(
-    parceiros,
-    allProducoes,
-    selectedPeriod,
-    criterios?.limites
-  );
+  // Vol. Prata exibido é sempre o da última produção lançada para o parceiro,
+  // independente de mês/período — a Carteira não usa mais seletor de período.
+  const prodsPorParceiro: Record<string, ProducaoMensal[]> = {};
+  allProducoes.forEach(prod => {
+    if (!prodsPorParceiro[prod.parceiro_id]) {
+      prodsPorParceiro[prod.parceiro_id] = [];
+    }
+    prodsPorParceiro[prod.parceiro_id].push(prod);
+  });
 
-  const filteredParceiros = parceirosNoPeriodo.filter(p => {
+  const parceirosComVolAtual = parceiros.map(p => ({
+    ...p,
+    vol_prata_mensal: getVolPrataUltimaProducao(prodsPorParceiro[p.id] || [])
+  }));
+
+  const filteredParceiros = parceirosComVolAtual.filter(p => {
     const matchesSearch = p.nome.toLowerCase().includes(search.toLowerCase()) || 
                           (p.cnpj || '').includes(search);
     const matchesStatus = statusFilter ? p.status === statusFilter : true;
@@ -179,21 +183,6 @@ export default function PartnersList({ onSelectPartner }: PartnersListProps) {
         </div>
         
         <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-          {/* Seletor de Período */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginRight: '1rem' }}>
-            <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-muted)' }}>PERÍODO:</span>
-            <select
-              value={selectedPeriod}
-              onChange={(e) => setSelectedPeriod(e.target.value)}
-              className="form-input"
-              style={{ fontSize: '0.85rem', padding: '0.4rem 2rem 0.4rem 0.75rem', width: 'auto', margin: 0, height: '36px', borderRadius: 'var(--radius-sm)' }}
-            >
-              {getPeriodOptions().map(opt => (
-                <option key={opt.value} value={opt.value}>{opt.label}</option>
-              ))}
-            </select>
-          </div>
-
           {IMPORTACAO_XLSX_HABILITADA && (
             <label className="btn btn-secondary" style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0, height: '36px' }}>
               <FileSpreadsheet size={16} /> Importar XLSX

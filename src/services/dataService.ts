@@ -202,6 +202,24 @@ export function computeStatusTimeline(
 
 // Retorna apenas o status vigente em um mês de referência específico (último
 // item da simulação até aquele mês).
+// Retorna o volume Prata (FGTS + CLT + CGV + Cartão/PIX) do mês de produção mais
+// recente já lançado para o parceiro — independe de qualquer período/mês
+// selecionado em filtros de tela. Usado em "VOL. PRATA ATUAL" (ficha do parceiro)
+// e na coluna "Vol. Prata" da Carteira de Parceiros.
+export function getVolPrataUltimaProducao(prods: ProducaoMensal[]): number {
+  if (!prods || prods.length === 0) return 0;
+
+  let maisRecente: ProducaoMensal | null = null;
+  for (const p of prods) {
+    if (!maisRecente || p.ano > maisRecente.ano || (p.ano === maisRecente.ano && p.mes > maisRecente.mes)) {
+      maisRecente = p;
+    }
+  }
+  if (!maisRecente) return 0;
+
+  return (maisRecente.vol_fgts || 0) + (maisRecente.vol_clt || 0) + (maisRecente.vol_cgv || 0) + (maisRecente.vol_pix || 0);
+}
+
 export function computeStatusAtMonth(
   createdAt: string | undefined,
   parceiroProds: ProducaoMensal[],
