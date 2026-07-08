@@ -1,3 +1,5 @@
+import { WeekInfo } from './utils/weekUtils';
+
 export interface Parceiro {
   id: string;
   nome: string;
@@ -38,6 +40,7 @@ export interface ProducaoMensal {
   vol_pix: number;
   vol_total?: number; // Calculado
   propostas_pagas?: number;
+  created_at?: string;
 }
 
 export interface CrmLog {
@@ -53,7 +56,7 @@ export interface CrmLog {
   crm_atualizado: boolean;
   score_no_momento?: number;
   origem?: 'manual' | 'sistema'; // 'sistema' = gerado automaticamente por transição de status; 'manual' = registrado pela Monique
-  
+
   // Questionário Pós-Reunião (Módulo 5/Blocos 1, 2 e 3)
   diagnostico_causa?: string;
   diagnostico_dor?: string;
@@ -67,12 +70,32 @@ export interface CrmLog {
   created_at?: string;
 }
 
+export interface EventoSemana {
+  id?: string;
+  semana_inicio: string;   // YYYY-MM-DD — segunda-feira
+  semana_fim: string;      // YYYY-MM-DD — domingo
+  ano: number;
+  mes: number;
+  semana_num: number;
+  tipo: 'ativacao' | 'reativacao';
+  parceiro_id: string;
+  origem: 'crm_direto' | 'planilha';
+  created_at?: string;
+  // Campo enriquecido em memória (não persiste no banco)
+  parceiro_nome?: string;
+}
+
 export interface SemafaroStatus {
   hunter: 'Verde' | 'Vermelho';
   farmer: 'Verde' | 'Vermelho';
   hunterAcao: string;
   farmerAcao: string;
   statusGeral: string;
+  // Campos novos — semana civil
+  hunterAtivacoes: EventoSemana[];
+  hunterReativacoes: EventoSemana[];
+  farmerPropostasSemana: number;
+  semanaInfo: WeekInfo;
 }
 
 export interface TaskItem {
@@ -112,13 +135,15 @@ export interface ProducaoSemanal {
   parceiro_id: string;
   ano: number;
   mes: number;
-  semana: number; // 1 a 5
+  semana: number;           // número ordinal dentro do mês (1-5)
+  semana_inicio?: string;   // YYYY-MM-DD — segunda-feira (fonte de verdade para deduplicação)
   vol_fgts: number;
   vol_clt: number;
   vol_cgv: number;
   vol_pix: number;
-  vol_total?: number; // Calculado
+  vol_total?: number;       // Calculado
   propostas_pagas: number;
+  origem_entrada?: 'planilha' | 'manual';
   created_at?: string;
 }
 
@@ -130,4 +155,3 @@ export interface CustomTask {
   isDynamic: boolean;
   parceiroId?: string;
 }
-

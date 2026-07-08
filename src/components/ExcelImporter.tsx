@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import * as XLSX from 'xlsx';
 import { dataService } from '../services/dataService';
-import { Upload, X, CheckCircle2, RefreshCw, Layers } from 'lucide-react';
+import { Upload, X, CheckCircle2, RefreshCw, Layers, AlertTriangle } from 'lucide-react';
+import WeekSelector from './WeekSelector';
+import { getLastCompletedWeek, WeekInfo } from '../utils/weekUtils';
 
 interface ExcelImporterProps {
   onClose: () => void;
@@ -9,26 +11,28 @@ interface ExcelImporterProps {
 }
 
 interface LogEntry {
-  type: 'info' | 'success' | 'error';
+  type: 'info' | 'success' | 'error' | 'skip';
   message: string;
 }
 
 export default function ExcelImporter({ onClose, onImportSuccess }: ExcelImporterProps) {
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
-  const [overrideLast, setOverrideLast] = useState(false);
+  const [selectedWeek, setSelectedWeek] = useState<WeekInfo>(getLastCompletedWeek());
   const [progress, setProgress] = useState(0);
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [summary, setSummary] = useState<{
     totalRows: number;
     processed: number;
+    skipped: number;
     errors: number;
     totalVol: number;
+    cnpjsNaoCadastrados: string[];
+    ativacoes: number;
+    reativacoes: number;
   } | null>(null);
 
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-  };
+  const handleDragOver = (e: React.DragEvent) => { e.preventDefault(); };
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
@@ -51,8 +55,6 @@ export default function ExcelImporter({ onClose, onImportSuccess }: ExcelImporte
     }
   };
 
-  const handleImportSuccessCallback = onImportSuccess;
-
   const addLog = (type: LogEntry['type'], message: string) => {
     setLogs(prev => [...prev, { type, message }]);
   };
@@ -65,109 +67,126 @@ export default function ExcelImporter({ onClose, onImportSuccess }: ExcelImporte
       setLogs([]);
       setSummary(null);
       setProgress(5);
+      addLog('info', `Semana de referência: ${selectedWeek.label} (${selectedWeek.inicio} → ${selectedWeek.fim})`);
       addLog('info', 'Iniciando leitura do arquivo...');
 
       const reader = new FileReader();
-      
+
       reader.onload = async (e) => {
         try {
           const data = e.target?.result;
           const workbook = XLSX.read(data, { type: 'binary' });
           const firstSheetName = workbook.SheetNames[0];
           const worksheet = workbook.Sheets[firstSheetName];
-          
-          // Converter planilha em array de objetos JSON
           const rawRows = XLSX.utils.sheet_to_json<any>(worksheet);
-          
+
           if (rawRows.length === 0) {
             addLog('error', 'A planilha selecionada está vazia.');
             setLoading(false);
             return;
           }
 
-          addLog('info', `Planilha lida com sucesso. Encontradas ${rawRows.length} linhas de dados.`);
+          addLog('info', `Planilha lida: ${rawRows.length} linha(s) encontrada(s).`);
           setProgress(15);
 
-          // Carregar todos os parceiros para mapear pelo CNPJ
           const parceiros = await dataService.getParceiros();
           let processedCount = 0;
+          let skippedCount = 0;
           let errorCount = 0;
           let totalVolumeAcumulado = 0;
+          const cnpjsNaoCadastrados: string[] = [];
 
-          // Limpar logs e preparar para o processamento linha a linha
           setProgress(25);
 
           for (let i = 0; i < rawRows.length; i++) {
             const row = rawRows[i];
-            const cnpjRaw = String(row.cnpj || '').trim();
-            const ano = parseInt(row.ano);
-            const mes = parseInt(row.mes);
+            // CNPJ é o único campo obrigatório da planilha.
+            // ano/mes NÃO são lidos da planilha — vêm exclusivamente do WeekSelector.
+            const cnpjRaw = String(row.cnpj || row.CNPJ || '').trim();
 
-            // Validação de colunas básicas
-            if (!cnpjRaw || isNaN(ano) || isNaN(mes)) {
+            if (!cnpjRaw) {
               errorCount++;
-              addLog('error', `Linha ${i + 2}: Dados inválidos (CNPJ, Ano ou Mês ausentes).`);
+              addLog('error', `Linha ${i + 2}: CNPJ ausente — linha ignorada.`);
               continue;
             }
 
-            // Procurar parceiro cadastrado com o CNPJ correspondente (limpando pontuações)
             const cleanCnpj = cnpjRaw.replace(/[^\d]/g, '');
             const parceiro = parceiros.find(p => p.cnpj.replace(/[^\d]/g, '') === cleanCnpj);
 
             if (!parceiro) {
-              errorCount++;
-              addLog('error', `Linha ${i + 2}: Parceiro com CNPJ ${cnpjRaw} não está cadastrado no CRM.`);
+              // Acumular CNPJs não cadastrados para alerta agrupado no final
+              if (!cnpjsNaoCadastrados.includes(cnpjRaw)) {
+                cnpjsNaoCadastrados.push(cnpjRaw);
+              }
               continue;
             }
 
-            // Coletar faturamentos e propostas
-            const vol_fgts = parseFloat(row.vol_fgts || 0);
-            const vol_clt = parseFloat(row.vol_clt || 0);
-            const vol_cgv = parseFloat(row.vol_cgv || 0);
-            const vol_pix = parseFloat(row.vol_pix || 0);
-            const propostas_pagas = parseInt(row.propostas_pagas || row.propostas || 0);
-
-            const lancamento = {
-              parceiro_id: parceiro.id,
-              ano,
-              mes,
-              vol_fgts,
-              vol_clt,
-              vol_cgv,
-              vol_pix,
-              propostas_pagas
-            };
+            const vol_fgts      = parseFloat(row.vol_fgts      ?? row.FGTS      ?? 0);
+            const vol_clt       = parseFloat(row.vol_clt       ?? row.CLT       ?? 0);
+            const vol_cgv       = parseFloat(row.vol_cgv       ?? row.CGV       ?? 0);
+            const vol_pix       = parseFloat(row.vol_pix       ?? row.PIX       ?? row.Cartao ?? 0);
+            const propostas_pagas = parseInt(row.propostas_pagas ?? row.propostas ?? row.Propostas ?? 0);
 
             try {
-              // Salvar produção semanal chamando a lógica de auto-incremento inteligente
-              const salvo = await dataService.saveProducaoSemanal(lancamento, overrideLast);
-              processedCount++;
-              const volLinha = (salvo.vol_fgts || 0) + (salvo.vol_clt || 0) + (salvo.vol_cgv || 0) + (salvo.vol_pix || 0);
-              totalVolumeAcumulado += volLinha;
+              const salvo = await dataService.saveProducaoSemanal({
+                parceiro_id: parceiro.id,
+                semana_inicio: selectedWeek.inicio,
+                origem_entrada: 'planilha',
+                vol_fgts,
+                vol_clt,
+                vol_cgv,
+                vol_pix,
+                propostas_pagas
+              });
 
-              addLog('success', `${parceiro.nome}: Registrada Semana ${salvo.semana} para ${mes}/${ano} no valor de R$ ${volLinha.toLocaleString('pt-BR')} (${salvo.propostas_pagas} propostas)`);
+              const volLinha = (salvo.vol_fgts || 0) + (salvo.vol_clt || 0) + (salvo.vol_cgv || 0) + (salvo.vol_pix || 0);
+
+              // Detectar se foi skip (manual prevaleceu) pelo vol_total idêntico ao existente
+              // e origem_entrada 'manual' no salvo
+              if (salvo.origem_entrada === 'manual') {
+                skippedCount++;
+                addLog('skip', `${parceiro.nome}: entrada manual existente mantida — planilha ignorada para esta semana.`);
+              } else {
+                processedCount++;
+                totalVolumeAcumulado += volLinha;
+                addLog('success', `${parceiro.nome}: ${selectedWeek.label} — Vol. R$ ${volLinha.toLocaleString('pt-BR')} | ${salvo.propostas_pagas} propostas`);
+              }
             } catch (err: any) {
               errorCount++;
-              addLog('error', `Erro ao salvar faturamento de ${parceiro.nome}: ${err.message || 'Erro desconhecido'}`);
+              addLog('error', `Erro ao salvar ${parceiro.nome}: ${err.message || 'Erro desconhecido'}`);
             }
 
-            // Atualizar barra de progresso proporcionalmente
-            const p = Math.round(25 + ((i + 1) / rawRows.length) * 75);
-            setProgress(Math.min(99, p));
+            const p = Math.round(25 + ((i + 1) / rawRows.length) * 65);
+            setProgress(Math.min(90, p));
           }
+
+          setProgress(95);
+
+          // Buscar contagem de eventos da semana para o sumário
+          let ativacoes = 0;
+          let reativacoes = 0;
+          try {
+            const eventos = await dataService.getEventosSemana(selectedWeek.inicio);
+            ativacoes  = eventos.filter(e => e.tipo === 'ativacao').length;
+            reativacoes = eventos.filter(e => e.tipo === 'reativacao').length;
+          } catch (e) { /* silencioso */ }
 
           setProgress(100);
           addLog('info', 'Processamento concluído.');
-          
+
           setSummary({
             totalRows: rawRows.length,
             processed: processedCount,
+            skipped: skippedCount,
             errors: errorCount,
-            totalVol: totalVolumeAcumulado
+            totalVol: totalVolumeAcumulado,
+            cnpjsNaoCadastrados,
+            ativacoes,
+            reativacoes
           });
-          
+
           if (processedCount > 0) {
-            handleImportSuccessCallback();
+            onImportSuccess();
           }
 
         } catch (err: any) {
@@ -187,27 +206,14 @@ export default function ExcelImporter({ onClose, onImportSuccess }: ExcelImporte
 
   return (
     <div className="modal-backdrop" style={{
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      width: '100%',
-      height: '100%',
-      backgroundColor: 'rgba(15, 23, 42, 0.6)',
-      display: 'flex',
-      alignItems: 'flex-start',
-      justifyContent: 'center',
-      zIndex: 1000,
-      backdropFilter: 'blur(4px)',
-      paddingTop: '3rem',
-      overflowY: 'auto'
+      position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
+      backgroundColor: 'rgba(15, 23, 42, 0.6)', display: 'flex',
+      alignItems: 'flex-start', justifyContent: 'center',
+      zIndex: 1000, backdropFilter: 'blur(4px)', paddingTop: '3rem', overflowY: 'auto'
     }}>
       <div className="card modal-card animate-scale" style={{
-        width: '100%',
-        maxWidth: '650px',
-        maxHeight: '85vh',
-        display: 'flex',
-        flexDirection: 'column',
-        padding: 0,
+        width: '100%', maxWidth: '650px', maxHeight: '88vh',
+        display: 'flex', flexDirection: 'column', padding: 0,
         boxShadow: 'var(--shadow-lg)',
         backgroundColor: 'rgba(209, 250, 237, 0.95)',
         border: '1px solid rgba(15, 184, 130, 0.35)',
@@ -215,18 +221,15 @@ export default function ExcelImporter({ onClose, onImportSuccess }: ExcelImporte
       }}>
         {/* Cabeçalho */}
         <div style={{
-          padding: '1.25rem 1.5rem',
-          borderBottom: '1px solid var(--border-color)',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center'
+          padding: '1.25rem 1.5rem', borderBottom: '1px solid var(--border-color)',
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center'
         }}>
           <div>
             <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--secondary-color)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <Upload size={20} style={{ color: 'var(--primary-color)' }} /> Importar Planilha de Produção Semanal
             </h3>
             <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.15rem' }}>
-              Carregue faturamentos da Prata Digital por parceiro com consolidação mensal automática.
+              Carregue faturamentos da Prata Digital por parceiro. Colunas esperadas: cnpj, vol_fgts, vol_clt, vol_cgv, vol_pix, propostas_pagas.
             </p>
           </div>
           <button onClick={onClose} className="btn-close" style={{ border: 'none', background: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}>
@@ -234,37 +237,42 @@ export default function ExcelImporter({ onClose, onImportSuccess }: ExcelImporte
           </button>
         </div>
 
-        {/* Corpo do Modal */}
+        {/* Corpo */}
         <div style={{ padding: '1.5rem', overflowY: 'auto', flex: 1 }}>
-          
+
+          {/* Seletor de semana — SEMPRE visível, é a fonte de verdade */}
+          <div style={{ marginBottom: '1.25rem' }}>
+            <WeekSelector
+              value={selectedWeek}
+              onChange={setSelectedWeek}
+              maxCurrentWeek={false}
+              label="Semana de referência da importação"
+            />
+            <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '0.4rem', lineHeight: 1.35 }}>
+              💡 Selecione a semana civil a que se referem os dados da planilha. O ano e o mês são determinados
+              pelo domingo da semana ({selectedWeek.fim} → {selectedWeek.ano}/{String(selectedWeek.mes).padStart(2,'0')}).
+            </p>
+          </div>
+
           {/* Zona de Drop */}
           {!loading && !summary && (
-            <div 
+            <div
               onDragOver={handleDragOver}
               onDrop={handleDrop}
               style={{
-                border: '2px dashed var(--border-color)',
-                borderRadius: 'var(--radius-sm)',
-                padding: '2.5rem 1.5rem',
-                textAlign: 'center',
+                border: '2px dashed var(--border-color)', borderRadius: 'var(--radius-sm)',
+                padding: '2.5rem 1.5rem', textAlign: 'center',
                 backgroundColor: file ? 'rgba(15, 184, 130, 0.1)' : 'rgba(255, 255, 255, 0.02)',
-                cursor: 'pointer',
-                transition: 'border-color 0.2s',
+                cursor: 'pointer', transition: 'border-color 0.2s',
                 borderColor: file ? 'var(--primary-color)' : 'var(--border-color)'
               }}
               onClick={() => document.getElementById('file-upload-input')?.click()}
             >
-              <input 
-                id="file-upload-input"
-                type="file" 
-                accept=".xlsx,.xls,.csv" 
-                onChange={handleFileChange}
-                style={{ display: 'none' }}
-              />
+              <input id="file-upload-input" type="file" accept=".xlsx,.xls,.csv"
+                onChange={handleFileChange} style={{ display: 'none' }} />
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem' }}>
                 <div style={{
-                  padding: '0.75rem',
-                  borderRadius: '50%',
+                  padding: '0.75rem', borderRadius: '50%',
                   backgroundColor: file ? 'rgba(15, 184, 130, 0.15)' : 'rgba(255, 255, 255, 0.05)',
                   color: file ? 'var(--primary-color)' : 'var(--text-muted)'
                 }}>
@@ -282,158 +290,121 @@ export default function ExcelImporter({ onClose, onImportSuccess }: ExcelImporte
             </div>
           )}
 
-          {/* Configuração de Importação (Acumular vs Sobrescrever) */}
-          {!loading && !summary && file && (
-            <div style={{
-              marginTop: '1.25rem',
-              padding: '1rem',
-              borderRadius: 'var(--radius-sm)',
-              backgroundColor: 'rgba(15, 23, 42, 0.3)',
-              border: '1px solid var(--border-color)',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '0.5rem'
-            }}>
-              <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>
-                Modo de Carga
-              </span>
-              
-              <div style={{ display: 'flex', gap: '1.5rem', marginTop: '0.25rem' }}>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', cursor: 'pointer', fontWeight: 550 }}>
-                  <input 
-                    type="radio" 
-                    name="mode" 
-                    checked={!overrideLast} 
-                    onChange={() => setOverrideLast(false)}
-                    style={{ accentColor: 'var(--primary-color)' }}
-                  />
-                  Acumular como nova semana (Padrão)
-                </label>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', cursor: 'pointer', fontWeight: 550 }}>
-                  <input 
-                    type="radio" 
-                    name="mode" 
-                    checked={overrideLast} 
-                    onChange={() => setOverrideLast(true)}
-                    style={{ accentColor: 'var(--primary-color)' }}
-                  />
-                  Sobrescrever última semana faturada
-                </label>
-              </div>
-              <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.15rem', lineHeight: 1.3 }}>
-                {!overrideLast 
-                  ? '💡 Cada carregamento semanal incrementa uma semana para o parceiro no mês correspondente, totalizando até 5 semanas.'
-                  : '💡 Substitui o faturamento da última semana existente do parceiro no mês. Ideal para correções de lotes com erros.'
-                }
-              </p>
-            </div>
-          )}
-
-          {/* Barra de Progresso do Processamento */}
+          {/* Barra de Progresso */}
           {loading && (
             <div style={{ margin: '1.5rem 0', textAlign: 'center' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', fontWeight: 600, marginBottom: '0.5rem', color: 'var(--text-main)' }}>
-                <span>Processando planilha comercial...</span>
+                <span>Processando planilha...</span>
                 <span>{progress}%</span>
               </div>
               <div style={{ width: '100%', height: '8px', borderRadius: '4px', backgroundColor: 'rgba(255, 255, 255, 0.05)', overflow: 'hidden' }}>
-                <div style={{ width: `${progress}%`, height: '100%', backgroundColor: 'var(--primary-color)', transition: 'width 0.2s ease-in-out' }}></div>
+                <div style={{ width: `${progress}%`, height: '100%', backgroundColor: 'var(--primary-color)', transition: 'width 0.2s ease-in-out' }} />
               </div>
             </div>
           )}
 
-          {/* Resumo pós Carga */}
+          {/* Resumo pós-carga */}
           {summary && (
-            <div style={{
-              margin: '1rem 0',
-              padding: '1.25rem',
-              borderRadius: 'var(--radius-sm)',
-              backgroundColor: 'rgba(16, 185, 129, 0.12)',
-              border: '1px solid rgba(16, 185, 129, 0.3)',
-              display: 'flex',
-              alignItems: 'flex-start',
-              gap: '1rem'
-            }}>
-              <CheckCircle2 size={24} style={{ color: 'var(--primary-color)', marginTop: '0.1rem' }} />
-              <div>
-                <h4 style={{ fontWeight: 750, color: 'var(--secondary-color)', fontSize: '1rem' }}>Importação Semanal Concluída!</h4>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '1rem', marginTop: '0.75rem', fontSize: '0.85rem' }}>
-                  <div>
-                    <span style={{ color: 'var(--text-muted)' }}>Linhas Lidas:</span>{' '}
-                    <strong style={{ color: 'var(--text-main)' }}>{summary.totalRows}</strong>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              <div style={{
+                padding: '1.25rem', borderRadius: 'var(--radius-sm)',
+                backgroundColor: 'rgba(16, 185, 129, 0.12)',
+                border: '1px solid rgba(16, 185, 129, 0.3)',
+                display: 'flex', alignItems: 'flex-start', gap: '1rem'
+              }}>
+                <CheckCircle2 size={24} style={{ color: 'var(--primary-color)', marginTop: '0.1rem', flexShrink: 0 }} />
+                <div style={{ flex: 1 }}>
+                  <h4 style={{ fontWeight: 750, color: 'var(--secondary-color)', fontSize: '1rem', marginBottom: '0.6rem' }}>
+                    Importação Concluída — {selectedWeek.label}
+                  </h4>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.5rem 1rem', fontSize: '0.85rem' }}>
+                    <div><span style={{ color: 'var(--text-muted)' }}>Linhas lidas:</span> <strong>{summary.totalRows}</strong></div>
+                    <div><span style={{ color: 'var(--text-muted)' }}>Registradas:</span> <strong style={{ color: 'var(--primary-color)' }}>{summary.processed}</strong></div>
+                    <div><span style={{ color: 'var(--text-muted)' }}>Manual prevaleceu:</span> <strong>{summary.skipped}</strong></div>
+                    <div><span style={{ color: 'var(--text-muted)' }}>Erros:</span> <strong style={{ color: summary.errors > 0 ? 'var(--danger)' : 'var(--text-main)' }}>{summary.errors}</strong></div>
+                    <div><span style={{ color: 'var(--text-muted)' }}>Vol. Prata importado:</span> <strong style={{ color: 'var(--secondary-color)' }}>R$ {summary.totalVol.toLocaleString('pt-BR')}</strong></div>
                   </div>
-                  <div>
-                    <span style={{ color: 'var(--text-muted)' }}>Atualizadas com sucesso:</span>{' '}
-                    <strong style={{ color: 'var(--primary-color)' }}>{summary.processed}</strong>
-                  </div>
-                  <div>
-                    <span style={{ color: 'var(--text-muted)' }}>Registros com erros:</span>{' '}
-                    <strong style={{ color: summary.errors > 0 ? 'var(--danger)' : 'var(--text-main)' }}>{summary.errors}</strong>
-                  </div>
-                  <div>
-                    <span style={{ color: 'var(--text-muted)' }}>Faturamento Novo Prata:</span>{' '}
-                    <strong style={{ color: 'var(--secondary-color)' }}>R$ {summary.totalVol.toLocaleString('pt-BR')}</strong>
-                  </div>
+
+                  {/* Transições detectadas */}
+                  {(summary.ativacoes > 0 || summary.reativacoes > 0) && (
+                    <div style={{ marginTop: '0.75rem', padding: '0.6rem 0.75rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(15,184,130,0.15)', border: '1px solid rgba(15,184,130,0.3)', fontSize: '0.82rem' }}>
+                      <strong>🎯 Transições detectadas esta semana:</strong>{' '}
+                      {summary.ativacoes > 0 && <span>{summary.ativacoes} ativação(ões) &nbsp;</span>}
+                      {summary.reativacoes > 0 && <span>{summary.reativacoes} reativação(ões)</span>}
+                    </div>
+                  )}
                 </div>
               </div>
+
+              {/* Alerta agrupado de CNPJs não cadastrados */}
+              {summary.cnpjsNaoCadastrados.length > 0 && (
+                <div style={{
+                  padding: '1rem', borderRadius: 'var(--radius-sm)',
+                  backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                  border: '1px solid rgba(245, 158, 11, 0.4)',
+                  display: 'flex', gap: '0.75rem', alignItems: 'flex-start'
+                }}>
+                  <AlertTriangle size={18} style={{ color: 'var(--warning)', marginTop: '0.1rem', flexShrink: 0 }} />
+                  <div>
+                    <p style={{ fontWeight: 700, color: 'var(--warning)', fontSize: '0.85rem', marginBottom: '0.4rem' }}>
+                      {summary.cnpjsNaoCadastrados.length} CNPJ(s) não encontrado(s) no sistema — cadastre antes de reimportar:
+                    </p>
+                    <ul style={{ margin: 0, paddingLeft: '1.1rem', fontSize: '0.8rem', color: 'var(--text-main)', display: 'flex', flexDirection: 'column', gap: '0.15rem' }}>
+                      {summary.cnpjsNaoCadastrados.map(cnpj => (
+                        <li key={cnpj} style={{ fontFamily: 'monospace' }}>{cnpj}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
-          {/* Painel de Logs de Execução */}
-          {(logs.length > 0) && (
+          {/* Log de execução */}
+          {logs.length > 0 && (
             <div style={{ marginTop: '1.25rem' }}>
               <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', display: 'block', marginBottom: '0.5rem' }}>
                 Histórico de Carga
               </span>
               <div style={{
-                maxHeight: '180px',
-                overflowY: 'auto',
-                backgroundColor: '#0f172a',
-                color: '#e2e8f0',
-                borderRadius: 'var(--radius-sm)',
-                padding: '0.75rem',
-                fontFamily: 'monospace',
-                fontSize: '0.75rem',
-                lineHeight: 1.4,
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '0.35rem'
+                maxHeight: '180px', overflowY: 'auto',
+                backgroundColor: '#0f172a', color: '#e2e8f0',
+                borderRadius: 'var(--radius-sm)', padding: '0.75rem',
+                fontFamily: 'monospace', fontSize: '0.75rem', lineHeight: 1.4,
+                display: 'flex', flexDirection: 'column', gap: '0.3rem'
               }}>
                 {logs.map((log, index) => (
                   <div key={index} style={{
-                    color: log.type === 'success' ? '#10b981' : log.type === 'error' ? '#ef4444' : '#94a3b8'
+                    color: log.type === 'success' ? '#10b981'
+                         : log.type === 'error'   ? '#ef4444'
+                         : log.type === 'skip'    ? '#f59e0b'
+                         : '#94a3b8'
                   }}>
                     {log.type === 'success' && '✓ '}
-                    {log.type === 'error' && '✗ '}
-                    {log.type === 'info' && '• '}
+                    {log.type === 'error'   && '✗ '}
+                    {log.type === 'skip'    && '⊘ '}
+                    {log.type === 'info'    && '• '}
                     {log.message}
                   </div>
                 ))}
               </div>
             </div>
           )}
-
         </div>
 
-        {/* Rodapé de Ações */}
+        {/* Rodapé */}
         <div style={{
-          padding: '1rem 1.5rem',
-          borderTop: '1px solid var(--border-color)',
+          padding: '1rem 1.5rem', borderTop: '1px solid var(--border-color)',
           backgroundColor: 'rgba(7, 12, 20, 0.45)',
-          display: 'flex',
-          justifyContent: 'flex-end',
-          gap: '0.75rem',
-          borderBottomLeftRadius: 'var(--radius-md)',
-          borderBottomRightRadius: 'var(--radius-md)'
+          display: 'flex', justifyContent: 'flex-end', gap: '0.75rem',
+          borderBottomLeftRadius: 'var(--radius-md)', borderBottomRightRadius: 'var(--radius-md)'
         }}>
           {!summary ? (
             <>
-              <button onClick={onClose} disabled={loading} className="btn btn-secondary">
-                Cancelar
-              </button>
-              <button 
-                onClick={processFile} 
-                disabled={!file || loading} 
+              <button onClick={onClose} disabled={loading} className="btn btn-secondary">Cancelar</button>
+              <button
+                onClick={processFile}
+                disabled={!file || loading}
                 className="btn btn-primary"
                 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
               >
@@ -442,9 +413,7 @@ export default function ExcelImporter({ onClose, onImportSuccess }: ExcelImporte
               </button>
             </>
           ) : (
-            <button onClick={onClose} className="btn btn-primary">
-              Fechar Painel
-            </button>
+            <button onClick={onClose} className="btn btn-primary">Fechar Painel</button>
           )}
         </div>
       </div>

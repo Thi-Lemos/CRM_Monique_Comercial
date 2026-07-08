@@ -1,7 +1,8 @@
 import { supabase } from '../supabaseClient';
-import { Parceiro, ProducaoMensal, CrmLog, SemafaroStatus, TaskItem, CriteriosConfig, ProducaoSemanal } from '../types';
+import { Parceiro, ProducaoMensal, CrmLog, SemafaroStatus, TaskItem, CriteriosConfig, ProducaoSemanal, EventoSemana } from '../types';
 import { initialParceiros, initialProducao, initialLogs } from './mockData';
 import { calculateScoreAndClassification } from './scoreCalculator';
+import { getWeekInfo, getCurrentWeek, WeekInfo } from '../utils/weekUtils';
 
 const LOCAL_STORAGE_KEY = 'crm_prata_digital_db';
 const LOCAL_CRITERIOS_KEY = 'crm_prata_digital_criterios';
@@ -506,6 +507,29 @@ export const dataService = {
       const statusCalculado = computeStatusAtMonth(p.created_at, prods, diasLimites, refAgora.ano, refAgora.mes);
 
       if (p.status !== statusCalculado) {
+        // Classificar se a transição é ascendente (para um status "melhor")
+        // ou descendente (para um status "pior"/"neutro")
+        const upwardTransitions: Array<{ from: Parceiro['status']; to: Parceiro['status'] }> = [
+          { from: 'Onboarding', to: 'Ativo' },
+          { from: 'Inativo',    to: 'Reativado' },
+          { from: 'Reativado',  to: 'Ativo' },
+        ];
+        const isUpward = upwardTransitions.some(t => t.from === p.status && t.to === statusCalculado);
+
+        // Para transições ascendentes: só aplicar se o parceiro NÃO tiver produção
+        // no mês corrente. Se tiver, significa que detectAndFireUpwardTransitions já
+        // disparou a transição com referência mais recente e não devemos reverter.
+        const mesCorrente = { ano: hoje.getFullYear(), mes: hoje.getMonth() + 1 };
+        const temProducaoCorrenteNaTabela = prods.some(
+          pr => pr.ano === mesCorrente.ano && pr.mes === mesCorrente.mes &&
+                ((pr.vol_fgts || 0) + (pr.vol_clt || 0) + (pr.vol_cgv || 0) + (pr.vol_pix || 0)) > 0
+        );
+        if (isUpward && temProducaoCorrenteNaTabela) {
+          // Transição ascendente já tratada por detectAndFireUpwardTransitions — não sobrescrever.
+          finalParceiros.push(p);
+          continue;
+        }
+
         const statusAnterior = p.status;
         p.status = statusCalculado;
 
@@ -858,62 +882,212 @@ export const dataService = {
     return newLog;
   },
 
+  // --- EVENTOS DE SEMANA (ativações / reativações por semana civil) ---
+  async getEventosSemana(semanaInicio: string): Promise<EventoSemana[]> {
+    if (supabase) {
+      try {
+        const { data, error } = await supabase
+          .from('eventos_semana')
+          .select('*')
+          .eq('semana_inicio', semanaInicio);
+        if (!error && data) return data as EventoSemana[];
+      } catch (err) {
+        console.warn('Erro ao ler eventos_semana no Supabase:', err);
+      }
+    }
+    return [];
+  },
+
+  async saveEventoSemana(evento: Omit<EventoSemana, 'id' | 'created_at'>): Promise<EventoSemana | null> {
+    if (supabase) {
+      try {
+        const { data, error } = await supabase
+          .from('eventos_semana')
+          .insert([evento])
+          .select()
+          .single();
+        if (error) throw error;
+        return data as EventoSemana;
+      } catch (err) {
+        console.warn('Erro ao salvar evento_semana no Supabase:', err);
+      }
+    }
+    return null;
+  },
+
+  // --- TRANSIÇÕES IMEDIATAS (ascendentes) ---
+  //
+  // Chamado após qualquer saveProducaoSemanal (planilha ou manual).
+  // Avalia o status do parceiro usando o mês CORRENTE (incluindo produção parcial)
+  // e dispara apenas transições ascendentes que ainda não foram disparadas nessa semana.
+  // Transições descendentes (Ativo→Inativo, Reativado→Inativo) permanecem avaliadas
+  // no fechamento do mês por getParceiros().
+  async detectAndFireUpwardTransitions(
+    parceiro: Parceiro,
+    allProds: ProducaoMensal[],
+    config: CriteriosConfig,
+    weekInfo: WeekInfo,
+    origem: 'planilha' | 'crm_direto'
+  ): Promise<{ disparou: boolean; tipo: 'ativacao' | 'reativacao' | 'reativado_para_ativo' | null }> {
+    const hoje = new Date();
+    const refAno = hoje.getFullYear();
+    const refMes = hoje.getMonth() + 1;
+
+    const newStatus = computeStatusAtMonth(parceiro.created_at, allProds, config.limites, refAno, refMes);
+    const currentStatus = parceiro.status;
+
+    if (newStatus === currentStatus) return { disparou: false, tipo: null };
+
+    const isOnboardingToAtivo   = newStatus === 'Ativo'     && currentStatus === 'Onboarding';
+    const isInativoToReativado  = newStatus === 'Reativado' && currentStatus === 'Inativo';
+    const isReativadoToAtivo    = newStatus === 'Ativo'     && currentStatus === 'Reativado';
+
+    if (!isOnboardingToAtivo && !isInativoToReativado && !isReativadoToAtivo) {
+      return { disparou: false, tipo: null };
+    }
+
+    const tipoEvento: 'ativacao' | 'reativacao' =
+      isOnboardingToAtivo ? 'ativacao' : 'reativacao';
+
+    const fmtCur = (val: number) =>
+      new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(val);
+    const volPrata = getVolPrataUltimaProducao(allProds);
+
+    // Atualizar status imediatamente no banco
+    parceiro.status = newStatus;
+    await this.saveParceiroStatusOnly(parceiro.id, newStatus).catch(console.error);
+
+    // Para Reativado→Ativo: atualiza status e gera log, mas NÃO cria evento_semana
+    // (a reativação já foi contada no evento Inativo→Reativado anterior)
+    if (isReativadoToAtivo) {
+      await this.saveLog({
+        parceiro_id: parceiro.id,
+        data_contato: new Date().toISOString(),
+        canal: 'WhatsApp',
+        processo: 'Farmer',
+        resumo: `Consolidação automática: Parceiro manteve produção no mês seguinte à reativação e passou para Ativo (vol. Prata ${fmtCur(volPrata)}).`,
+        proxima_acao: 'Manter acompanhamento de rotina',
+        data_proxima_acao: new Date(hoje.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString().substring(0, 10),
+        classificacao_pos_contato: parceiro.classificacao,
+        crm_atualizado: true,
+        origem: 'sistema'
+      }).catch(console.error);
+      return { disparou: true, tipo: 'reativado_para_ativo' };
+    }
+
+    // Verificar deduplicação: se já existe evento para esse parceiro+tipo+semana, não registrar novamente
+    const eventosExistentes = await this.getEventosSemana(weekInfo.inicio);
+    const jaExiste = eventosExistentes.some(
+      e => e.parceiro_id === parceiro.id && e.tipo === tipoEvento
+    );
+
+    if (!jaExiste) {
+      await this.saveEventoSemana({
+        semana_inicio: weekInfo.inicio,
+        semana_fim: weekInfo.fim,
+        ano: weekInfo.ano,
+        mes: weekInfo.mes,
+        semana_num: weekInfo.semana_num,
+        tipo: tipoEvento,
+        parceiro_id: parceiro.id,
+        origem
+      });
+    }
+
+    // Gerar log automático de CRM
+    if (isOnboardingToAtivo) {
+      await this.saveLog({
+        parceiro_id: parceiro.id,
+        data_contato: new Date().toISOString(),
+        canal: 'WhatsApp',
+        processo: 'Hunter',
+        resumo: `Ativação automática: Novo parceiro ativou na ${weekInfo.label} com produção Prata de ${fmtCur(volPrata)}.`,
+        proxima_acao: 'Acompanhar produção e estreitar contato',
+        data_proxima_acao: new Date(hoje.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString().substring(0, 10),
+        classificacao_pos_contato: parceiro.classificacao,
+        crm_atualizado: true,
+        origem: 'sistema'
+      }).catch(console.error);
+    } else if (isInativoToReativado) {
+      await this.saveLog({
+        parceiro_id: parceiro.id,
+        data_contato: new Date().toISOString(),
+        canal: 'WhatsApp',
+        processo: 'Win-back',
+        resumo: `Reativação automática: Parceiro voltou a produzir na ${weekInfo.label} (vol. Prata ${fmtCur(volPrata)}).`,
+        proxima_acao: 'Confirmar manutenção da produção no mês seguinte',
+        data_proxima_acao: new Date(hoje.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString().substring(0, 10),
+        classificacao_pos_contato: parceiro.classificacao,
+        crm_atualizado: true,
+        origem: 'sistema'
+      }).catch(console.error);
+    }
+
+    return { disparou: true, tipo: tipoEvento };
+  },
+
   // --- SEMÁFORO & METAS ---
-  async getSemafaroStatus(preloadedParceiros?: Parceiro[], preloadedLogs?: CrmLog[]): Promise<SemafaroStatus> {
+  async getSemafaroStatus(preloadedParceiros?: Parceiro[]): Promise<SemafaroStatus> {
     const parceiros = preloadedParceiros || await this.getParceiros();
     const config = await this.getCriterios();
-    
-    // Farmer: propostas pagas na semana de toda a carteira ativa comparado à meta
-    const ativos = parceiros.filter(p => p.status === 'Ativo');
-    const propostasPagasTotal = ativos.reduce((sum, p) => sum + (p.propostas_pagas_semana || 0), 0);
-    
-    // Hunter: contagem de ativações/reativações nos últimos 7 dias
-    const logs = preloadedLogs || await this.getLogs();
-    const hoje = new Date();
-    const umaSemanaAtras = new Date(hoje.getTime() - (7 * 24 * 60 * 60 * 1000));
-    
-    let novosAtivosSemana = 0;
-    let reativadosSemana = 0;
-    
-    logs.forEach(log => {
-      const dataLog = new Date(log.data_contato);
-      if (dataLog >= umaSemanaAtras) {
-        if (log.resumo && log.resumo.includes('Ativação automática')) {
-          novosAtivosSemana++;
-        }
-        if (log.resumo && log.resumo.includes('Reativação automática')) {
-          reativadosSemana++;
-        }
-      }
-    });
+    const weekInfo = getCurrentWeek();
 
-    const metaFarmer = config.metas.farmer_propostas_pagas_semana;
-    const metaHunterNovos = config.metas.hunter_novos_ativos_semana;
+    // FARMER: soma propostas_pagas das producoes_semanais da semana civil corrente
+    let farmerPropostasSemana = 0;
+    if (supabase) {
+      try {
+        const { data, error } = await supabase
+          .from('producoes_semanais')
+          .select('propostas_pagas')
+          .eq('semana_inicio', weekInfo.inicio);
+        if (!error && data) {
+          farmerPropostasSemana = data.reduce((sum: number, r: any) => sum + (r.propostas_pagas || 0), 0);
+        }
+      } catch (err) {
+        console.warn('Erro ao buscar propostas_pagas da semana:', err);
+      }
+    }
+
+    // HUNTER: eventos_semana da semana civil corrente, enriquecidos com nomes
+    const eventos = await this.getEventosSemana(weekInfo.inicio);
+    const parceiroMap = new Map(parceiros.map(p => [p.id, p.nome]));
+    const hunterAtivacoes: EventoSemana[] = eventos
+      .filter(e => e.tipo === 'ativacao')
+      .map(e => ({ ...e, parceiro_nome: parceiroMap.get(e.parceiro_id) || 'Desconhecido' }));
+    const hunterReativacoes: EventoSemana[] = eventos
+      .filter(e => e.tipo === 'reativacao')
+      .map(e => ({ ...e, parceiro_nome: parceiroMap.get(e.parceiro_id) || 'Desconhecido' }));
+
+    const novosAtivosSemana  = hunterAtivacoes.length;
+    const reativadosSemana   = hunterReativacoes.length;
+
+    const metaFarmer          = config.metas.farmer_propostas_pagas_semana;
+    const metaHunterNovos     = config.metas.hunter_novos_ativos_semana;
     const metaHunterReativados = config.metas.hunter_reativacoes_semana;
 
-    const farmerStatus = (propostasPagasTotal >= metaFarmer) ? 'Verde' : 'Vermelho';
+    const farmerStatus = farmerPropostasSemana >= metaFarmer ? 'Verde' : 'Vermelho';
     const hunterStatus = (novosAtivosSemana >= metaHunterNovos || reativadosSemana >= metaHunterReativados) ? 'Verde' : 'Vermelho';
-    
+
     let hunterAcao = '';
     let farmerAcao = '';
     let statusGeral = '';
 
     if (hunterStatus === 'Verde' && farmerStatus === 'Verde') {
       statusGeral = 'Meta Atingida!';
-      hunterAcao = `Ritmo excelente! Conseguiu ${novosAtivosSemana} ativações e ${reativadosSemana} reativações nesta semana (meta: ${metaHunterNovos}/${metaHunterReativados}).`;
-      farmerAcao = `Parceiros saudáveis. Produção semanal de ${propostasPagasTotal} propostas superou a meta de ${metaFarmer}.`;
+      hunterAcao = `Ritmo excelente! ${novosAtivosSemana} ativações e ${reativadosSemana} reativações nesta semana (meta: ${metaHunterNovos}/${metaHunterReativados}).`;
+      farmerAcao = `Parceiros saudáveis. ${farmerPropostasSemana} propostas pagas nesta semana, superando a meta de ${metaFarmer}.`;
     } else if (hunterStatus === 'Verde' && farmerStatus === 'Vermelho') {
       statusGeral = 'Prospecção Forte, Carteira com Baixo Volume';
-      hunterAcao = `Novas contas ativadas/reativadas (${novosAtivosSemana} ativações, ${reativadosSemana} reativações).`;
-      farmerAcao = `Alerta! Produção semanal de ${propostasPagasTotal} propostas ficou abaixo da meta de ${metaFarmer}. Estimular parceiros da carteira Farmer.`;
+      hunterAcao = `${novosAtivosSemana} ativações e ${reativadosSemana} reativações registradas.`;
+      farmerAcao = `Alerta! ${farmerPropostasSemana} propostas nesta semana, abaixo da meta de ${metaFarmer}. Estimular parceiros da carteira.`;
     } else if (hunterStatus === 'Vermelho' && farmerStatus === 'Verde') {
       statusGeral = 'Carteira Saudável, Prospecção Lenta';
-      hunterAcao = `Necessário foco em ativação. Apenas ${novosAtivosSemana} ativações e ${reativadosSemana} reativações na semana (meta: ${metaHunterNovos}/${metaHunterReativados}).`;
-      farmerAcao = `Farmer saudável. Excelente engajamento com ${propostasPagasTotal} propostas na semana (meta: ${metaFarmer}).`;
+      hunterAcao = `Foco em ativação necessário. Apenas ${novosAtivosSemana} ativações e ${reativadosSemana} reativações (meta: ${metaHunterNovos}/${metaHunterReativados}).`;
+      farmerAcao = `Farmer saudável. ${farmerPropostasSemana} propostas nesta semana (meta: ${metaFarmer}).`;
     } else {
       statusGeral = 'Semana Crítica';
-      hunterAcao = `Urgente! Aumentar prospecção. Apenas ${novosAtivosSemana} ativações e ${reativadosSemana} reativações (meta: ${metaHunterNovos}/${metaHunterReativados}).`;
-      farmerAcao = `Atenção total! Produção semanal de ${propostasPagasTotal} propostas está abaixo da meta de ${metaFarmer}. Ação de engajamento Farmer emergencial necessária.`;
+      hunterAcao = `Urgente! Apenas ${novosAtivosSemana} ativações e ${reativadosSemana} reativações (meta: ${metaHunterNovos}/${metaHunterReativados}).`;
+      farmerAcao = `Atenção total! ${farmerPropostasSemana} propostas nesta semana, abaixo da meta de ${metaFarmer}.`;
     }
 
     return {
@@ -921,7 +1095,11 @@ export const dataService = {
       farmer: farmerStatus,
       hunterAcao,
       farmerAcao,
-      statusGeral
+      statusGeral,
+      hunterAtivacoes,
+      hunterReativacoes,
+      farmerPropostasSemana,
+      semanaInfo: weekInfo
     };
   },
 
@@ -1005,90 +1183,85 @@ export const dataService = {
       .sort((a,b) => (a.ano !== b.ano ? a.ano - b.ano : a.mes !== b.mes ? a.mes - b.mes : a.semana - b.semana));
   },
 
-  async saveProducaoSemanal(prod: Partial<ProducaoSemanal>, overrideLast?: boolean): Promise<ProducaoSemanal> {
-    const db = getLocalDB();
+  // Salva (ou faz upsert) de uma produção semanal.
+  //
+  // FONTE DE VERDADE: semana_inicio (string YYYY-MM-DD — segunda-feira).
+  //   - ano, mes e semana_num são SEMPRE derivados de getWeekInfo(semana_inicio).
+  //     Qualquer valor de ano/mes passado pelo chamador é ignorado.
+  //   - Deduplicação por (parceiro_id, semana_inicio). Se já existe registro:
+  //       • origem 'planilha' vs existente 'manual' → SKIP silencioso (manual prevalece)
+  //       • qualquer outro caso                      → UPSERT (sobrescreve)
+  //
+  // Após salvar: chama consolidateMensal + detectAndFireUpwardTransitions.
+  async saveProducaoSemanal(
+    prod: Partial<ProducaoSemanal> & { semana_inicio: string; origem_entrada: 'planilha' | 'manual' }
+  ): Promise<ProducaoSemanal> {
     const parceiroId = prod.parceiro_id!;
-    const ano = prod.ano!;
-    const mes = prod.mes!;
-    
-    let semana = prod.semana;
-    
-    if (!semana) {
-      // Auto-incremento inteligente: buscar produções existentes e contar
-      let existentes: ProducaoSemanal[] = [];
-      if (supabase) {
-        try {
-          const { data } = await supabase
-            .from('producoes_semanais')
-            .select('*')
-            .eq('parceiro_id', parceiroId)
-            .eq('ano', ano)
-            .eq('mes', mes);
-          existentes = data || [];
-        } catch (e) {
-          existentes = (db.producoes_semanais || []).filter(p => p.parceiro_id === parceiroId && p.ano === ano && p.mes === mes);
-        }
-      } else {
-        existentes = (db.producoes_semanais || []).filter(p => p.parceiro_id === parceiroId && p.ano === ano && p.mes === mes);
-      }
+    const origemEntrada = prod.origem_entrada;
 
-      if (overrideLast && existentes.length > 0) {
-        const sorted = [...existentes].sort((a, b) => b.semana - a.semana);
-        semana = sorted[0].semana;
-      } else {
-        semana = existentes.length + 1;
-        if (semana > 5) semana = 5;
+    // 1. Derivar (ano, mes, semana_num) da semana_inicio — ignora caller's ano/mes
+    const weekInfo = getWeekInfo(new Date(prod.semana_inicio + 'T12:00:00Z'));
+    const ano = weekInfo.ano;
+    const mes = weekInfo.mes;
+    const semana = weekInfo.semana_num;
+
+    // 2. Checar registro existente por (parceiro_id, semana_inicio)
+    let existingRecord: ProducaoSemanal | null = null;
+    if (supabase) {
+      try {
+        const { data } = await supabase
+          .from('producoes_semanais')
+          .select('*')
+          .eq('parceiro_id', parceiroId)
+          .eq('semana_inicio', prod.semana_inicio)
+          .maybeSingle();
+        if (data) existingRecord = data as ProducaoSemanal;
+      } catch (e) {
+        console.warn('Erro ao checar dedup por semana_inicio:', e);
       }
+    } else {
+      const db = getLocalDB();
+      existingRecord = (db.producoes_semanais || []).find(
+        p => p.parceiro_id === parceiroId && p.semana_inicio === prod.semana_inicio
+      ) || null;
+    }
+
+    // 3. Regra de deduplicação: manual PREVALECE sobre planilha
+    if (existingRecord && origemEntrada === 'planilha' && existingRecord.origem_entrada === 'manual') {
+      console.info(
+        `[saveProducaoSemanal] SKIP — ${parceiroId} semana ${prod.semana_inicio}: ` +
+        `entrada manual existente prevalece sobre planilha.`
+      );
+      return existingRecord;
     }
 
     const vol_total = (prod.vol_fgts || 0) + (prod.vol_clt || 0) + (prod.vol_cgv || 0) + (prod.vol_pix || 0);
     const item: ProducaoSemanal = {
       ...prod,
+      ano,
+      mes,
       semana,
+      semana_inicio: prod.semana_inicio,
       vol_total,
       propostas_pagas: prod.propostas_pagas || 0,
+      origem_entrada: origemEntrada,
       created_at: prod.created_at || new Date().toISOString()
     } as ProducaoSemanal;
 
-    // Atualizar propostas pagas na semana diretamente no Parceiro para alimentar o Semáforo
-    if (supabase) {
-      try {
-        await supabase
-          .from('parceiros')
-          .update({ propostas_pagas_semana: item.propostas_pagas })
-          .eq('id', parceiroId);
-      } catch (e) {
-        console.warn('Erro ao atualizar propostas_pagas_semana no Supabase, usando local:', e);
-      }
-    } else {
-      const pIdx = db.parceiros.findIndex(p => p.id === parceiroId);
-      if (pIdx !== -1) {
-        db.parceiros[pIdx].propostas_pagas_semana = item.propostas_pagas;
-        saveLocalDB(db);
-      }
-    }
+    let result: ProducaoSemanal = item;
 
     if (supabase) {
       try {
-        let result;
-        const { data: check } = await supabase
-          .from('producoes_semanais')
-          .select('id')
-          .eq('parceiro_id', parceiroId)
-          .eq('ano', ano)
-          .eq('mes', mes)
-          .eq('semana', semana)
-          .maybeSingle();
-
-        if (check?.id) {
+        if (existingRecord?.id) {
+          // UPSERT: sobrescreve o registro existente
           const { data, error } = await supabase
             .from('producoes_semanais')
             .update(item)
-            .eq('id', check.id)
+            .eq('id', existingRecord.id)
             .select()
             .single();
           if (error) throw error;
-          result = data;
+          result = data as ProducaoSemanal;
         } else {
           const { data, error } = await supabase
             .from('producoes_semanais')
@@ -1096,33 +1269,212 @@ export const dataService = {
             .select()
             .single();
           if (error) throw error;
-          result = data;
+          result = data as ProducaoSemanal;
         }
-        
-        await this.consolidateMensal(parceiroId, ano, mes);
-        return result as ProducaoSemanal;
       } catch (err) {
         console.warn('Erro ao salvar semana no Supabase, usando local:', err);
       }
-    }
-
-    const updatedDb = getLocalDB();
-    if (!updatedDb.producoes_semanais) updatedDb.producoes_semanais = [];
-    const idx = updatedDb.producoes_semanais.findIndex(p => p.parceiro_id === parceiroId && p.ano === ano && p.mes === mes && p.semana === semana);
-    
-    if (idx !== -1) {
-      updatedDb.producoes_semanais[idx] = { ...updatedDb.producoes_semanais[idx], ...item };
     } else {
-      const newItem = {
-        ...item,
-        id: 'prod_sem_' + Math.random().toString(36).substr(2, 9)
-      };
-      updatedDb.producoes_semanais.push(newItem);
+      const db = getLocalDB();
+      if (!db.producoes_semanais) db.producoes_semanais = [];
+      const idx = db.producoes_semanais.findIndex(
+        p => p.parceiro_id === parceiroId && p.semana_inicio === prod.semana_inicio
+      );
+      if (idx !== -1) {
+        db.producoes_semanais[idx] = { ...db.producoes_semanais[idx], ...item };
+        result = db.producoes_semanais[idx];
+      } else {
+        const newItem = { ...item, id: 'prod_sem_' + Math.random().toString(36).substr(2, 9) };
+        db.producoes_semanais.push(newItem);
+        result = newItem;
+      }
+      saveLocalDB(db);
     }
-    saveLocalDB(updatedDb);
 
+    // 4. Consolidar o mês (recalcula producao mensal a partir das semanas)
     await this.consolidateMensal(parceiroId, ano, mes);
-    return item;
+
+    // 5. Disparar transições ascendentes imediatas
+    //    Busca apenas o parceiro específico e suas produções — sem getParceiros() completo.
+    try {
+      const config = await this.getCriterios();
+      if (supabase) {
+        const [parceiroResult, prodsResult] = await Promise.all([
+          supabase.from('parceiros').select('*').eq('id', parceiroId).single(),
+          supabase.from('producao').select('*').eq('parceiro_id', parceiroId)
+        ]);
+        const parceiro = parceiroResult.data as Parceiro | null;
+        const parceiroProds = (prodsResult.data || []) as ProducaoMensal[];
+        if (parceiro) {
+          await this.detectAndFireUpwardTransitions(
+            parceiro, parceiroProds, config, weekInfo,
+            origemEntrada === 'planilha' ? 'planilha' : 'crm_direto'
+          );
+        }
+      }
+    } catch (e) {
+      console.warn('Erro ao detectar transições após saveProducaoSemanal:', e);
+    }
+
+    // 6. Manter propostas_pagas_semana no cadastro do parceiro (campo legado,
+    //    semáforo não lê mais daqui, mas mantemos por compatibilidade)
+    if (supabase) {
+      try {
+        await supabase
+          .from('parceiros')
+          .update({ propostas_pagas_semana: item.propostas_pagas })
+          .eq('id', parceiroId);
+      } catch (e) {
+        console.warn('Erro ao atualizar propostas_pagas_semana no Supabase:', e);
+      }
+    }
+
+    return result;
+  },
+
+  // Edita campos de um registro semanal existente.
+  // Recalcula vol_total, re-consolida o mês e dispara transições ascendentes.
+  async updateProducaoSemanal(id: string, updates: Partial<ProducaoSemanal>): Promise<ProducaoSemanal> {
+    // Buscar registro atual para ter o contexto completo
+    let current: ProducaoSemanal | null = null;
+    if (supabase) {
+      const { data } = await supabase.from('producoes_semanais').select('*').eq('id', id).single();
+      current = data as ProducaoSemanal | null;
+    }
+    if (!current) throw new Error('Registro semanal não encontrado: ' + id);
+
+    const vol_total =
+      (updates.vol_fgts  ?? current.vol_fgts  ?? 0) +
+      (updates.vol_clt   ?? current.vol_clt   ?? 0) +
+      (updates.vol_cgv   ?? current.vol_cgv   ?? 0) +
+      (updates.vol_pix   ?? current.vol_pix   ?? 0);
+
+    const merged = { ...current, ...updates, vol_total };
+
+    let result: ProducaoSemanal = merged;
+    if (supabase) {
+      try {
+        const { data, error } = await supabase
+          .from('producoes_semanais')
+          .update(merged)
+          .eq('id', id)
+          .select()
+          .single();
+        if (error) throw error;
+        result = data as ProducaoSemanal;
+      } catch (err) {
+        console.warn('Erro ao atualizar semana no Supabase:', err);
+        throw err;
+      }
+    }
+
+    await this.consolidateMensal(current.parceiro_id, current.ano, current.mes);
+
+    // Disparar transições ascendentes após edição
+    try {
+      const config = await this.getCriterios();
+      const weekInfo = getWeekInfo(new Date((current.semana_inicio || '2026-01-01') + 'T12:00:00Z'));
+      if (supabase) {
+        const [parceiroResult, prodsResult] = await Promise.all([
+          supabase.from('parceiros').select('*').eq('id', current.parceiro_id).single(),
+          supabase.from('producao').select('*').eq('parceiro_id', current.parceiro_id)
+        ]);
+        const parceiro = parceiroResult.data as Parceiro | null;
+        const parceiroProds = (prodsResult.data || []) as ProducaoMensal[];
+        if (parceiro) {
+          await this.detectAndFireUpwardTransitions(
+            parceiro, parceiroProds, config, weekInfo, 'crm_direto'
+          );
+        }
+      }
+    } catch (e) {
+      console.warn('Erro ao detectar transições após updateProducaoSemanal:', e);
+    }
+
+    return result;
+  },
+
+  // Exclui um registro semanal e re-consolida o mês.
+  // Se nenhuma semana restar naquele mês, consolida também exclui o registro mensal.
+  // Transições descendentes (Ativo→Inativo) NÃO são disparadas aqui — avaliadas no
+  // fechamento do mês por getParceiros().
+  async deleteProducaoSemanal(id: string, parceiroId: string, ano: number, mes: number): Promise<void> {
+    if (supabase) {
+      try {
+        const { error } = await supabase.from('producoes_semanais').delete().eq('id', id);
+        if (error) throw error;
+      } catch (err) {
+        console.warn('Erro ao excluir semana no Supabase:', err);
+        throw err;
+      }
+    } else {
+      const db = getLocalDB();
+      db.producoes_semanais = (db.producoes_semanais || []).filter(p => p.id !== id);
+      saveLocalDB(db);
+    }
+    // consolidateMensal agora deleta o registro mensal se não restar nenhuma semana
+    await this.consolidateMensal(parceiroId, ano, mes);
+  },
+
+  // Edita campos de um registro mensal LEGADO (sem semanas vinculadas).
+  // NÃO dispara detectAndFireUpwardTransitions — é correção pontual de dado legado.
+  async updateProducaoMensal(id: string, updates: Partial<ProducaoMensal>): Promise<ProducaoMensal> {
+    const vol_total =
+      (updates.vol_fgts  ?? 0) +
+      (updates.vol_clt   ?? 0) +
+      (updates.vol_cgv   ?? 0) +
+      (updates.vol_pix   ?? 0);
+
+    const merged = { ...updates, vol_total };
+
+    if (supabase) {
+      try {
+        const { data, error } = await supabase
+          .from('producao')
+          .update(merged)
+          .eq('id', id)
+          .select()
+          .single();
+        if (error) throw error;
+        await this.recalculateParceiroPrataVolume((data as ProducaoMensal).parceiro_id);
+        return data as ProducaoMensal;
+      } catch (err) {
+        console.warn('Erro ao atualizar produção mensal legada no Supabase:', err);
+        throw err;
+      }
+    }
+    throw new Error('updateProducaoMensal requer Supabase');
+  },
+
+  // Exclui registro mensal LEGADO (sem semanas vinculadas) e em cascata
+  // exclui também quaisquer producoes_semanais do mesmo (parceiro_id, ano, mes),
+  // caso existam (segurança).
+  async deleteProducaoMensal(id: string, parceiroId: string, ano: number, mes: number): Promise<void> {
+    if (supabase) {
+      try {
+        // Cascata: excluir semanas do mesmo mês, se houver
+        await supabase
+          .from('producoes_semanais')
+          .delete()
+          .eq('parceiro_id', parceiroId)
+          .eq('ano', ano)
+          .eq('mes', mes);
+        // Excluir o registro mensal
+        const { error } = await supabase.from('producao').delete().eq('id', id);
+        if (error) throw error;
+        await this.recalculateParceiroPrataVolume(parceiroId);
+      } catch (err) {
+        console.warn('Erro ao excluir produção mensal no Supabase:', err);
+        throw err;
+      }
+    } else {
+      const db = getLocalDB();
+      db.producoes_semanais = (db.producoes_semanais || []).filter(
+        p => !(p.parceiro_id === parceiroId && p.ano === ano && p.mes === mes)
+      );
+      db.producao = db.producao.filter(p => p.id !== id);
+      saveLocalDB(db);
+    }
   },
 
   async consolidateMensal(parceiroId: string, ano: number, mes: number): Promise<void> {
@@ -1160,6 +1512,7 @@ export const dataService = {
     });
 
     if (semanais.length > 0) {
+      // Semanas existem: recalcular total mensal a partir delas
       let prodMensalId: string | undefined;
       if (supabase) {
         try {
@@ -1191,6 +1544,29 @@ export const dataService = {
         vol_pix: sumPix,
         propostas_pagas: sumPropostas
       });
+    } else {
+      // Nenhuma semana restou: excluir o registro mensal correspondente (se existir).
+      // Isso só acontece quando a ÚLTIMA semana de um mês é deletada por deleteProducaoSemanal.
+      // Registros mensais legados (criados sem semanas) nunca chegam aqui porque
+      // deleteProducaoSemanal só é chamado sobre semanas que existem.
+      if (supabase) {
+        try {
+          await supabase
+            .from('producao')
+            .delete()
+            .eq('parceiro_id', parceiroId)
+            .eq('ano', ano)
+            .eq('mes', mes);
+        } catch (e) {
+          console.warn('Erro ao excluir registro mensal após remoção da última semana:', e);
+        }
+      } else {
+        const db2 = getLocalDB();
+        db2.producao = db2.producao.filter(
+          p => !(p.parceiro_id === parceiroId && p.ano === ano && p.mes === mes)
+        );
+        saveLocalDB(db2);
+      }
     }
   },
 

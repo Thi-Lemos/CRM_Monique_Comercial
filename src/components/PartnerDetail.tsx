@@ -11,9 +11,15 @@ import {
   Settings,
   TrendingUp,
   CalendarDays,
-  History
+  History,
+  Trash2,
+  Save,
+  ChevronDown,
+  ChevronRight as ChevronRightIcon
 } from 'lucide-react';
 import PartnerFormModal from './PartnerFormModal';
+import WeekSelector from './WeekSelector';
+import { getCurrentWeek, WeekInfo, fmtDateBR } from '../utils/weekUtils';
 
 interface PartnerDetailProps {
   partnerId: string;
@@ -30,16 +36,22 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
   const [volPrataAtual, setVolPrataAtual] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  // Form de Lançamento de Produção
-  const [showProdForm, setShowProdForm] = useState(false);
-  const [prodForm, setProdForm] = useState({
-    ano: 2026,
-    mes: 6,
-    vol_fgts: 0,
-    vol_clt: 0,
-    vol_cgv: 0,
-    vol_pix: 0
-  });
+  // Form de lançamento de Produção Semanal (substitui o mensal antigo)
+  const [showSemanalForm, setShowSemanalForm] = useState(false);
+  const [semanalWeek, setSemanalWeek] = useState<WeekInfo>(getCurrentWeek());
+  const [semanalForm, setSemanalForm] = useState({ vol_fgts: 0, vol_clt: 0, vol_cgv: 0, vol_pix: 0, propostas_pagas: 0 });
+  const [semanalUpsertWarning, setSemanalUpsertWarning] = useState(false);
+
+  // Inline editing de semana
+  const [editingSemanaId, setEditingSemanaId] = useState<string | null>(null);
+  const [editSemanaForm, setEditSemanaForm] = useState<Partial<ProducaoSemanal>>({});
+
+  // Inline editing de registro mensal legado
+  const [editingLegadoId, setEditingLegadoId] = useState<string | null>(null);
+  const [editLegadoForm, setEditLegadoForm] = useState<Partial<ProducaoMensal>>({});
+
+  // Controle de expansão de meses no histórico unificado
+  const [expandedMonths, setExpandedMonths] = useState<Set<string>>(new Set());
 
   // Estado para Edição do Parceiro
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -100,22 +112,85 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
     return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(val);
   };
 
-  const handleProdSubmit = async (e: React.FormEvent) => {
+  const openEditModal = () => { setIsFormOpen(true); };
+
+  // ── Lançamento de produção semanal manual ─────────────────────────────────
+  const handleSemanalSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!partner) return;
+    setSemanalUpsertWarning(false);
     try {
-      await dataService.saveProducao({
+      const saved = await dataService.saveProducaoSemanal({
         parceiro_id: partner.id,
-        ...prodForm
+        semana_inicio: semanalWeek.inicio,
+        origem_entrada: 'manual',
+        ...semanalForm
       });
-      setShowProdForm(false);
+      // Se o registro já existia (upsert), avisar o usuário
+      if (saved.origem_entrada === 'manual' &&
+          (saved.vol_fgts !== semanalForm.vol_fgts || saved.vol_clt !== semanalForm.vol_clt)) {
+        setSemanalUpsertWarning(true);
+      }
+      setShowSemanalForm(false);
+      setSemanalForm({ vol_fgts: 0, vol_clt: 0, vol_cgv: 0, vol_pix: 0, propostas_pagas: 0 });
       await loadData();
-    } catch (e) {
-      console.error(e);
-    }
+    } catch (e) { console.error(e); }
   };
 
-  const openEditModal = () => {
-    setIsFormOpen(true);
+  // ── Edição inline de semana ───────────────────────────────────────────────
+  const startEditSemana = (s: ProducaoSemanal) => {
+    setEditingSemanaId(s.id || null);
+    setEditSemanaForm({ vol_fgts: s.vol_fgts, vol_clt: s.vol_clt, vol_cgv: s.vol_cgv, vol_pix: s.vol_pix, propostas_pagas: s.propostas_pagas });
+  };
+  const cancelEditSemana = () => { setEditingSemanaId(null); setEditSemanaForm({}); };
+  const saveEditSemana = async (s: ProducaoSemanal) => {
+    if (!s.id) return;
+    try {
+      await dataService.updateProducaoSemanal(s.id, editSemanaForm);
+      setEditingSemanaId(null);
+      await loadData();
+    } catch (e) { console.error('Erro ao atualizar semana:', e); }
+  };
+  const deleteSemana = async (s: ProducaoSemanal) => {
+    const isLastWeek = semanas.filter(w => w.ano === s.ano && w.mes === s.mes).length === 1;
+    const msg = isLastWeek
+      ? `Excluir a última semana de ${s.mes.toString().padStart(2,'0')}/${s.ano}? O registro mensal também será removido permanentemente.`
+      : `Excluir a produção da semana ${s.semana_inicio ? fmtDateBR(s.semana_inicio) : `Sem. ${s.semana}`}? O total do mês será recalculado.`;
+    if (!window.confirm(msg)) return;
+    try {
+      await dataService.deleteProducaoSemanal(s.id!, partner!.id, s.ano, s.mes);
+      await loadData();
+    } catch (e) { console.error('Erro ao excluir semana:', e); }
+  };
+
+  // ── Edição/exclusão de registro mensal legado ─────────────────────────────
+  const startEditLegado = (p: ProducaoMensal) => {
+    setEditingLegadoId(p.id || null);
+    setEditLegadoForm({ vol_fgts: p.vol_fgts, vol_clt: p.vol_clt, vol_cgv: p.vol_cgv, vol_pix: p.vol_pix, propostas_pagas: p.propostas_pagas || 0 });
+  };
+  const cancelEditLegado = () => { setEditingLegadoId(null); setEditLegadoForm({}); };
+  const saveLegado = async (p: ProducaoMensal) => {
+    if (!p.id) return;
+    try {
+      await dataService.updateProducaoMensal(p.id, editLegadoForm);
+      setEditingLegadoId(null);
+      await loadData();
+    } catch (e) { console.error('Erro ao atualizar legado:', e); }
+  };
+  const deleteLegado = async (p: ProducaoMensal) => {
+    if (!window.confirm(`Excluir o registro de ${p.mes.toString().padStart(2,'0')}/${p.ano} permanentemente? Esta ação não pode ser desfeita.`)) return;
+    try {
+      await dataService.deleteProducaoMensal(p.id!, partner!.id, p.ano, p.mes);
+      await loadData();
+    } catch (e) { console.error('Erro ao excluir legado:', e); }
+  };
+
+  const toggleMonth = (key: string) => {
+    setExpandedMonths(prev => {
+      const next = new Set(prev);
+      next.has(key) ? next.delete(key) : next.add(key);
+      return next;
+    });
   };
 
   return (
@@ -275,121 +350,239 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
           </div>
         </div>
 
-        {/* Bloco de Produção Mensal */}
+        {/* ── Histórico de Produção Unificado ────────────────────────────── */}
         <div className="card" style={{ padding: '1.25rem' }}>
           <h3 className="card-title" style={{ justifyContent: 'space-between', fontSize: '1rem', marginBottom: '0.75rem' }}>
             <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <TrendingUp size={18} /> Histórico de Produção Mensal
+              <TrendingUp size={18} /> Histórico de Produção
             </span>
-            <button className="btn btn-secondary" style={{ padding: '0.35rem 0.65rem', fontSize: '0.725rem' }} onClick={() => setShowProdForm(true)}>
-              <Plus size={12} /> Registrar Produção
+            <button className="btn btn-secondary" style={{ padding: '0.35rem 0.65rem', fontSize: '0.725rem' }}
+              onClick={() => { setSemanalForm({ vol_fgts: 0, vol_clt: 0, vol_cgv: 0, vol_pix: 0, propostas_pagas: 0 }); setSemanalWeek(getCurrentWeek()); setShowSemanalForm(true); }}>
+              <Plus size={12} /> Registrar Semana
             </button>
           </h3>
 
-          <div className="table-container" style={{ border: 'none', boxShadow: 'none', overflowX: 'visible' }}>
-            <table className="table" style={{ fontSize: '0.75rem', width: '100%' }}>
-              <thead>
-                <tr>
-                  <th style={{ backgroundColor: 'var(--secondary-color)', color: '#ffffff', borderBottom: '1px solid rgba(255, 255, 255, 0.15)', padding: '0.5rem 0.4rem' }}>Mês/Ano</th>
-                  <th style={{ backgroundColor: 'var(--secondary-color)', color: '#ffffff', borderBottom: '1px solid rgba(255, 255, 255, 0.15)', textAlign: 'right', padding: '0.5rem 0.4rem' }}>FGTS</th>
-                  <th style={{ backgroundColor: 'var(--secondary-color)', color: '#ffffff', borderBottom: '1px solid rgba(255, 255, 255, 0.15)', textAlign: 'right', padding: '0.5rem 0.4rem' }}>CLT</th>
-                  <th style={{ backgroundColor: 'var(--secondary-color)', color: '#ffffff', borderBottom: '1px solid rgba(255, 255, 255, 0.15)', textAlign: 'right', padding: '0.5rem 0.4rem' }}>CGV</th>
-                  <th style={{ backgroundColor: 'var(--secondary-color)', color: '#ffffff', borderBottom: '1px solid rgba(255, 255, 255, 0.15)', textAlign: 'right', padding: '0.5rem 0.4rem' }}>Pix</th>
-                  <th style={{ backgroundColor: 'var(--secondary-color)', color: '#ffffff', borderBottom: '1px solid rgba(255, 255, 255, 0.15)', textAlign: 'right', padding: '0.5rem 0.4rem' }}>Total Prata</th>
-                  <th style={{ backgroundColor: 'var(--secondary-color)', color: '#ffffff', borderBottom: '1px solid rgba(255, 255, 255, 0.15)', textAlign: 'right', padding: '0.5rem 0.4rem' }}>Conc. %</th>
-                </tr>
-              </thead>
-              <tbody>
-                {producao.length === 0 ? (
-                  <tr>
-                    <td colSpan={7} style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '2rem 0' }}>Nenhum volume registrado.</td>
+          {(() => {
+            const mesesComSemanas = new Set<string>();
+            semanas.forEach(s => mesesComSemanas.add(`${s.ano}-${s.mes}`));
+
+            const semanasPorMes: Record<string, ProducaoSemanal[]> = {};
+            semanas.forEach(s => {
+              const k = `${s.ano}-${s.mes}`;
+              if (!semanasPorMes[k]) semanasPorMes[k] = [];
+              semanasPorMes[k].push(s);
+            });
+            Object.values(semanasPorMes).forEach(arr => arr.sort((a, b) => (a.semana || 0) - (b.semana || 0)));
+
+            const mesesOrdenados = [...producao].sort((a, b) =>
+              b.ano !== a.ano ? b.ano - a.ano : b.mes - a.mes);
+
+            const chavesMensal = new Set(producao.map(p => `${p.ano}-${p.mes}`));
+            const mesesSoComSemanas = [...mesesComSemanas].filter(k => !chavesMensal.has(k));
+
+            const NOMES_MES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+
+            const thStyle: React.CSSProperties = {
+              backgroundColor: 'var(--secondary-color)', color: '#fff',
+              borderBottom: '1px solid rgba(255,255,255,0.15)', padding: '0.45rem 0.4rem',
+              fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase' as const
+            };
+
+            const renderSemanaRow = (s: ProducaoSemanal) => {
+              const isEditing = editingSemanaId === s.id;
+              const fim = s.semana_inicio
+                ? new Date(new Date(s.semana_inicio + 'T12:00:00Z').getTime() + 6*86400000).toISOString().slice(0,10)
+                : null;
+              const periodo = s.semana_inicio && fim
+                ? `${fmtDateBR(s.semana_inicio)} → ${fmtDateBR(fim)}`
+                : `Sem. ${s.semana}`;
+
+              if (isEditing) {
+                return (
+                  <tr key={s.id} style={{ backgroundColor: 'rgba(15,184,130,0.06)' }}>
+                    <td style={{ padding: '0.4rem', fontSize: '0.72rem', whiteSpace: 'nowrap', color: 'var(--text-muted)', fontStyle: 'italic' }}>{periodo}</td>
+                    {(['vol_fgts','vol_clt','vol_cgv','vol_pix','propostas_pagas'] as const).map(field => (
+                      <td key={field} style={{ padding: '0.25rem 0.3rem', textAlign: 'right' }}>
+                        <input type="number" min={0} style={{ width: '70px', textAlign: 'right', padding: '0.2rem 0.3rem', fontSize: '0.72rem', borderRadius: '4px', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-input, #fff)' }}
+                          value={(editSemanaForm as any)[field] ?? 0}
+                          onChange={ev => setEditSemanaForm(prev => ({ ...prev, [field]: parseFloat(ev.target.value) || 0 }))} />
+                      </td>
+                    ))}
+                    <td style={{ padding: '0.25rem 0.3rem', textAlign: 'right', fontSize: '0.72rem', fontWeight: 650, color: 'var(--primary-color)' }}>
+                      {formatCurrency((editSemanaForm.vol_fgts||0)+(editSemanaForm.vol_clt||0)+(editSemanaForm.vol_cgv||0)+(editSemanaForm.vol_pix||0))}
+                    </td>
+                    <td style={{ padding: '0.25rem 0.3rem', textAlign: 'right' }}>
+                      <div style={{ display: 'flex', gap: '0.3rem', justifyContent: 'flex-end' }}>
+                        <button title="Salvar" onClick={() => saveEditSemana(s)} style={{ border: 'none', background: 'none', cursor: 'pointer', color: 'var(--success)', padding: '0.2rem' }}><Save size={13} /></button>
+                        <button title="Cancelar" onClick={cancelEditSemana} style={{ border: 'none', background: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '0.2rem' }}><X size={13} /></button>
+                      </div>
+                    </td>
                   </tr>
-                ) : (
-                  producao.map(p => {
-                    const totalDeclarado = partner.vol_total_mensal;
-                    const concText = totalDeclarado > 0 ? `${Math.min(100, (p.vol_total! / totalDeclarado) * 100).toFixed(0)}%` : 'NVT';
-                    return (
-                      <tr key={p.id}>
-                        <td style={{ fontWeight: 650, whiteSpace: 'nowrap', padding: '0.5rem 0.4rem' }}>{p.mes.toString().padStart(2, '0')}/{p.ano}</td>
-                        <td style={{ textAlign: 'right', whiteSpace: 'nowrap', padding: '0.5rem 0.4rem' }}>{formatCurrency(p.vol_fgts)}</td>
-                        <td style={{ textAlign: 'right', whiteSpace: 'nowrap', padding: '0.5rem 0.4rem' }}>{formatCurrency(p.vol_clt)}</td>
-                        <td style={{ textAlign: 'right', whiteSpace: 'nowrap', padding: '0.5rem 0.4rem' }}>{formatCurrency(p.vol_cgv)}</td>
-                        <td style={{ textAlign: 'right', whiteSpace: 'nowrap', padding: '0.5rem 0.4rem' }}>{formatCurrency(p.vol_pix)}</td>
-                        <td style={{ textAlign: 'right', fontWeight: 650, color: 'var(--primary-color)', whiteSpace: 'nowrap', padding: '0.5rem 0.4rem' }}>{formatCurrency(p.vol_total!)}</td>
-                        <td style={{ textAlign: 'right', fontWeight: 600, padding: '0.5rem 0.4rem' }}>{concText}</td>
-                      </tr>
-                    );
-                  })
-                )}
-              </tbody>
-            </table>
-          </div>
+                );
+              }
+
+              return (
+                <tr key={s.id}>
+                  <td style={{ padding: '0.45rem 0.4rem', fontSize: '0.72rem', whiteSpace: 'nowrap', color: 'var(--text-muted)' }}>{periodo}</td>
+                  <td style={{ padding: '0.45rem 0.4rem', textAlign: 'right', fontSize: '0.72rem' }}>{formatCurrency(s.vol_fgts)}</td>
+                  <td style={{ padding: '0.45rem 0.4rem', textAlign: 'right', fontSize: '0.72rem' }}>{formatCurrency(s.vol_clt)}</td>
+                  <td style={{ padding: '0.45rem 0.4rem', textAlign: 'right', fontSize: '0.72rem' }}>{formatCurrency(s.vol_cgv)}</td>
+                  <td style={{ padding: '0.45rem 0.4rem', textAlign: 'right', fontSize: '0.72rem' }}>{formatCurrency(s.vol_pix)}</td>
+                  <td style={{ padding: '0.45rem 0.4rem', textAlign: 'right', fontSize: '0.72rem' }}>{s.propostas_pagas ?? 0}</td>
+                  <td style={{ padding: '0.45rem 0.4rem', textAlign: 'right', fontSize: '0.72rem', fontWeight: 650, color: 'var(--primary-color)' }}>
+                    {formatCurrency((s.vol_fgts||0)+(s.vol_clt||0)+(s.vol_cgv||0)+(s.vol_pix||0))}
+                  </td>
+                  <td style={{ padding: '0.25rem 0.3rem', textAlign: 'right' }}>
+                    <div style={{ display: 'flex', gap: '0.2rem', justifyContent: 'flex-end' }}>
+                      <button title="Editar" onClick={() => startEditSemana(s)} style={{ border: 'none', background: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '0.2rem' }}><Edit size={12} /></button>
+                      <button title="Excluir" onClick={() => deleteSemana(s)} style={{ border: 'none', background: 'none', cursor: 'pointer', color: 'var(--danger)', padding: '0.2rem' }}><Trash2 size={12} /></button>
+                    </div>
+                  </td>
+                </tr>
+              );
+            };
+
+            if (producao.length === 0 && semanas.length === 0) {
+              return <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', padding: '1.5rem 0', textAlign: 'center' }}>Nenhum volume registrado.</p>;
+            }
+
+            return (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                {mesesOrdenados.map(prod => {
+                  const key = `${prod.ano}-${prod.mes}`;
+                  const isLegacy = !mesesComSemanas.has(key);
+                  const semanasDoMes = semanasPorMes[key] || [];
+                  const expanded = expandedMonths.has(key);
+                  const mesLabel = `${NOMES_MES[prod.mes - 1]}/${prod.ano}`;
+                  const isEditingLeg = editingLegadoId === prod.id;
+
+                  return (
+                    <div key={key} style={{ border: '1px solid var(--border-color)', borderRadius: 'var(--radius-sm)', overflow: 'hidden' }}>
+                      <div
+                        onClick={() => !isLegacy && toggleMonth(key)}
+                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.6rem 0.75rem', backgroundColor: 'rgba(255,255,255,0.03)', cursor: isLegacy ? 'default' : 'pointer', borderBottom: (expanded && !isLegacy) ? '1px solid var(--border-color)' : 'none' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                          {!isLegacy && (expanded ? <ChevronDown size={14} /> : <ChevronRightIcon size={14} />)}
+                          <span style={{ fontWeight: 700, fontSize: '0.85rem', color: 'var(--secondary-color)' }}>{mesLabel}</span>
+                          {isLegacy && <span style={{ fontSize: '0.65rem', padding: '0.1rem 0.35rem', backgroundColor: 'rgba(100,116,139,0.15)', color: 'var(--text-muted)', borderRadius: '3px', fontWeight: 600 }}>LEGADO</span>}
+                          {!isLegacy && <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>{semanasDoMes.length} semana(s)</span>}
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                          <span style={{ fontWeight: 700, fontSize: '0.85rem', color: 'var(--primary-color)' }}>{formatCurrency(prod.vol_total || 0)}</span>
+                          <div style={{ display: 'flex', gap: '0.2rem' }}>
+                            {isLegacy && (
+                              <button title="Editar total mensal" onClick={e => { e.stopPropagation(); startEditLegado(prod); }}
+                                style={{ border: 'none', background: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '0.2rem' }}><Edit size={13} /></button>
+                            )}
+                            <button title="Excluir" onClick={e => { e.stopPropagation(); if (isLegacy) deleteLegado(prod); }}
+                              style={{ border: 'none', background: 'none', cursor: 'pointer', color: 'var(--danger)', padding: '0.2rem' }}><Trash2 size={13} /></button>
+                          </div>
+                        </div>
+                      </div>
+
+                      {isLegacy && isEditingLeg && (
+                        <div style={{ padding: '0.75rem', backgroundColor: 'rgba(15,184,130,0.05)', borderTop: '1px solid var(--border-color)' }}>
+                          <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginBottom: '0.5rem', fontStyle: 'italic' }}>
+                            Editando totais mensais do registro legado de {mesLabel}
+                          </p>
+                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))', gap: '0.5rem', marginBottom: '0.6rem' }}>
+                            {(['vol_fgts','vol_clt','vol_cgv','vol_pix','propostas_pagas'] as const).map(field => (
+                              <div key={field}>
+                                <label style={{ fontSize: '0.65rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>{field.replace('vol_','').toUpperCase()}</label>
+                                <input type="number" min={0} className="form-input" style={{ padding: '0.3rem 0.4rem', fontSize: '0.78rem', marginTop: '0.15rem' }}
+                                  value={(editLegadoForm as any)[field] ?? 0}
+                                  onChange={ev => setEditLegadoForm(prev => ({ ...prev, [field]: parseFloat(ev.target.value) || 0 }))} />
+                              </div>
+                            ))}
+                          </div>
+                          <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                            <button className="btn btn-secondary" style={{ padding: '0.25rem 0.65rem', fontSize: '0.75rem' }} onClick={cancelEditLegado}>Cancelar</button>
+                            <button className="btn btn-primary" style={{ padding: '0.25rem 0.65rem', fontSize: '0.75rem' }} onClick={() => saveLegado(prod)}>Salvar</button>
+                          </div>
+                        </div>
+                      )}
+
+                      {!isLegacy && expanded && (
+                        <div className="table-container" style={{ border: 'none', boxShadow: 'none', margin: 0 }}>
+                          <table className="table" style={{ fontSize: '0.72rem', width: '100%' }}>
+                            <thead>
+                              <tr>
+                                <th style={thStyle}>Período</th>
+                                <th style={{ ...thStyle, textAlign: 'right' }}>FGTS</th>
+                                <th style={{ ...thStyle, textAlign: 'right' }}>CLT</th>
+                                <th style={{ ...thStyle, textAlign: 'right' }}>CGV</th>
+                                <th style={{ ...thStyle, textAlign: 'right' }}>PIX</th>
+                                <th style={{ ...thStyle, textAlign: 'right' }}>Propos.</th>
+                                <th style={{ ...thStyle, textAlign: 'right' }}>Total</th>
+                                <th style={{ ...thStyle, width: '60px' }}></th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {semanasDoMes.map(s => renderSemanaRow(s))}
+                              <tr style={{ backgroundColor: 'rgba(15,184,130,0.07)', fontWeight: 700 }}>
+                                <td colSpan={6} style={{ padding: '0.4rem', fontSize: '0.72rem', textAlign: 'right', color: 'var(--text-muted)' }}>Subtotal {mesLabel}</td>
+                                <td style={{ padding: '0.4rem', textAlign: 'right', fontSize: '0.78rem', color: 'var(--primary-color)' }}>{formatCurrency(prod.vol_total || 0)}</td>
+                                <td></td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+
+                {mesesSoComSemanas.map(key => {
+                  const [anoS, mesS] = key.split('-').map(Number);
+                  const semanasDoMes = semanasPorMes[key] || [];
+                  const mesLabel = `${NOMES_MES[mesS - 1]}/${anoS}`;
+                  const totalMes = semanasDoMes.reduce((s, w) => s + ((w.vol_fgts||0)+(w.vol_clt||0)+(w.vol_cgv||0)+(w.vol_pix||0)), 0);
+                  const expanded = expandedMonths.has(key);
+                  return (
+                    <div key={key} style={{ border: '1px solid var(--border-color)', borderRadius: 'var(--radius-sm)', overflow: 'hidden' }}>
+                      <div onClick={() => toggleMonth(key)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.6rem 0.75rem', backgroundColor: 'rgba(255,255,255,0.03)', cursor: 'pointer' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                          {expanded ? <ChevronDown size={14} /> : <ChevronRightIcon size={14} />}
+                          <span style={{ fontWeight: 700, fontSize: '0.85rem', color: 'var(--secondary-color)' }}>{mesLabel}</span>
+                          <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>{semanasDoMes.length} semana(s)</span>
+                        </div>
+                        <span style={{ fontWeight: 700, fontSize: '0.85rem', color: 'var(--primary-color)' }}>{formatCurrency(totalMes)}</span>
+                      </div>
+                      {expanded && (
+                        <div className="table-container" style={{ border: 'none', boxShadow: 'none', margin: 0 }}>
+                          <table className="table" style={{ fontSize: '0.72rem' }}>
+                            <thead><tr>
+                              <th style={thStyle}>Período</th>
+                              <th style={{ ...thStyle, textAlign: 'right' }}>FGTS</th>
+                              <th style={{ ...thStyle, textAlign: 'right' }}>CLT</th>
+                              <th style={{ ...thStyle, textAlign: 'right' }}>CGV</th>
+                              <th style={{ ...thStyle, textAlign: 'right' }}>PIX</th>
+                              <th style={{ ...thStyle, textAlign: 'right' }}>Propos.</th>
+                              <th style={{ ...thStyle, textAlign: 'right' }}>Total</th>
+                              <th style={{ ...thStyle, width: '60px' }}></th>
+                            </tr></thead>
+                            <tbody>{semanasDoMes.map(s => renderSemanaRow(s))}</tbody>
+                          </table>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          })()}
         </div>
 
       </div>
 
-      {/* Grid de Duas Colunas: Produção Semanal / Logs de Relacionamento */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(460px, 1fr))', gap: '1.5rem', marginBottom: '2rem', alignItems: 'start' }}>
-        
-        {/* Bloco de Produção Semanal */}
-        <div className="card" style={{ padding: '1.5rem' }}>
-          <h3 className="card-title">
-            <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <CalendarDays size={20} /> Detalhamento de Faturamento Semanal (Mês Corrente)
-            </span>
-          </h3>
-          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '1rem', marginTop: '0.2rem' }}>
-            Lançamentos acumulados da planilha de faturamento semanal para Junho/2026.
-          </p>
-
-          <div className="table-container" style={{ border: 'none', boxShadow: 'none' }}>
-            <table className="table">
-              <thead>
-                <tr>
-                  <th style={{ backgroundColor: 'var(--secondary-color)', color: '#ffffff', borderBottom: '1px solid rgba(255, 255, 255, 0.15)' }}>Semana</th>
-                  <th style={{ backgroundColor: 'var(--secondary-color)', color: '#ffffff', borderBottom: '1px solid rgba(255, 255, 255, 0.15)', textAlign: 'right' }}>FGTS</th>
-                  <th style={{ backgroundColor: 'var(--secondary-color)', color: '#ffffff', borderBottom: '1px solid rgba(255, 255, 255, 0.15)', textAlign: 'right' }}>CLT</th>
-                  <th style={{ backgroundColor: 'var(--secondary-color)', color: '#ffffff', borderBottom: '1px solid rgba(255, 255, 255, 0.15)', textAlign: 'right' }}>CGV / Pix</th>
-                  <th style={{ backgroundColor: 'var(--secondary-color)', color: '#ffffff', borderBottom: '1px solid rgba(255, 255, 255, 0.15)', textAlign: 'right' }}>Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                {(() => {
-                  const semanasMêsAtivo = semanas.filter(s => s.ano === 2026 && s.mes === 6);
-                  if (semanasMêsAtivo.length === 0) {
-                    return (
-                      <tr>
-                        <td colSpan={5} style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '2rem 0' }}>
-                          Nenhum faturamento semanal carregado para Junho/2026.
-                        </td>
-                      </tr>
-                    );
-                  }
-                  return semanasMêsAtivo.map(s => (
-                    <tr key={s.id}>
-                      <td style={{ fontWeight: 650 }}>Semana {s.semana}</td>
-                      <td style={{ textAlign: 'right' }}>{formatCurrency(s.vol_fgts)}</td>
-                      <td style={{ textAlign: 'right' }}>{formatCurrency(s.vol_clt)}</td>
-                      <td style={{ textAlign: 'right' }}>{formatCurrency(s.vol_cgv + s.vol_pix)}</td>
-                      <td style={{ textAlign: 'right', fontWeight: 650, color: 'var(--primary-color)' }}>
-                        {formatCurrency((s.vol_fgts || 0) + (s.vol_clt || 0) + (s.vol_cgv || 0) + (s.vol_pix || 0))}
-                      </td>
-                    </tr>
-                  ));
-                })()}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        {/* Histórico de Logs / Reuniões */}
+      {/* Histórico de Interações Comerciais */}
+      <div style={{ marginBottom: '2rem' }}>
         <div className="card" style={{ padding: '1.5rem' }}>
           <h3 className="card-title">
             <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <History size={20} /> Histórico de Interações Comerciais
             </span>
           </h3>
-          
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '1rem', maxHeight: '420px', overflowY: 'auto', paddingRight: '0.25rem' }}>
             {logs.length === 0 ? (
               <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', textAlign: 'center', padding: '1.5rem 0' }}>
@@ -397,45 +590,22 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
               </p>
             ) : (
               logs.map(log => (
-                <div key={log.id} style={{
-                  padding: '1rem',
-                  borderRadius: 'var(--radius-sm)',
-                  border: '1px solid var(--border-color)',
-                  backgroundColor: '#ffffff'
-                }}>
+                <div key={log.id} style={{ padding: '1rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-color)', backgroundColor: '#ffffff' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.5rem', borderBottom: '1px dashed var(--border-color)', paddingBottom: '0.5rem', fontSize: '0.8rem' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                       <span className="badge badge-info">{log.canal}</span>
                       <span className="badge badge-success" style={{ backgroundColor: '#f1f5f9', color: 'var(--text-main)' }}>{log.processo}</span>
-                      <span style={{ fontWeight: 650, color: 'var(--secondary-color)' }}>
-                        {new Date(log.data_contato).toLocaleDateString('pt-BR')}
-                      </span>
+                      <span style={{ fontWeight: 650, color: 'var(--secondary-color)' }}>{new Date(log.data_contato).toLocaleDateString('pt-BR')}</span>
                     </div>
                   </div>
-
-                  <p style={{ fontSize: '0.85rem', color: 'var(--text-main)', lineHeight: 1.4, fontWeight: 550 }}>
-                    {log.resumo}
-                  </p>
-
+                  <p style={{ fontSize: '0.85rem', color: 'var(--text-main)', lineHeight: 1.4, fontWeight: 550 }}>{log.resumo}</p>
                   {log.proxima_acao && (
                     <div style={{ marginTop: '0.5rem', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                       Próxima ação: <strong>{log.proxima_acao}</strong> em <strong>{new Date(log.data_proxima_acao + 'T12:00:00').toLocaleDateString('pt-BR')}</strong>
                     </div>
                   )}
-
-                  {/* Se houver bloco de diagnóstico (reunião completa) */}
                   {log.diagnostico_dor && (
-                    <div style={{
-                      marginTop: '0.5rem',
-                      padding: '0.5rem',
-                      borderRadius: '4px',
-                      backgroundColor: '#f8fafc',
-                      fontSize: '0.75rem',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: '0.25rem',
-                      borderLeft: '2px solid var(--primary-color)'
-                    }}>
+                    <div style={{ marginTop: '0.5rem', padding: '0.5rem', borderRadius: '4px', backgroundColor: '#f8fafc', fontSize: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.25rem', borderLeft: '2px solid var(--primary-color)' }}>
                       <div><strong>Motivo/Causa:</strong> {log.diagnostico_causa}</div>
                       <div><strong>Dor Relatada:</strong> {log.diagnostico_dor}</div>
                       {log.diagnostico_concorrentes && <div><strong>Concorrentes Citados:</strong> {log.diagnostico_concorrentes}</div>}
@@ -446,85 +616,65 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
             )}
           </div>
         </div>
-
       </div>
 
-      {/* Modal de Lançamento de Produção */}
-      {showProdForm && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(7, 12, 20, 0.7)',
-          display: 'flex',
-          alignItems: 'flex-start',
-          justifyContent: 'center',
-          zIndex: 100,
-          padding: '3rem 1.5rem',
-          overflowY: 'auto',
-          backdropFilter: 'var(--glass-blur)',
-          WebkitBackdropFilter: 'var(--glass-blur)'
-        }}>
-          <div className="card fade-in" style={{
-            width: '100%',
-            maxWidth: '650px',
-            borderRadius: 'var(--radius-md)',
-            boxShadow: 'var(--shadow-lg)',
-            backgroundColor: 'rgba(209, 250, 237, 0.95)',
-            border: '1px solid rgba(15, 184, 130, 0.35)',
-            marginBottom: '2rem'
-          }}>
+      {/* Modal de Produção Semanal */}
+      {showSemanalForm && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(7,12,20,0.7)', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', zIndex: 100, padding: '3rem 1.5rem', overflowY: 'auto', backdropFilter: 'var(--glass-blur)', WebkitBackdropFilter: 'var(--glass-blur)' }}>
+          <div className="card fade-in" style={{ width: '100%', maxWidth: '580px', borderRadius: 'var(--radius-md)', boxShadow: 'var(--shadow-lg)', backgroundColor: 'rgba(209,250,237,0.95)', border: '1px solid rgba(15,184,130,0.35)', marginBottom: '2rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.75rem' }}>
-              <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--secondary-color)' }}>Registrar Produção Mensal</h3>
-              <button onClick={() => setShowProdForm(false)} style={{ border: 'none', background: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}><X size={20} /></button>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--secondary-color)', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                <CalendarDays size={18} /> Registrar Produção Semanal
+              </h3>
+              <button onClick={() => setShowSemanalForm(false)} style={{ border: 'none', background: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}><X size={20} /></button>
             </div>
 
-            <form onSubmit={handleProdSubmit}>
-              <div className="form-row">
-                <div className="form-group">
-                  <label className="form-label">Mês *</label>
-                  <select className="form-input" value={prodForm.mes} onChange={(e) => setProdForm(prev => ({ ...prev, mes: parseInt(e.target.value) }))}>
-                    {Array.from({ length: 12 }, (_, i) => (
-                      <option key={i+1} value={i+1}>{new Date(2026, i, 1).toLocaleDateString('pt-BR', { month: 'long' })}</option>
-                    ))}
-                  </select>
-                </div>
-                <div className="form-group">
-                  <label className="form-label">Ano *</label>
-                  <select className="form-input" value={prodForm.ano} onChange={(e) => setProdForm(prev => ({ ...prev, ano: parseInt(e.target.value) }))}>
-                    <option value={2026}>2026</option>
-                    <option value={2025}>2025</option>
-                  </select>
-                </div>
+            {semanalUpsertWarning && (
+              <div style={{ padding: '0.6rem 0.75rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(245,158,11,0.12)', border: '1px solid rgba(245,158,11,0.35)', fontSize: '0.8rem', color: 'var(--warning)', marginBottom: '1rem' }}>
+                ⚠️ Já existia um registro manual para esta semana. Os valores anteriores foram substituídos.
+              </div>
+            )}
+
+            <form onSubmit={handleSemanalSubmit}>
+              <div style={{ marginBottom: '1.25rem' }}>
+                <WeekSelector value={semanalWeek} onChange={setSemanalWeek} label="Semana de referência" />
               </div>
 
               <div className="form-row">
                 <div className="form-group">
                   <label className="form-label">FGTS (R$)</label>
-                  <input type="number" min={0} className="form-input" value={prodForm.vol_fgts} onChange={(e) => setProdForm(prev => ({ ...prev, vol_fgts: parseFloat(e.target.value) || 0 }))} />
+                  <input type="number" min={0} className="form-input" value={semanalForm.vol_fgts} onChange={e => setSemanalForm(p => ({ ...p, vol_fgts: parseFloat(e.target.value)||0 }))} />
                 </div>
                 <div className="form-group">
                   <label className="form-label">CLT Consignado (R$)</label>
-                  <input type="number" min={0} className="form-input" value={prodForm.vol_clt} onChange={(e) => setProdForm(prev => ({ ...prev, vol_clt: parseFloat(e.target.value) || 0 }))} />
+                  <input type="number" min={0} className="form-input" value={semanalForm.vol_clt} onChange={e => setSemanalForm(p => ({ ...p, vol_clt: parseFloat(e.target.value)||0 }))} />
                 </div>
               </div>
-
               <div className="form-row">
                 <div className="form-group">
                   <label className="form-label">CGV (R$)</label>
-                  <input type="number" min={0} className="form-input" value={prodForm.vol_cgv} onChange={(e) => setProdForm(prev => ({ ...prev, vol_cgv: parseFloat(e.target.value) || 0 }))} />
+                  <input type="number" min={0} className="form-input" value={semanalForm.vol_cgv} onChange={e => setSemanalForm(p => ({ ...p, vol_cgv: parseFloat(e.target.value)||0 }))} />
                 </div>
                 <div className="form-group">
                   <label className="form-label">Pix no Cartão (R$)</label>
-                  <input type="number" min={0} className="form-input" value={prodForm.vol_pix} onChange={(e) => setProdForm(prev => ({ ...prev, vol_pix: parseFloat(e.target.value) || 0 }))} />
+                  <input type="number" min={0} className="form-input" value={semanalForm.vol_pix} onChange={e => setSemanalForm(p => ({ ...p, vol_pix: parseFloat(e.target.value)||0 }))} />
                 </div>
               </div>
+              <div className="form-group">
+                <label className="form-label">Propostas Pagas</label>
+                <input type="number" min={0} className="form-input" value={semanalForm.propostas_pagas} onChange={e => setSemanalForm(p => ({ ...p, propostas_pagas: parseInt(e.target.value)||0 }))} />
+              </div>
 
-              <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end', marginTop: '2rem', borderTop: '1px solid var(--border-color)', paddingTop: '1.25rem' }}>
-                <button type="button" className="btn btn-secondary" onClick={() => setShowProdForm(false)}>Cancelar</button>
-                <button type="submit" className="btn btn-primary">Registrar Produção</button>
+              <div style={{ padding: '0.6rem 0.75rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(15,184,130,0.1)', marginTop: '0.75rem', fontSize: '0.85rem', fontWeight: 700, color: 'var(--secondary-color)', display: 'flex', justifyContent: 'space-between' }}>
+                <span>Total desta semana:</span>
+                <span style={{ color: 'var(--primary-color)' }}>{formatCurrency((semanalForm.vol_fgts||0)+(semanalForm.vol_clt||0)+(semanalForm.vol_cgv||0)+(semanalForm.vol_pix||0))}</span>
+              </div>
+
+              <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end', marginTop: '1.5rem', borderTop: '1px solid var(--border-color)', paddingTop: '1.25rem' }}>
+                <button type="button" className="btn btn-secondary" onClick={() => setShowSemanalForm(false)}>Cancelar</button>
+                <button type="submit" className="btn btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <Save size={14} /> Registrar Semana
+                </button>
               </div>
             </form>
           </div>

@@ -214,7 +214,7 @@ export default function Dashboard({ onSelectPartner }: { onSelectPartner?: (id: 
           dataService.getCriterios()
         ]);
 
-        const sem = await dataService.getSemafaroStatus(pList, lList);
+        const sem = await dataService.getSemafaroStatus(pList);
         const uploadDate = dataService.getLastWeeklyUploadDate();
         
         setParceiros(pList);
@@ -616,7 +616,7 @@ export default function Dashboard({ onSelectPartner }: { onSelectPartner?: (id: 
         
         {semaforo && (
           <div className="semaforo-container">
-            {/* Hunter */}
+            {/* Hunter / Winback */}
             <div className={`card semaforo-card ${semaforo.hunter}`}>
               <div className="semaforo-header">
                 <span style={{ fontWeight: 600, color: 'var(--text-muted)', fontSize: '0.85rem', textTransform: 'uppercase' }}>WINBACK / HUNTER</span>
@@ -625,12 +625,48 @@ export default function Dashboard({ onSelectPartner }: { onSelectPartner?: (id: 
                   <span style={{ color: semaforo.hunter === 'Verde' ? 'var(--success)' : 'var(--danger)' }}>{semaforo.hunter}</span>
                 </div>
               </div>
-              <div style={{ margin: '1rem 0' }}>
-                <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Meta Semanal:</span>
-                <p style={{ fontWeight: 600, fontSize: '0.95rem', color: 'var(--secondary-color)' }}>
-                  2 conversões Onboarding → Ativo OU 1 transição Inativo → Reativado
-                </p>
+
+              {/* Período */}
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.5rem', marginBottom: '0.75rem' }}>
+                {semaforo.semanaInfo.label} &nbsp;·&nbsp; {semaforo.semanaInfo.labelRange}
               </div>
+
+              {/* Contagens */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '0.75rem' }}>
+                <div style={{ padding: '0.6rem 0.75rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(0,0,0,0.2)', border: '1px solid var(--border-color)' }}>
+                  <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>Ativações</div>
+                  <div style={{ fontSize: '1.4rem', fontWeight: 800, color: semaforo.hunterAtivacoes.length > 0 ? 'var(--success)' : 'var(--text-muted)', lineHeight: 1.2 }}>
+                    {semaforo.hunterAtivacoes.length}
+                  </div>
+                </div>
+                <div style={{ padding: '0.6rem 0.75rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(0,0,0,0.2)', border: '1px solid var(--border-color)' }}>
+                  <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>Reativações</div>
+                  <div style={{ fontSize: '1.4rem', fontWeight: 800, color: semaforo.hunterReativacoes.length > 0 ? 'var(--success)' : 'var(--text-muted)', lineHeight: 1.2 }}>
+                    {semaforo.hunterReativacoes.length}
+                  </div>
+                </div>
+              </div>
+
+              {/* Lista de parceiros ativados/reativados */}
+              {(semaforo.hunterAtivacoes.length > 0 || semaforo.hunterReativacoes.length > 0) && (
+                <div style={{ fontSize: '0.78rem', marginBottom: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                  {semaforo.hunterAtivacoes.map(e => (
+                    <div key={e.id || e.parceiro_id} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--text-main)' }}>
+                      <span style={{ color: 'var(--success)', fontWeight: 700 }}>✓</span>
+                      <span>{e.parceiro_nome}</span>
+                      <span className="badge badge-info" style={{ fontSize: '0.6rem', padding: '0.1rem 0.35rem' }}>Ativado</span>
+                    </div>
+                  ))}
+                  {semaforo.hunterReativacoes.map(e => (
+                    <div key={e.id || e.parceiro_id} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--text-main)' }}>
+                      <span style={{ color: 'var(--warning)', fontWeight: 700 }}>↑</span>
+                      <span>{e.parceiro_nome}</span>
+                      <span className="badge badge-warning" style={{ fontSize: '0.6rem', padding: '0.1rem 0.35rem' }}>Reativado</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
               <div style={{ padding: '0.75rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(0, 0, 0, 0.25)', border: '1px solid var(--border-color)', fontSize: '0.85rem' }}>
                 <strong>Recomendação:</strong> {semaforo.hunterAcao}
               </div>
@@ -645,12 +681,40 @@ export default function Dashboard({ onSelectPartner }: { onSelectPartner?: (id: 
                   <span style={{ color: semaforo.farmer === 'Verde' ? 'var(--success)' : 'var(--danger)' }}>{semaforo.farmer}</span>
                 </div>
               </div>
-              <div style={{ margin: '1rem 0' }}>
-                <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Meta Semanal:</span>
-                <p style={{ fontWeight: 600, fontSize: '0.95rem', color: 'var(--secondary-color)' }}>
-                  1200 propostas pagas na carteira
-                </p>
+
+              {/* Período */}
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.5rem', marginBottom: '0.75rem' }}>
+                {semaforo.semanaInfo.label} &nbsp;·&nbsp; {semaforo.semanaInfo.labelRange}
               </div>
+
+              {/* Propostas realizadas vs meta */}
+              <div style={{ padding: '0.75rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(0,0,0,0.2)', border: '1px solid var(--border-color)', marginBottom: '0.75rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                  <div>
+                    <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>Propostas Pagas</div>
+                    <div style={{ fontSize: '1.6rem', fontWeight: 800, color: semaforo.farmer === 'Verde' ? 'var(--success)' : 'var(--danger)', lineHeight: 1.1 }}>
+                      {semaforo.farmerPropostasSemana.toLocaleString('pt-BR')}
+                    </div>
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Meta</div>
+                    <div style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--text-muted)' }}>
+                      {criterios?.metas.farmer_propostas_pagas_semana?.toLocaleString('pt-BR') || '1.200'}
+                    </div>
+                  </div>
+                </div>
+                {/* Barra de progresso */}
+                {(() => {
+                  const meta = criterios?.metas.farmer_propostas_pagas_semana || 1200;
+                  const pct = Math.min(100, Math.round((semaforo.farmerPropostasSemana / meta) * 100));
+                  return (
+                    <div style={{ marginTop: '0.5rem', width: '100%', height: '5px', borderRadius: '3px', backgroundColor: 'rgba(255,255,255,0.1)', overflow: 'hidden' }}>
+                      <div style={{ width: `${pct}%`, height: '100%', backgroundColor: semaforo.farmer === 'Verde' ? 'var(--success)' : 'var(--danger)', transition: 'width 0.4s ease' }} />
+                    </div>
+                  );
+                })()}
+              </div>
+
               <div style={{ padding: '0.75rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(0, 0, 0, 0.25)', border: '1px solid var(--border-color)', fontSize: '0.85rem' }}>
                 <strong>Recomendação:</strong> {semaforo.farmerAcao}
               </div>
@@ -927,7 +991,7 @@ export default function Dashboard({ onSelectPartner }: { onSelectPartner?: (id: 
                 dataService.getAllProducao()
               ]);
 
-              const sem = await dataService.getSemafaroStatus(pList, lList);
+              const sem = await dataService.getSemafaroStatus(pList);
               
               setParceiros(pList);
               setLogs(lList);
