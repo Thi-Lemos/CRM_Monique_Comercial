@@ -104,14 +104,27 @@ export default function ExcelImporter({ onClose, onImportSuccess }: ExcelImporte
             // ano/mes NÃO são lidos da planilha — vêm exclusivamente do WeekSelector.
             const cnpjRaw = String(row.cnpj || row.CNPJ || '').trim();
 
+            // Fallback por nome quando CNPJ está ausente na planilha
+            let parceiro: (typeof parceiros)[0] | undefined;
             if (!cnpjRaw) {
-              errorCount++;
-              addLog('error', `Linha ${i + 2}: CNPJ ausente — linha ignorada.`);
-              continue;
+              const nomeRaw = String(row.promotora || row.Promotora || row.nome || row.Nome || '').trim();
+              if (!nomeRaw) {
+                errorCount++;
+                addLog('error', `Linha ${i + 2}: CNPJ e nome ausentes — linha ignorada.`);
+                continue;
+              }
+              const nomeNorm = nomeRaw.toLowerCase();
+              parceiro = parceiros.find(p => p.nome.trim().toLowerCase() === nomeNorm);
+              if (!parceiro) {
+                errorCount++;
+                addLog('error', `Linha ${i + 2}: CNPJ ausente e nome "${nomeRaw}" não encontrado no sistema — linha ignorada.`);
+                continue;
+              }
+              addLog('info', `Linha ${i + 2}: CNPJ ausente — parceiro identificado pelo nome "${parceiro.nome}".`);
+            } else {
+              const cleanCnpj = cnpjRaw.replace(/[^\d]/g, '');
+              parceiro = parceiros.find(p => (p.cnpj || '').replace(/[^\d]/g, '') === cleanCnpj);
             }
-
-            const cleanCnpj = cnpjRaw.replace(/[^\d]/g, '');
-            const parceiro = parceiros.find(p => (p.cnpj || '').replace(/[^\d]/g, '') === cleanCnpj);
 
             if (!parceiro) {
               // Acumular CNPJs não cadastrados para alerta agrupado no final
