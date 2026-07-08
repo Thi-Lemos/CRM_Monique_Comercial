@@ -111,7 +111,7 @@ export default function ExcelImporter({ onClose, onImportSuccess }: ExcelImporte
             }
 
             const cleanCnpj = cnpjRaw.replace(/[^\d]/g, '');
-            const parceiro = parceiros.find(p => p.cnpj.replace(/[^\d]/g, '') === cleanCnpj);
+            const parceiro = parceiros.find(p => (p.cnpj || '').replace(/[^\d]/g, '') === cleanCnpj);
 
             if (!parceiro) {
               // Acumular CNPJs não cadastrados para alerta agrupado no final
