@@ -89,7 +89,12 @@ export function computeStatusTimeline(
   parceiroProds: ProducaoMensal[],
   limites: { dias_inatividade_winback: number; dias_conversao_hunter: number },
   uptoAno: number,
-  uptoMes: number
+  uptoMes: number,
+  // Status registrado no banco para este parceiro. Usado apenas em parceiros novos
+  // (pós-DATA_CORTE) que ainda não produziram: se for diferente de 'Onboarding',
+  // indica que foi definido manualmente no cadastro e deve ser o ponto de partida
+  // da simulação em vez de forçar Onboarding.
+  statusNoBanco?: Parceiro['status']
 ): StatusTimelineEntry[] {
   const createdDate = createdAt ? new Date(createdAt) : new Date(2026, 4, 1);
   const isLegacy = createdDate < DATA_CORTE_CONFIABILIDADE_CADASTRO;
@@ -131,7 +136,16 @@ export function computeStatusTimeline(
     const firstVol = volByMonth.get(`${startAno}-${startMes}`) || 0;
     status = firstVol > 0 ? 'Ativo' : 'Inativo';
   } else {
-    status = 'Onboarding';
+    // Parceiro novo (pós-corte): começa em Onboarding por padrão.
+    // Exceção: se o status registrado no banco for diferente de Onboarding, significa
+    // que foi definido manualmente no cadastro (ex.: parceiro vindo de outra carteira,
+    // já Ativo ou já Inativo). Nesse caso, respeita o status do banco como ponto de
+    // partida, sem passar pela janela de Onboarding.
+    if (statusNoBanco && statusNoBanco !== 'Onboarding') {
+      status = statusNoBanco;
+    } else {
+      status = 'Onboarding';
+    }
   }
 
   const timeline: StatusTimelineEntry[] = [];
@@ -226,9 +240,10 @@ export function computeStatusAtMonth(
   parceiroProds: ProducaoMensal[],
   limites: { dias_inatividade_winback: number; dias_conversao_hunter: number },
   refAno: number,
-  refMes: number
+  refMes: number,
+  statusNoBanco?: Parceiro['status']
 ): Parceiro['status'] {
-  const timeline = computeStatusTimeline(createdAt, parceiroProds, limites, refAno, refMes);
+  const timeline = computeStatusTimeline(createdAt, parceiroProds, limites, refAno, refMes, statusNoBanco);
   return timeline[timeline.length - 1].status;
 }
 
@@ -504,7 +519,7 @@ export const dataService = {
       const prods = prodsMap[p.id] || [];
       const diasLimites = config.limites;
 
-      const statusCalculado = computeStatusAtMonth(p.created_at, prods, diasLimites, refAgora.ano, refAgora.mes);
+      const statusCalculado = computeStatusAtMonth(p.created_at, prods, diasLimites, refAgora.ano, refAgora.mes, p.status);
 
       if (p.status !== statusCalculado) {
         // Classificar se a transição é ascendente (para um status "melhor")
@@ -917,11 +932,53 @@ export const dataService = {
 
   // --- TRANSIÇÕES IMEDIATAS (ascendentes) ---
   //
+  // Chamado pelo ExcelImporter quando a semana importada é a ÚLTIMA do mês.
+  // Avalia todos os parceiros e aplica apenas transições DESCENDENTES:
+  //   Ativo → Inativo   (não produziu no mês que fechou)
+  //   Reativado → Inativo (idem)
+  //   Onboarding → Inativo (superou janela dias_conversao_hunter sem produzir)
+  // Transições ascendentes já foram tratadas em detectAndFireUpwardTransitions.
+  async runEndOfMonthDownwardTransitions(
+    closedAno: number,
+    closedMes: number,
+    config: CriteriosConfig
+  ): Promise<{ inativados: string[] }> {
+    const parceiros = await this.getParceiros();
+    const inativados: string[] = [];
+
+    const downwardSources: Parceiro['status'][] = ['Ativo', 'Reativado', 'Onboarding'];
+
+    for (const p of parceiros) {
+      if (!downwardSources.includes(p.status)) continue;
+
+      // Buscar produções mensais do parceiro para o histórico completo
+      const prods = await this.getProducao(p.id);
+
+      // Calcular status ao final do mês fechado
+      const statusFechamento = computeStatusAtMonth(
+        p.created_at,
+        prods,
+        config.limites,
+        closedAno,
+        closedMes,
+        p.status
+      );
+
+      // Só aplicar se for transição descendente (Ativo/Reativado/Onboarding → Inativo)
+      if (statusFechamento === 'Inativo' && p.status !== 'Inativo') {
+        await this.saveParceiroStatusOnly(p.id, 'Inativo');
+        inativados.push(p.nome);
+      }
+    }
+
+    return { inativados };
+  },
+
   // Chamado após qualquer saveProducaoSemanal (planilha ou manual).
   // Avalia o status do parceiro usando o mês CORRENTE (incluindo produção parcial)
   // e dispara apenas transições ascendentes que ainda não foram disparadas nessa semana.
   // Transições descendentes (Ativo→Inativo, Reativado→Inativo) permanecem avaliadas
-  // no fechamento do mês por getParceiros().
+  // no fechamento do mês por runEndOfMonthDownwardTransitions().
   async detectAndFireUpwardTransitions(
     parceiro: Parceiro,
     allProds: ProducaoMensal[],
@@ -933,7 +990,7 @@ export const dataService = {
     const refAno = hoje.getFullYear();
     const refMes = hoje.getMonth() + 1;
 
-    const newStatus = computeStatusAtMonth(parceiro.created_at, allProds, config.limites, refAno, refMes);
+    const newStatus = computeStatusAtMonth(parceiro.created_at, allProds, config.limites, refAno, refMes, parceiro.status);
     const currentStatus = parceiro.status;
 
     if (newStatus === currentStatus) return { disparou: false, tipo: null };

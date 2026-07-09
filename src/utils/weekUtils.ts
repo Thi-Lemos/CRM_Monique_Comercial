@@ -143,3 +143,16 @@ export function fmtDateBR(dateStr: string): string {
   const [y, m, d] = dateStr.split('-');
   return `${d}/${m}/${y}`;
 }
+
+/**
+ * Retorna true se a WeekInfo fornecida é a ÚLTIMA semana do mês.
+ * Critério: a semana seguinte (cujo domingo cai 7 dias depois) pertence a um mês diferente.
+ * Usado pelo ExcelImporter para disparar a avaliação de inativação ao fechar o mês.
+ */
+export function isLastWeekOfMonth(week: WeekInfo): boolean {
+  const nextSunday = addDays(week.fim, 7);
+  const nextSundayDate = parseDate(nextSunday);
+  const nextMes = nextSundayDate.getUTCMonth() + 1;
+  const nextAno = nextSundayDate.getUTCFullYear();
+  return nextMes !== week.mes || nextAno !== week.ano;
+}

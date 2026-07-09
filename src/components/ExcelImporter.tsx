@@ -3,7 +3,7 @@ import * as XLSX from 'xlsx';
 import { dataService } from '../services/dataService';
 import { Upload, X, CheckCircle2, RefreshCw, Layers, AlertTriangle } from 'lucide-react';
 import WeekSelector from './WeekSelector';
-import { getLastCompletedWeek, WeekInfo } from '../utils/weekUtils';
+import { getLastCompletedWeek, WeekInfo, isLastWeekOfMonth } from '../utils/weekUtils';
 
 interface ExcelImporterProps {
   onClose: () => void;
@@ -30,6 +30,7 @@ export default function ExcelImporter({ onClose, onImportSuccess }: ExcelImporte
     cnpjsNaoCadastrados: string[];
     ativacoes: number;
     reativacoes: number;
+    inativados: string[];
   } | null>(null);
 
   const handleDragOver = (e: React.DragEvent) => { e.preventDefault(); };
@@ -175,6 +176,30 @@ export default function ExcelImporter({ onClose, onImportSuccess }: ExcelImporte
 
           setProgress(95);
 
+          // Se esta é a última semana do mês, disparar avaliação de inativações.
+          // Transições descendentes (Ativo/Reativado/Onboarding → Inativo) só ocorrem
+          // aqui — nunca durante semanas intermediárias do mês.
+          let inativados: string[] = [];
+          if (isLastWeekOfMonth(selectedWeek)) {
+            addLog('info', `Semana final de ${selectedWeek.mes}/${selectedWeek.ano} detectada — avaliando inativações de fim de mês...`);
+            try {
+              const config = await dataService.getCriterios();
+              const result = await dataService.runEndOfMonthDownwardTransitions(
+                selectedWeek.ano,
+                selectedWeek.mes,
+                config
+              );
+              inativados = result.inativados;
+              if (inativados.length > 0) {
+                addLog('info', `${inativados.length} parceiro(s) inativado(s) por não produção no mês: ${inativados.join(', ')}.`);
+              } else {
+                addLog('info', 'Nenhum parceiro inativado no fechamento do mês.');
+              }
+            } catch (e: any) {
+              addLog('error', `Erro no fechamento de mês: ${e.message || 'Erro desconhecido'}`);
+            }
+          }
+
           // Buscar contagem de eventos da semana para o sumário
           let ativacoes = 0;
           let reativacoes = 0;
@@ -195,7 +220,8 @@ export default function ExcelImporter({ onClose, onImportSuccess }: ExcelImporte
             totalVol: totalVolumeAcumulado,
             cnpjsNaoCadastrados,
             ativacoes,
-            reativacoes
+            reativacoes,
+            inativados
           });
 
           if (processedCount > 0) {
@@ -344,6 +370,18 @@ export default function ExcelImporter({ onClose, onImportSuccess }: ExcelImporte
                       <strong>🎯 Transições detectadas esta semana:</strong>{' '}
                       {summary.ativacoes > 0 && <span>{summary.ativacoes} ativação(ões) &nbsp;</span>}
                       {summary.reativacoes > 0 && <span>{summary.reativacoes} reativação(ões)</span>}
+                    </div>
+                  )}
+
+                  {/* Inativações de fechamento de mês */}
+                  {summary.inativados.length > 0 && (
+                    <div style={{ marginTop: '0.75rem', padding: '0.6rem 0.75rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', fontSize: '0.82rem' }}>
+                      <strong>🔴 Fechamento de mês — {summary.inativados.length} parceiro(s) inativado(s) por não produção:</strong>
+                      <ul style={{ margin: '0.4rem 0 0', paddingLeft: '1.1rem', display: 'flex', flexDirection: 'column', gap: '0.1rem' }}>
+                        {summary.inativados.map(nome => (
+                          <li key={nome} style={{ fontSize: '0.79rem', color: 'var(--text-main)' }}>{nome}</li>
+                        ))}
+                      </ul>
                     </div>
                   )}
                 </div>
