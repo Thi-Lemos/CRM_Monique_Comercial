@@ -1161,6 +1161,18 @@ export const dataService = {
     return getLocalDB().producao;
   },
 
+  // Busca TODAS as produções semanais de todos os parceiros (usada pelo Dashboard
+  // para consolidar dados do mês atual quando não há registro mensal fechado).
+  async getAllProducoesSemanais(): Promise<ProducaoSemanal[]> {
+    try {
+      const allSemanais = await fetchAllRows<ProducaoSemanal>('producoes_semanais');
+      if (allSemanais.length > 0) return allSemanais;
+    } catch (err) {
+      console.warn('Erro ao obter todas as produções semanais do Supabase:', err);
+    }
+    return getLocalDB().producoes_semanais || [];
+  },
+
   // --- PRODUÇÃO SEMANAL ---
   async getProducoesSemanais(parceiroId: string): Promise<ProducaoSemanal[]> {
     if (supabase) {

@@ -247,7 +247,7 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
             <p style={{ fontWeight: 650, color: 'var(--secondary-color)', fontSize: '0.95rem', marginTop: '0.15rem' }}>{partner.contato_principal}</p>
           </div>
           <div>
-            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>VOL. PRATA ATUAL</span>
+            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>VOL. PRATA MÊS ANTERIOR</span>
             <p style={{ fontWeight: 700, color: 'var(--primary-color)', fontSize: '1.1rem', marginTop: '0.15rem' }}>{formatCurrency(volPrataAtual)}</p>
             <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>de {formatCurrency(partner.vol_total_mensal)}</p>
           </div>
@@ -378,7 +378,13 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
               b.ano !== a.ano ? b.ano - a.ano : b.mes - a.mes);
 
             const chavesMensal = new Set(producao.map(p => `${p.ano}-${p.mes}`));
-            const mesesSoComSemanas = [...mesesComSemanas].filter(k => !chavesMensal.has(k));
+            const mesesSoComSemanas = [...mesesComSemanas]
+              .filter(k => !chavesMensal.has(k))
+              .sort((a, b) => {
+                const [aA, aM] = a.split('-').map(Number);
+                const [bA, bM] = b.split('-').map(Number);
+                return bA !== aA ? bA - aA : bM - aM;
+              });
 
             const NOMES_MES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
 
@@ -403,7 +409,7 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
                     <td style={{ padding: '0.4rem', fontSize: '0.72rem', whiteSpace: 'nowrap', color: 'var(--text-muted)', fontStyle: 'italic' }}>{periodo}</td>
                     {(['vol_fgts','vol_clt','vol_cgv','vol_pix','propostas_pagas'] as const).map(field => (
                       <td key={field} style={{ padding: '0.25rem 0.3rem', textAlign: 'right' }}>
-                        <input type="number" min={0} style={{ width: '70px', textAlign: 'right', padding: '0.2rem 0.3rem', fontSize: '0.72rem', borderRadius: '4px', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-input, #fff)' }}
+                        <input type="number" min={0} step="any" style={{ width: '70px', textAlign: 'right', padding: '0.2rem 0.3rem', fontSize: '0.72rem', borderRadius: '4px', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-input, #fff)', MozAppearance: 'textfield' } as React.CSSProperties}
                           value={(editSemanaForm as any)[field] ?? 0}
                           onChange={ev => setEditSemanaForm(prev => ({ ...prev, [field]: parseFloat(ev.target.value) || 0 }))} />
                       </td>
@@ -446,96 +452,119 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
               return <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', padding: '1.5rem 0', textAlign: 'center' }}>Nenhum volume registrado.</p>;
             }
 
+            // Unificar meses com registro mensal e meses só com semanas em lista
+            // única, ordenada de forma decrescente (mês mais recente no topo).
+            type MesUnificado =
+              | { tipo: 'mensal'; key: string; prod: (typeof mesesOrdenados)[number] }
+              | { tipo: 'semanas'; key: string; ano: number; mes: number };
+
+            const todosMeses: MesUnificado[] = [
+              ...mesesOrdenados.map(prod => ({
+                tipo: 'mensal' as const,
+                key: `${prod.ano}-${prod.mes}`,
+                prod
+              })),
+              ...mesesSoComSemanas.map(key => {
+                const [ano, mes] = key.split('-').map(Number);
+                return { tipo: 'semanas' as const, key, ano, mes };
+              })
+            ].sort((a, b) => {
+              const [aA, aM] = a.key.split('-').map(Number);
+              const [bA, bM] = b.key.split('-').map(Number);
+              return bA !== aA ? bA - aA : bM - aM;
+            });
+
             return (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-                {mesesOrdenados.map(prod => {
-                  const key = `${prod.ano}-${prod.mes}`;
-                  const isLegacy = !mesesComSemanas.has(key);
-                  const semanasDoMes = semanasPorMes[key] || [];
-                  const expanded = expandedMonths.has(key);
-                  const mesLabel = `${NOMES_MES[prod.mes - 1]}/${prod.ano}`;
-                  const isEditingLeg = editingLegadoId === prod.id;
+                {todosMeses.map(item => {
+                  if (item.tipo === 'mensal') {
+                    const { key, prod } = item;
+                    const isLegacy = !mesesComSemanas.has(key);
+                    const semanasDoMes = semanasPorMes[key] || [];
+                    const expanded = expandedMonths.has(key);
+                    const mesLabel = `${NOMES_MES[prod.mes - 1]}/${prod.ano}`;
+                    const isEditingLeg = editingLegadoId === prod.id;
 
-                  return (
-                    <div key={key} style={{ border: '1px solid var(--border-color)', borderRadius: 'var(--radius-sm)', overflow: 'hidden' }}>
-                      <div
-                        onClick={() => !isLegacy && toggleMonth(key)}
-                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.6rem 0.75rem', backgroundColor: 'rgba(255,255,255,0.03)', cursor: isLegacy ? 'default' : 'pointer', borderBottom: (expanded && !isLegacy) ? '1px solid var(--border-color)' : 'none' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                          {!isLegacy && (expanded ? <ChevronDown size={14} /> : <ChevronRightIcon size={14} />)}
-                          <span style={{ fontWeight: 700, fontSize: '0.85rem', color: 'var(--secondary-color)' }}>{mesLabel}</span>
-                          {isLegacy && <span style={{ fontSize: '0.65rem', padding: '0.1rem 0.35rem', backgroundColor: 'rgba(100,116,139,0.15)', color: 'var(--text-muted)', borderRadius: '3px', fontWeight: 600 }}>LEGADO</span>}
-                          {!isLegacy && <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>{semanasDoMes.length} semana(s)</span>}
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                          <span style={{ fontWeight: 700, fontSize: '0.85rem', color: 'var(--primary-color)' }}>{formatCurrency(prod.vol_total || 0)}</span>
-                          <div style={{ display: 'flex', gap: '0.2rem' }}>
-                            {isLegacy && (
-                              <button title="Editar total mensal" onClick={e => { e.stopPropagation(); startEditLegado(prod); }}
-                                style={{ border: 'none', background: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '0.2rem' }}><Edit size={13} /></button>
-                            )}
-                            <button title="Excluir" onClick={e => { e.stopPropagation(); if (isLegacy) deleteLegado(prod); }}
-                              style={{ border: 'none', background: 'none', cursor: 'pointer', color: 'var(--danger)', padding: '0.2rem' }}><Trash2 size={13} /></button>
+                    return (
+                      <div key={key} style={{ border: '1px solid var(--border-color)', borderRadius: 'var(--radius-sm)', overflow: 'hidden' }}>
+                        <div
+                          onClick={() => !isLegacy && toggleMonth(key)}
+                          style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.6rem 0.75rem', backgroundColor: 'rgba(255,255,255,0.03)', cursor: isLegacy ? 'default' : 'pointer', borderBottom: (expanded && !isLegacy) ? '1px solid var(--border-color)' : 'none' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            {!isLegacy && (expanded ? <ChevronDown size={14} /> : <ChevronRightIcon size={14} />)}
+                            <span style={{ fontWeight: 700, fontSize: '0.85rem', color: 'var(--secondary-color)' }}>{mesLabel}</span>
+                            {isLegacy && <span style={{ fontSize: '0.65rem', padding: '0.1rem 0.35rem', backgroundColor: 'rgba(100,116,139,0.15)', color: 'var(--text-muted)', borderRadius: '3px', fontWeight: 600 }}>LEGADO</span>}
+                            {!isLegacy && <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>{semanasDoMes.length} semana(s)</span>}
+                          </div>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                            <span style={{ fontWeight: 700, fontSize: '0.85rem', color: 'var(--primary-color)' }}>{formatCurrency(prod.vol_total || 0)}</span>
+                            <div style={{ display: 'flex', gap: '0.2rem' }}>
+                              {isLegacy && (
+                                <button title="Editar total mensal" onClick={e => { e.stopPropagation(); startEditLegado(prod); }}
+                                  style={{ border: 'none', background: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '0.2rem' }}><Edit size={13} /></button>
+                              )}
+                              <button title="Excluir" onClick={e => { e.stopPropagation(); if (isLegacy) deleteLegado(prod); }}
+                                style={{ border: 'none', background: 'none', cursor: 'pointer', color: 'var(--danger)', padding: '0.2rem' }}><Trash2 size={13} /></button>
+                            </div>
                           </div>
                         </div>
+
+                        {isLegacy && isEditingLeg && (
+                          <div style={{ padding: '0.75rem', backgroundColor: 'rgba(15,184,130,0.05)', borderTop: '1px solid var(--border-color)' }}>
+                            <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginBottom: '0.5rem', fontStyle: 'italic' }}>
+                              Editando totais mensais do registro legado de {mesLabel}
+                            </p>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))', gap: '0.5rem', marginBottom: '0.6rem' }}>
+                              {(['vol_fgts','vol_clt','vol_cgv','vol_pix','propostas_pagas'] as const).map(field => (
+                                <div key={field}>
+                                  <label style={{ fontSize: '0.65rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>{field.replace('vol_','').toUpperCase()}</label>
+                                  <input type="number" min={0} step="any" className="form-input" style={{ padding: '0.3rem 0.4rem', fontSize: '0.78rem', marginTop: '0.15rem' }}
+                                    value={(editLegadoForm as any)[field] ?? 0}
+                                    onChange={ev => setEditLegadoForm(prev => ({ ...prev, [field]: parseFloat(ev.target.value) || 0 }))} />
+                                </div>
+                              ))}
+                            </div>
+                            <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
+                              <button className="btn btn-secondary" style={{ padding: '0.25rem 0.65rem', fontSize: '0.75rem' }} onClick={cancelEditLegado}>Cancelar</button>
+                              <button className="btn btn-primary" style={{ padding: '0.25rem 0.65rem', fontSize: '0.75rem' }} onClick={() => saveLegado(prod)}>Salvar</button>
+                            </div>
+                          </div>
+                        )}
+
+                        {!isLegacy && expanded && (
+                          <div className="table-container" style={{ border: 'none', boxShadow: 'none', margin: 0 }}>
+                            <table className="table" style={{ fontSize: '0.72rem', width: '100%' }}>
+                              <thead>
+                                <tr>
+                                  <th style={thStyle}>Período</th>
+                                  <th style={{ ...thStyle, textAlign: 'right' }}>FGTS</th>
+                                  <th style={{ ...thStyle, textAlign: 'right' }}>CLT</th>
+                                  <th style={{ ...thStyle, textAlign: 'right' }}>CGV</th>
+                                  <th style={{ ...thStyle, textAlign: 'right' }}>PIX</th>
+                                  <th style={{ ...thStyle, textAlign: 'right' }}>Propos.</th>
+                                  <th style={{ ...thStyle, textAlign: 'right' }}>Total</th>
+                                  <th style={{ ...thStyle, width: '60px' }}></th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {semanasDoMes.map(s => renderSemanaRow(s))}
+                                <tr style={{ backgroundColor: 'rgba(15,184,130,0.07)', fontWeight: 700 }}>
+                                  <td colSpan={6} style={{ padding: '0.4rem', fontSize: '0.72rem', textAlign: 'right', color: 'var(--text-muted)' }}>Subtotal {mesLabel}</td>
+                                  <td style={{ padding: '0.4rem', textAlign: 'right', fontSize: '0.78rem', color: 'var(--primary-color)' }}>{formatCurrency(prod.vol_total || 0)}</td>
+                                  <td></td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        )}
                       </div>
+                    );
+                  }
 
-                      {isLegacy && isEditingLeg && (
-                        <div style={{ padding: '0.75rem', backgroundColor: 'rgba(15,184,130,0.05)', borderTop: '1px solid var(--border-color)' }}>
-                          <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginBottom: '0.5rem', fontStyle: 'italic' }}>
-                            Editando totais mensais do registro legado de {mesLabel}
-                          </p>
-                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))', gap: '0.5rem', marginBottom: '0.6rem' }}>
-                            {(['vol_fgts','vol_clt','vol_cgv','vol_pix','propostas_pagas'] as const).map(field => (
-                              <div key={field}>
-                                <label style={{ fontSize: '0.65rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>{field.replace('vol_','').toUpperCase()}</label>
-                                <input type="number" min={0} className="form-input" style={{ padding: '0.3rem 0.4rem', fontSize: '0.78rem', marginTop: '0.15rem' }}
-                                  value={(editLegadoForm as any)[field] ?? 0}
-                                  onChange={ev => setEditLegadoForm(prev => ({ ...prev, [field]: parseFloat(ev.target.value) || 0 }))} />
-                              </div>
-                            ))}
-                          </div>
-                          <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
-                            <button className="btn btn-secondary" style={{ padding: '0.25rem 0.65rem', fontSize: '0.75rem' }} onClick={cancelEditLegado}>Cancelar</button>
-                            <button className="btn btn-primary" style={{ padding: '0.25rem 0.65rem', fontSize: '0.75rem' }} onClick={() => saveLegado(prod)}>Salvar</button>
-                          </div>
-                        </div>
-                      )}
-
-                      {!isLegacy && expanded && (
-                        <div className="table-container" style={{ border: 'none', boxShadow: 'none', margin: 0 }}>
-                          <table className="table" style={{ fontSize: '0.72rem', width: '100%' }}>
-                            <thead>
-                              <tr>
-                                <th style={thStyle}>Período</th>
-                                <th style={{ ...thStyle, textAlign: 'right' }}>FGTS</th>
-                                <th style={{ ...thStyle, textAlign: 'right' }}>CLT</th>
-                                <th style={{ ...thStyle, textAlign: 'right' }}>CGV</th>
-                                <th style={{ ...thStyle, textAlign: 'right' }}>PIX</th>
-                                <th style={{ ...thStyle, textAlign: 'right' }}>Propos.</th>
-                                <th style={{ ...thStyle, textAlign: 'right' }}>Total</th>
-                                <th style={{ ...thStyle, width: '60px' }}></th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {semanasDoMes.map(s => renderSemanaRow(s))}
-                              <tr style={{ backgroundColor: 'rgba(15,184,130,0.07)', fontWeight: 700 }}>
-                                <td colSpan={6} style={{ padding: '0.4rem', fontSize: '0.72rem', textAlign: 'right', color: 'var(--text-muted)' }}>Subtotal {mesLabel}</td>
-                                <td style={{ padding: '0.4rem', textAlign: 'right', fontSize: '0.78rem', color: 'var(--primary-color)' }}>{formatCurrency(prod.vol_total || 0)}</td>
-                                <td></td>
-                              </tr>
-                            </tbody>
-                          </table>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-
-                {mesesSoComSemanas.map(key => {
-                  const [anoS, mesS] = key.split('-').map(Number);
+                  // tipo === 'semanas': mês sem registro mensal consolidado (ex: mês atual em andamento)
+                  const { key, ano, mes } = item;
                   const semanasDoMes = semanasPorMes[key] || [];
-                  const mesLabel = `${NOMES_MES[mesS - 1]}/${anoS}`;
+                  const mesLabel = `${NOMES_MES[mes - 1]}/${ano}`;
                   const totalMes = semanasDoMes.reduce((s, w) => s + ((w.vol_fgts||0)+(w.vol_clt||0)+(w.vol_cgv||0)+(w.vol_pix||0)), 0);
                   const expanded = expandedMonths.has(key);
                   return (
@@ -643,21 +672,21 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
               <div className="form-row">
                 <div className="form-group">
                   <label className="form-label">FGTS (R$)</label>
-                  <input type="number" min={0} className="form-input" value={semanalForm.vol_fgts} onChange={e => setSemanalForm(p => ({ ...p, vol_fgts: parseFloat(e.target.value)||0 }))} />
+                  <input type="number" min={0} step="any" inputMode="decimal" className="form-input no-spinner" value={semanalForm.vol_fgts} onChange={e => setSemanalForm(p => ({ ...p, vol_fgts: parseFloat(e.target.value)||0 }))} />
                 </div>
                 <div className="form-group">
                   <label className="form-label">CLT Consignado (R$)</label>
-                  <input type="number" min={0} className="form-input" value={semanalForm.vol_clt} onChange={e => setSemanalForm(p => ({ ...p, vol_clt: parseFloat(e.target.value)||0 }))} />
+                  <input type="number" min={0} step="any" inputMode="decimal" className="form-input no-spinner" value={semanalForm.vol_clt} onChange={e => setSemanalForm(p => ({ ...p, vol_clt: parseFloat(e.target.value)||0 }))} />
                 </div>
               </div>
               <div className="form-row">
                 <div className="form-group">
                   <label className="form-label">CGV (R$)</label>
-                  <input type="number" min={0} className="form-input" value={semanalForm.vol_cgv} onChange={e => setSemanalForm(p => ({ ...p, vol_cgv: parseFloat(e.target.value)||0 }))} />
+                  <input type="number" min={0} step="any" inputMode="decimal" className="form-input no-spinner" value={semanalForm.vol_cgv} onChange={e => setSemanalForm(p => ({ ...p, vol_cgv: parseFloat(e.target.value)||0 }))} />
                 </div>
                 <div className="form-group">
                   <label className="form-label">Pix no Cartão (R$)</label>
-                  <input type="number" min={0} className="form-input" value={semanalForm.vol_pix} onChange={e => setSemanalForm(p => ({ ...p, vol_pix: parseFloat(e.target.value)||0 }))} />
+                  <input type="number" min={0} step="any" inputMode="decimal" className="form-input no-spinner" value={semanalForm.vol_pix} onChange={e => setSemanalForm(p => ({ ...p, vol_pix: parseFloat(e.target.value)||0 }))} />
                 </div>
               </div>
               <div className="form-group">

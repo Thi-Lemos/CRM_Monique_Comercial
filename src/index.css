@@ -432,3 +432,14 @@ select.form-input option {
   border-color: var(--primary-color);
   box-shadow: 0 0 10px rgba(15, 184, 130, 0.1);
 }
+
+/* Remove setas/spinners de inputs numéricos com classe no-spinner */
+input[type='number'].no-spinner::-webkit-inner-spin-button,
+input[type='number'].no-spinner::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type='number'].no-spinner {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}

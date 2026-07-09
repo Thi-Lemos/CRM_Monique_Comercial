@@ -259,6 +259,17 @@ export default function InteractionForm({ initialPartnerId, onSave, onCancel }: 
               />
             </div>
           </div>
+
+          <div className="form-group">
+            <label className="form-label">Ação Interna a Executar</label>
+            <input
+              type="text"
+              placeholder="Ex: Configurar comissão diferenciada na retaguarda"
+              className="form-input"
+              value={formData.passos_acao_interna}
+              onChange={(e) => setFormData(prev => ({ ...prev, passos_acao_interna: e.target.value }))}
+            />
+          </div>
         </div>
 
         {/* Bloco Diagnóstico da Reunião (Questionário Opcional/Expansível) */}
@@ -314,21 +325,6 @@ export default function InteractionForm({ initialPartnerId, onSave, onCancel }: 
             <div className="form-group">
               <label className="form-label">Gargalo Operacional Identificado</label>
               <input type="text" placeholder="Ex: Falta de link ou suporte do Star Bank" className="form-input" value={formData.diagnostico_gargalo} onChange={(e) => setFormData(prev => ({ ...prev, diagnostico_gargalo: e.target.value }))} />
-            </div>
-
-            <div style={{ fontWeight: 600, fontSize: '0.85rem', color: 'var(--text-muted)', borderBottom: '1px solid var(--border-color)', paddingBottom: '0.25rem', marginTop: '0.5rem' }}>
-              PRÓXIMOS PASSOS ACORDADOS
-            </div>
-
-            <div className="form-row">
-              <div className="form-group">
-                <label className="form-label">Ação acordada com o parceiro</label>
-                <input type="text" placeholder="Ex: Enviar lista de CPFs para simular" className="form-input" value={formData.passos_acao_parceiro} onChange={(e) => setFormData(prev => ({ ...prev, passos_acao_parceiro: e.target.value }))} />
-              </div>
-              <div className="form-group">
-                <label className="form-label">Ação interna a executar</label>
-                <input type="text" placeholder="Ex: Configurar comissão diferenciada na retaguarda" className="form-input" value={formData.passos_acao_interna} onChange={(e) => setFormData(prev => ({ ...prev, passos_acao_interna: e.target.value }))} />
-              </div>
             </div>
           </div>
         </details>

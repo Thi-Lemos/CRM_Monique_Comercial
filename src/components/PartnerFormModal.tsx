@@ -239,11 +239,11 @@ export default function PartnerFormModal({ isOpen, onClose, partner, onSave }: P
           <div className="form-row">
             <div className="form-group">
               <label className="form-label">Nº de Vendedores *</label>
-              <input type="number" min={1} required className="form-input" value={formData.num_vendedores} onChange={(e) => setFormData(prev => ({ ...prev, num_vendedores: parseInt(e.target.value) || 1 }))} />
+              <input type="number" min={1} required className="form-input no-spinner" value={formData.num_vendedores} onChange={(e) => setFormData(prev => ({ ...prev, num_vendedores: parseInt(e.target.value) || 1 }))} />
             </div>
             <div className="form-group">
               <label className="form-label">Propostas Pagas na Semana (Farmer)</label>
-              <input type="number" min={0} className="form-input" value={formData.propostas_pagas_semana} onChange={(e) => setFormData(prev => ({ ...prev, propostas_pagas_semana: parseInt(e.target.value) || 0 }))} />
+              <input type="number" min={0} className="form-input no-spinner" value={formData.propostas_pagas_semana} onChange={(e) => setFormData(prev => ({ ...prev, propostas_pagas_semana: parseInt(e.target.value) || 0 }))} />
             </div>
           </div>
 
@@ -272,7 +272,9 @@ export default function PartnerFormModal({ isOpen, onClose, partner, onSave }: P
                 <input 
                   type="number" 
                   min={0} 
-                  className="form-input" 
+                  step="any"
+                  inputMode="decimal"
+                  className="form-input no-spinner" 
                   value={formData.vol_total_detalhes.valor1} 
                   onChange={(e) => setFormData(prev => ({
                     ...prev,
@@ -304,7 +306,9 @@ export default function PartnerFormModal({ isOpen, onClose, partner, onSave }: P
                 <input 
                   type="number" 
                   min={0} 
-                  className="form-input" 
+                  step="any"
+                  inputMode="decimal"
+                  className="form-input no-spinner" 
                   value={formData.vol_total_detalhes.valor2} 
                   onChange={(e) => setFormData(prev => ({
                     ...prev,
@@ -336,7 +340,9 @@ export default function PartnerFormModal({ isOpen, onClose, partner, onSave }: P
                 <input 
                   type="number" 
                   min={0} 
-                  className="form-input" 
+                  step="any"
+                  inputMode="decimal"
+                  className="form-input no-spinner" 
                   value={formData.vol_total_detalhes.valor3} 
                   onChange={(e) => setFormData(prev => ({
                     ...prev,

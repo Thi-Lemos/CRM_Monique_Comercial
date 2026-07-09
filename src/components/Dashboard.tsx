@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { dataService, getMonthsForPeriod, getPeriodLabel, getDefaultPeriod, getPeriodOptions, shiftMonth, getMonthShortLabel, computeStatusTimeline, computeStatusAtMonth } from '../services/dataService';
+import { dataService, getMonthsForPeriod, getPeriodLabel, getDefaultPeriod, getPeriodOptions, shiftMonth, getMonthShortLabel, computeStatusTimeline, computeStatusAtMonth, getCurrentPeriodRef } from '../services/dataService';
 import { Parceiro, SemafaroStatus, CrmLog, ProducaoMensal, CriteriosConfig } from '../types';
 import ExcelImporter from './ExcelImporter';
 import { 
@@ -65,7 +65,8 @@ function gerarAlertasDinamicos(pList: Parceiro[], lList: CrmLog[], allProds: Pro
         parceiroId: p.id,
         mensagem: `Risco de Concentração Sistêmica (Ref: ${labelMesRef}): O parceiro representou ${sharePortfol.toFixed(1)}% do faturamento consolidado do Prata Digital no mês anterior.`,
         prioridade: 'Alta',
-        ultimaInteracao: dataUltima ? dataUltima.toLocaleDateString('pt-BR') : 'Sem registro'
+        ultimaInteracao: dataUltima ? dataUltima.toLocaleDateString('pt-BR') : 'Sem registro',
+        data_criacao: hoje
       });
     }
 
@@ -84,7 +85,8 @@ function gerarAlertasDinamicos(pList: Parceiro[], lList: CrmLog[], allProds: Pro
             parceiroId: p.id,
             mensagem: `Redução de ${queda.toFixed(1)}% no faturamento consolidado de ${labelMesRef} em relação a ${labelMesComparacao} (de R$ ${volComparacao.toLocaleString('pt-BR')} para R$ ${volPrataRef.toLocaleString('pt-BR')}).`,
             prioridade: 'Alta',
-            ultimaInteracao: dataUltima ? dataUltima.toLocaleDateString('pt-BR') : 'Sem registro'
+            ultimaInteracao: dataUltima ? dataUltima.toLocaleDateString('pt-BR') : 'Sem registro',
+            data_criacao: hoje
           });
         }
       }
@@ -102,7 +104,8 @@ function gerarAlertasDinamicos(pList: Parceiro[], lList: CrmLog[], allProds: Pro
             parceiroId: p.id,
             mensagem: 'Parceiro Estratégico sem nenhum contato registrado nos últimos 30 dias.',
             prioridade: 'Alta',
-            ultimaInteracao: dataUltima ? dataUltima.toLocaleDateString('pt-BR') : 'Sem registro'
+            ultimaInteracao: dataUltima ? dataUltima.toLocaleDateString('pt-BR') : 'Sem registro',
+            data_criacao: hoje
           });
         }
       }
@@ -118,7 +121,8 @@ function gerarAlertasDinamicos(pList: Parceiro[], lList: CrmLog[], allProds: Pro
           parceiroId: p.id,
           mensagem: 'Novo parceiro cadastrado há mais de 7 dias sem registrar nenhuma operação.',
           prioridade: 'Alta',
-          ultimaInteracao: dataUltima ? dataUltima.toLocaleDateString('pt-BR') : 'Sem contato'
+          ultimaInteracao: dataUltima ? dataUltima.toLocaleDateString('pt-BR') : 'Sem contato',
+          data_criacao: hoje
         });
       }
     }
@@ -147,7 +151,8 @@ function gerarAlertasDinamicos(pList: Parceiro[], lList: CrmLog[], allProds: Pro
             parceiroId: p.id,
             mensagem: 'Produção zerada há 60+ dias — processo Win-back deve ser iniciado.',
             prioridade: 'Alta',
-            ultimaInteracao: dataUltima ? dataUltima.toLocaleDateString('pt-BR') : 'Sem registro'
+            ultimaInteracao: dataUltima ? dataUltima.toLocaleDateString('pt-BR') : 'Sem registro',
+            data_criacao: hoje
           });
         }
       }
@@ -161,7 +166,8 @@ function gerarAlertasDinamicos(pList: Parceiro[], lList: CrmLog[], allProds: Pro
         parceiroId: p.id,
         mensagem: 'Parceiro qualificado para expansão do produto CGV (ainda não ativado).',
         prioridade: 'Média',
-        ultimaInteracao: dataUltima ? dataUltima.toLocaleDateString('pt-BR') : 'Sem registro'
+        ultimaInteracao: dataUltima ? dataUltima.toLocaleDateString('pt-BR') : 'Sem registro',
+        data_criacao: hoje
       });
     }
 
@@ -173,7 +179,8 @@ function gerarAlertasDinamicos(pList: Parceiro[], lList: CrmLog[], allProds: Pro
         parceiroId: p.id,
         mensagem: `Concentração no Prata abaixo de 25% no mês de ${labelMesRef} (${(shareMercadoRef * 100).toFixed(0)}%) — grande volume de mercado captável.`,
         prioridade: 'Média',
-        ultimaInteracao: dataUltima ? dataUltima.toLocaleDateString('pt-BR') : 'Sem registro'
+        ultimaInteracao: dataUltima ? dataUltima.toLocaleDateString('pt-BR') : 'Sem registro',
+        data_criacao: hoje
       });
     }
   }
@@ -201,30 +208,76 @@ export default function Dashboard({ onSelectPartner }: { onSelectPartner?: (id: 
     mensagem: string;
     prioridade: 'Alta' | 'Média';
     ultimaInteracao?: string;
+    data_criacao: Date;
   }[]>([]);
+  const [alertasDismissed, setAlertasDismissed] = useState<Set<string>>(new Set());
+  const [alertaDismissConfirm, setAlertaDismissConfirm] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadDashboardData() {
       try {
         setLoading(true);
-        const [pList, lList, allProds, config] = await Promise.all([
+        const [pList, lList, allProds, allSemanais, config] = await Promise.all([
           dataService.getParceiros(),
           dataService.getLogs(),
           dataService.getAllProducao(),
+          dataService.getAllProducoesSemanais(),
           dataService.getCriterios()
         ]);
+
+        // Garantir que o mês atual aparece no Dashboard mesmo antes do fechamento
+        // mensal. O consolidateMensal gera um registro em `producao` quando semanas
+        // são salvas — mas em caso de qualquer falha silenciosa ou race condition,
+        // reconstruímos aqui o consolidado a partir das semanas brutas.
+        const refAtual = getCurrentPeriodRef();
+        const prodsComMesAtual = [...allProds];
+        // Agrupar semanas do mês atual por parceiro
+        const semanasMesAtual = allSemanais.filter(
+          s => s.ano === refAtual.ano && s.mes === refAtual.mes
+        );
+        const semanaisPorParceiro: Record<string, typeof semanasMesAtual> = {};
+        semanasMesAtual.forEach(s => {
+          if (!semanaisPorParceiro[s.parceiro_id]) semanaisPorParceiro[s.parceiro_id] = [];
+          semanaisPorParceiro[s.parceiro_id].push(s);
+        });
+        // Para cada parceiro com semanas no mês atual, verificar se já existe
+        // registro mensal consolidado; se não, sintetizar um temporário in-memory.
+        Object.entries(semanaisPorParceiro).forEach(([parceiroId, semanas]) => {
+          const jaExiste = prodsComMesAtual.some(
+            p => p.parceiro_id === parceiroId && p.ano === refAtual.ano && p.mes === refAtual.mes
+          );
+          if (!jaExiste) {
+            const sumFgts = semanas.reduce((a, s) => a + (s.vol_fgts || 0), 0);
+            const sumClt = semanas.reduce((a, s) => a + (s.vol_clt || 0), 0);
+            const sumCgv = semanas.reduce((a, s) => a + (s.vol_cgv || 0), 0);
+            const sumPix = semanas.reduce((a, s) => a + (s.vol_pix || 0), 0);
+            const sumPropostas = semanas.reduce((a, s) => a + (s.propostas_pagas || 0), 0);
+            prodsComMesAtual.push({
+              id: `__sintetico_${parceiroId}_${refAtual.ano}_${refAtual.mes}`,
+              parceiro_id: parceiroId,
+              ano: refAtual.ano,
+              mes: refAtual.mes,
+              vol_fgts: sumFgts,
+              vol_clt: sumClt,
+              vol_cgv: sumCgv,
+              vol_pix: sumPix,
+              propostas_pagas: sumPropostas,
+              vol_total: sumFgts + sumClt + sumCgv + sumPix
+            } as ProducaoMensal);
+          }
+        });
 
         const sem = await dataService.getSemafaroStatus(pList);
         const uploadDate = dataService.getLastWeeklyUploadDate();
         
         setParceiros(pList);
         setLogs(lList);
-        setAllProducoes(allProds);
+        setAllProducoes(prodsComMesAtual);
         setSemaforo(sem);
         setLastWeeklyUploadDate(uploadDate);
         setCriterios(config);
 
-        const activeAlerts = gerarAlertasDinamicos(pList, lList, allProds);
+        const activeAlerts = gerarAlertasDinamicos(pList, lList, prodsComMesAtual);
         setAlertas(activeAlerts);
       } catch (e) {
         console.error('Erro ao carregar dados do dashboard:', e);
@@ -890,34 +943,84 @@ export default function Dashboard({ onSelectPartner }: { onSelectPartner?: (id: 
           </h3>
           
           <div style={{ maxHeight: '420px', overflowY: 'auto', paddingRight: '0.25rem' }}>
-            {alertas.length === 0 ? (
+            {alertas.filter(a => !alertasDismissed.has(a.id)).length === 0 ? (
               <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', textAlign: 'center', padding: '2rem 0' }}>
                 Nenhum alerta ativo! Toda a carteira está em dia com as cadências.
               </p>
             ) : (
-              alertas.map(alert => (
-                <div 
-                  key={alert.id} 
-                  className={`alert-item ${alert.prioridade}`}
-                  onClick={() => onSelectPartner?.(alert.parceiroId)}
-                  style={{ cursor: onSelectPartner ? 'pointer' : 'default' }}
-                >
-                  <div className="alert-body">
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--secondary-color)' }}>
-                        {alert.parceiro}
-                      </span>
-                      <span className={`badge ${alert.prioridade === 'Alta' ? 'badge-danger' : 'badge-warning'}`} style={{ fontSize: '0.65rem' }}>
-                        {alert.prioridade}
-                      </span>
+              alertas
+                .filter(a => !alertasDismissed.has(a.id))
+                .map(alert => {
+                  // Um alerta pode ser descartado manualmente apenas se não houver
+                  // registro de contato com data posterior à criação do alerta.
+                  const logsDosParceiro = logs.filter(l => l.parceiro_id === alert.parceiroId);
+                  const temContatoAposAlerta = logsDosParceiro.some(
+                    l => new Date(l.data_contato) > alert.data_criacao
+                  );
+                  const podeDismiss = !temContatoAposAlerta;
+                  const confirmandoEste = alertaDismissConfirm === alert.id;
+
+                  return (
+                    <div 
+                      key={alert.id} 
+                      className={`alert-item ${alert.prioridade}`}
+                      style={{ cursor: 'default', position: 'relative' }}
+                    >
+                      <div className="alert-body">
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span
+                            style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--secondary-color)', cursor: onSelectPartner ? 'pointer' : 'default' }}
+                            onClick={() => onSelectPartner?.(alert.parceiroId)}
+                          >
+                            {alert.parceiro}
+                          </span>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                            <span className={`badge ${alert.prioridade === 'Alta' ? 'badge-danger' : 'badge-warning'}`} style={{ fontSize: '0.65rem' }}>
+                              {alert.prioridade}
+                            </span>
+                            {podeDismiss && (
+                              <button
+                                title="Descartar alerta"
+                                onClick={e => { e.stopPropagation(); setAlertaDismissConfirm(confirmandoEste ? null : alert.id); }}
+                                style={{ border: 'none', background: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '0.1rem', display: 'flex', alignItems: 'center', opacity: 0.7 }}
+                              >
+                                <X size={14} />
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                        <p className="alert-text" style={{ marginTop: '0.35rem', fontWeight: 550 }}>{alert.mensagem}</p>
+                        <div className="alert-meta">
+                          <span>Último Contato: {alert.ultimaInteracao}</span>
+                        </div>
+                        {confirmandoEste && (
+                          <div style={{ marginTop: '0.6rem', padding: '0.5rem 0.65rem', backgroundColor: 'rgba(239,68,68,0.08)', borderRadius: 'var(--radius-sm)', border: '1px solid rgba(239,68,68,0.25)', fontSize: '0.78rem' }}>
+                            <p style={{ color: 'var(--danger)', fontWeight: 600, marginBottom: '0.4rem' }}>
+                              Confirmar descarte do alerta?
+                            </p>
+                            <p style={{ color: 'var(--text-muted)', fontSize: '0.73rem', marginBottom: '0.5rem' }}>
+                              O alerta será removido da lista. Ele voltará a aparecer caso as condições persistam no próximo carregamento.
+                            </p>
+                            <div style={{ display: 'flex', gap: '0.4rem' }}>
+                              <button
+                                onClick={e => { e.stopPropagation(); setAlertasDismissed(prev => new Set([...prev, alert.id])); setAlertaDismissConfirm(null); }}
+                                style={{ fontSize: '0.72rem', padding: '0.2rem 0.6rem', backgroundColor: 'var(--danger)', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 600 }}
+                              >
+                                Descartar
+                              </button>
+                              <button
+                                onClick={e => { e.stopPropagation(); setAlertaDismissConfirm(null); }}
+                                style={{ fontSize: '0.72rem', padding: '0.2rem 0.6rem', backgroundColor: 'transparent', color: 'var(--text-muted)', border: '1px solid var(--border-color)', borderRadius: '4px', cursor: 'pointer' }}
+                              >
+                                Cancelar
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                    <p className="alert-text" style={{ marginTop: '0.35rem', fontWeight: 550 }}>{alert.mensagem}</p>
-                    <div className="alert-meta">
-                      <span>Último Contato: {alert.ultimaInteracao}</span>
-                    </div>
-                  </div>
-                </div>
-              ))
+                  );
+                })
             )}
           </div>
         </div>
@@ -985,21 +1088,58 @@ export default function Dashboard({ onSelectPartner }: { onSelectPartner?: (id: 
               setLastWeeklyUploadDate(newUploadDate);
 
               // Recarregar os dados do Dashboard após importação em lote
-              const [pList, lList, allProds] = await Promise.all([
+              const [pList, lList, allProds, allSemanais] = await Promise.all([
                 dataService.getParceiros(),
                 dataService.getLogs(),
-                dataService.getAllProducao()
+                dataService.getAllProducao(),
+                dataService.getAllProducoesSemanais()
               ]);
+
+              // Consolidar mês atual a partir de semanas (mesmo algoritmo do load inicial)
+              const refAtual = getCurrentPeriodRef();
+              const prodsComMesAtual = [...allProds];
+              const semanasMesAtual = allSemanais.filter(
+                s => s.ano === refAtual.ano && s.mes === refAtual.mes
+              );
+              const semanaisPorParceiro: Record<string, typeof semanasMesAtual> = {};
+              semanasMesAtual.forEach(s => {
+                if (!semanaisPorParceiro[s.parceiro_id]) semanaisPorParceiro[s.parceiro_id] = [];
+                semanaisPorParceiro[s.parceiro_id].push(s);
+              });
+              Object.entries(semanaisPorParceiro).forEach(([parceiroId, semanas]) => {
+                const jaExiste = prodsComMesAtual.some(
+                  p => p.parceiro_id === parceiroId && p.ano === refAtual.ano && p.mes === refAtual.mes
+                );
+                if (!jaExiste) {
+                  const sumFgts = semanas.reduce((a, s) => a + (s.vol_fgts || 0), 0);
+                  const sumClt = semanas.reduce((a, s) => a + (s.vol_clt || 0), 0);
+                  const sumCgv = semanas.reduce((a, s) => a + (s.vol_cgv || 0), 0);
+                  const sumPix = semanas.reduce((a, s) => a + (s.vol_pix || 0), 0);
+                  const sumPropostas = semanas.reduce((a, s) => a + (s.propostas_pagas || 0), 0);
+                  prodsComMesAtual.push({
+                    id: `__sintetico_${parceiroId}_${refAtual.ano}_${refAtual.mes}`,
+                    parceiro_id: parceiroId,
+                    ano: refAtual.ano,
+                    mes: refAtual.mes,
+                    vol_fgts: sumFgts,
+                    vol_clt: sumClt,
+                    vol_cgv: sumCgv,
+                    vol_pix: sumPix,
+                    propostas_pagas: sumPropostas,
+                    vol_total: sumFgts + sumClt + sumCgv + sumPix
+                  } as ProducaoMensal);
+                }
+              });
 
               const sem = await dataService.getSemafaroStatus(pList);
               
               setParceiros(pList);
               setLogs(lList);
-              setAllProducoes(allProds);
+              setAllProducoes(prodsComMesAtual);
               setSemaforo(sem);
 
               // Atualizar alertas
-              const activeAlerts = gerarAlertasDinamicos(pList, lList, allProds);
+              const activeAlerts = gerarAlertasDinamicos(pList, lList, prodsComMesAtual);
               setAlertas(activeAlerts);
             } catch (err) {
               console.error('Erro ao atualizar dados pós-importação:', err);
