@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { dataService, getDefaultPeriod, getCurrentPeriodRef } from '../services/dataService';
-import { Parceiro, ProducaoMensal, ProducaoSemanal } from '../types';
+import { Parceiro, ProducaoMensal, ProducaoSemanal, CriteriosConfig } from '../types';
 import { Search, Plus, Edit2, Trash2, FileSpreadsheet } from 'lucide-react';
 import PartnerFormModal from './PartnerFormModal';
 
@@ -16,6 +16,7 @@ export default function PartnersList({ onSelectPartner }: PartnersListProps) {
   const [parceiros, setParceiros] = useState<Parceiro[]>([]);
   const [allProducoes, setAllProducoes] = useState<ProducaoMensal[]>([]);
   const [allProducoesSemanais, setAllProducoesSemanais] = useState<ProducaoSemanal[]>([]);
+  const [criterios, setCriterios] = useState<CriteriosConfig | null>(null);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
@@ -29,14 +30,16 @@ export default function PartnersList({ onSelectPartner }: PartnersListProps) {
   const loadPartners = async () => {
     try {
       setLoading(true);
-      const [list, prods, semanais] = await Promise.all([
+      const [list, prods, semanais, config] = await Promise.all([
         dataService.getParceiros(),
         dataService.getAllProducao(),
-        dataService.getAllProducoesSemanais()
+        dataService.getAllProducoesSemanais(),
+        dataService.getCriterios()
       ]);
       setParceiros(list);
       setAllProducoes(prods);
       setAllProducoesSemanais(semanais);
+      setCriterios(config);
     } catch (e) {
       console.error('Erro ao ler parceiros:', e);
     } finally {
@@ -183,7 +186,8 @@ export default function PartnersList({ onSelectPartner }: PartnersListProps) {
   const parceirosComVolAtual = dataService.getParceirosComStatusNoPeriodo(
     parceiros,
     prodsComMesAtual,
-    periodoAtual
+    periodoAtual,
+    criterios?.limites
   );
 
   const filteredParceiros = parceirosComVolAtual.filter(p => {
