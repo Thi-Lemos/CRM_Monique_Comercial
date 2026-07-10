@@ -96,6 +96,14 @@ export function computeStatusTimeline(
   // da simulação em vez de forçar Onboarding.
   statusNoBanco?: Parceiro['status']
 ): StatusTimelineEntry[] {
+  // Mês civil corrente (horário de Brasília). Transições de inativação
+  // (Ativo → Inativo e Onboarding → Inativo) NUNCA devem ser disparadas no mês
+  // ainda em aberto: a regra de negócio é que inativação só é verificada quando
+  // a última semana do mês for importada, o que só ocorre depois que o mês fecha.
+  const nowBrasilia = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Sao_Paulo" }));
+  const currentOpenAno = nowBrasilia.getFullYear();
+  const currentOpenMes = nowBrasilia.getMonth() + 1;
+
   const createdDate = createdAt ? new Date(createdAt) : new Date(2026, 4, 1);
   const isLegacy = createdDate < DATA_CORTE_CONFIABILIDADE_CADASTRO;
 
@@ -164,17 +172,26 @@ export function computeStatusTimeline(
     if (!isFirstMonth) {
       switch (status) {
         case 'Onboarding': {
-          const monthEndDate = new Date(curAno, curMes, 0);
-          const diasDesdeCriacao = (monthEndDate.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24);
+          // Upward transition (→ Ativo): fires immediately on any import with production.
+          // Downward transition (→ Inativo): only when the month is already closed —
+          // never fire inactivation during the current open month.
+          const isCurrentOpenMonth = curAno === currentOpenAno && curMes === currentOpenMes;
           if (hasProd) {
             status = 'Ativo';
-          } else if (diasDesdeCriacao > limites.dias_conversao_hunter) {
-            status = 'Inativo';
+          } else if (!isCurrentOpenMonth) {
+            const monthEndDate = new Date(curAno, curMes, 0);
+            const diasDesdeCriacao = (monthEndDate.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24);
+            if (diasDesdeCriacao > limites.dias_conversao_hunter) {
+              status = 'Inativo';
+            }
           }
           break;
         }
         case 'Ativo': {
-          if (lastProdMonth) {
+          // Downward transition (→ Inativo): only when the month is already closed —
+          // never fire inactivation during the current open month.
+          const isCurrentOpenMonth = curAno === currentOpenAno && curMes === currentOpenMes;
+          if (!isCurrentOpenMonth && lastProdMonth) {
             const monthEndDate = new Date(curAno, curMes, 0);
             const lastProdEndDate = new Date(lastProdMonth.ano, lastProdMonth.mes, 0);
             const diasSemProd = (monthEndDate.getTime() - lastProdEndDate.getTime()) / (1000 * 60 * 60 * 24);
