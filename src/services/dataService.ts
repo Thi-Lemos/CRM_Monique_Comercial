@@ -172,13 +172,13 @@ export function computeStatusTimeline(
     if (!isFirstMonth) {
       switch (status) {
         case 'Onboarding': {
-          // Upward transition (→ Ativo): fires immediately on any import with production.
-          // Downward transition (→ Inativo): only when the month is already closed —
-          // never fire inactivation during the current open month.
-          const isCurrentOpenMonth = curAno === currentOpenAno && curMes === currentOpenMes;
+          // Upward transition (→ Ativo): fires on any import with production, regardless of month.
+          // Downward transition (→ Inativo): based solely on days since registration — fires
+          // as soon as dias_conversao_hunter days have elapsed without production, on any import,
+          // including during the current open month. This is independent of month-end closing.
           if (hasProd) {
             status = 'Ativo';
-          } else if (!isCurrentOpenMonth) {
+          } else {
             const monthEndDate = new Date(curAno, curMes, 0);
             const diasDesdeCriacao = (monthEndDate.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24);
             if (diasDesdeCriacao > limites.dias_conversao_hunter) {
