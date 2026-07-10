@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { dataService, getDefaultPeriod } from '../services/dataService';
-import { Parceiro, ProducaoMensal } from '../types';
+import { dataService, getDefaultPeriod, getCurrentPeriodRef } from '../services/dataService';
+import { Parceiro, ProducaoMensal, ProducaoSemanal } from '../types';
 import { Search, Plus, Edit2, Trash2, FileSpreadsheet } from 'lucide-react';
 import PartnerFormModal from './PartnerFormModal';
 
@@ -15,6 +15,7 @@ interface PartnersListProps {
 export default function PartnersList({ onSelectPartner }: PartnersListProps) {
   const [parceiros, setParceiros] = useState<Parceiro[]>([]);
   const [allProducoes, setAllProducoes] = useState<ProducaoMensal[]>([]);
+  const [allProducoesSemanais, setAllProducoesSemanais] = useState<ProducaoSemanal[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
@@ -28,12 +29,14 @@ export default function PartnersList({ onSelectPartner }: PartnersListProps) {
   const loadPartners = async () => {
     try {
       setLoading(true);
-      const [list, prods] = await Promise.all([
+      const [list, prods, semanais] = await Promise.all([
         dataService.getParceiros(),
-        dataService.getAllProducao()
+        dataService.getAllProducao(),
+        dataService.getAllProducoesSemanais()
       ]);
       setParceiros(list);
       setAllProducoes(prods);
+      setAllProducoesSemanais(semanais);
     } catch (e) {
       console.error('Erro ao ler parceiros:', e);
     } finally {
@@ -136,13 +139,50 @@ export default function PartnersList({ onSelectPartner }: PartnersListProps) {
     reader.readAsBinaryString(file);
   };
 
-  // Status e Vol. Prata exibidos são sempre os do mês atual, calculados pela mesma
-  // lógica do Dashboard (computeStatusAtMonth + produções do mês de referência).
-  // Isso garante consistência entre as duas telas.
+  // Replicar exatamente a lógica do Dashboard:
+  // 1. Sintetizar registro mensal in-memory para parceiros que têm semanas no mês
+  //    atual mas ainda não têm o fechamento mensal na tabela `producao`.
+  // 2. Calcular status e vol. prata via getParceirosComStatusNoPeriodo (mesmo
+  //    algoritmo do Dashboard), garantindo consistência entre as duas telas.
+  const refAtual = getCurrentPeriodRef();
+  const prodsComMesAtual = [...allProducoes];
+  const semanasMesAtual = allProducoesSemanais.filter(
+    s => s.ano === refAtual.ano && s.mes === refAtual.mes
+  );
+  const semanaisPorParceiro: Record<string, ProducaoSemanal[]> = {};
+  semanasMesAtual.forEach(s => {
+    if (!semanaisPorParceiro[s.parceiro_id]) semanaisPorParceiro[s.parceiro_id] = [];
+    semanaisPorParceiro[s.parceiro_id].push(s);
+  });
+  Object.entries(semanaisPorParceiro).forEach(([parceiroId, semanas]) => {
+    const jaExiste = prodsComMesAtual.some(
+      p => p.parceiro_id === parceiroId && p.ano === refAtual.ano && p.mes === refAtual.mes
+    );
+    if (!jaExiste) {
+      const sumFgts = semanas.reduce((a, s) => a + (s.vol_fgts || 0), 0);
+      const sumClt  = semanas.reduce((a, s) => a + (s.vol_clt  || 0), 0);
+      const sumCgv  = semanas.reduce((a, s) => a + (s.vol_cgv  || 0), 0);
+      const sumPix  = semanas.reduce((a, s) => a + (s.vol_pix  || 0), 0);
+      const sumPropostas = semanas.reduce((a, s) => a + (s.propostas_pagas || 0), 0);
+      prodsComMesAtual.push({
+        id: `__sintetico_${parceiroId}_${refAtual.ano}_${refAtual.mes}`,
+        parceiro_id: parceiroId,
+        ano: refAtual.ano,
+        mes: refAtual.mes,
+        vol_fgts: sumFgts,
+        vol_clt: sumClt,
+        vol_cgv: sumCgv,
+        vol_pix: sumPix,
+        propostas_pagas: sumPropostas,
+        vol_total: sumFgts + sumClt + sumCgv + sumPix
+      } as ProducaoMensal);
+    }
+  });
+
   const periodoAtual = getDefaultPeriod();
   const parceirosComVolAtual = dataService.getParceirosComStatusNoPeriodo(
     parceiros,
-    allProducoes,
+    prodsComMesAtual,
     periodoAtual
   );
 
