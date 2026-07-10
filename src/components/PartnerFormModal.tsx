@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { dataService } from '../services/dataService';
 import { Parceiro } from '../types';
 import { X, Check } from 'lucide-react';
+import CurrencyInput from './CurrencyInput';
 
 interface PartnerFormModalProps {
   isOpen: boolean;
@@ -269,17 +270,12 @@ export default function PartnerFormModal({ isOpen, onClose, partner, onSave }: P
               </div>
               <div className="form-group" style={{ marginBottom: 0 }}>
                 <label className="form-label" style={{ fontSize: '0.8rem' }}>Volume (R$)</label>
-                <input 
-                  type="number" 
-                  min={0} 
-                  step="any"
-                  inputMode="decimal"
-                  className="form-input no-spinner" 
-                  value={formData.vol_total_detalhes.valor1} 
-                  onChange={(e) => setFormData(prev => ({
+                <CurrencyInput
+                  value={formData.vol_total_detalhes.valor1}
+                  onChange={(val) => setFormData(prev => ({
                     ...prev,
-                    vol_total_detalhes: { ...prev.vol_total_detalhes, valor1: parseFloat(e.target.value) || 0 }
-                  }))} 
+                    vol_total_detalhes: { ...prev.vol_total_detalhes, valor1: val }
+                  }))}
                 />
               </div>
             </div>
@@ -303,17 +299,12 @@ export default function PartnerFormModal({ isOpen, onClose, partner, onSave }: P
               </div>
               <div className="form-group" style={{ marginBottom: 0 }}>
                 <label className="form-label" style={{ fontSize: '0.8rem' }}>Volume (R$)</label>
-                <input 
-                  type="number" 
-                  min={0} 
-                  step="any"
-                  inputMode="decimal"
-                  className="form-input no-spinner" 
-                  value={formData.vol_total_detalhes.valor2} 
-                  onChange={(e) => setFormData(prev => ({
+                <CurrencyInput
+                  value={formData.vol_total_detalhes.valor2}
+                  onChange={(val) => setFormData(prev => ({
                     ...prev,
-                    vol_total_detalhes: { ...prev.vol_total_detalhes, valor2: parseFloat(e.target.value) || 0 }
-                  }))} 
+                    vol_total_detalhes: { ...prev.vol_total_detalhes, valor2: val }
+                  }))}
                 />
               </div>
             </div>
@@ -337,17 +328,12 @@ export default function PartnerFormModal({ isOpen, onClose, partner, onSave }: P
               </div>
               <div className="form-group" style={{ marginBottom: 0 }}>
                 <label className="form-label" style={{ fontSize: '0.8rem' }}>Volume (R$)</label>
-                <input 
-                  type="number" 
-                  min={0} 
-                  step="any"
-                  inputMode="decimal"
-                  className="form-input no-spinner" 
-                  value={formData.vol_total_detalhes.valor3} 
-                  onChange={(e) => setFormData(prev => ({
+                <CurrencyInput
+                  value={formData.vol_total_detalhes.valor3}
+                  onChange={(val) => setFormData(prev => ({
                     ...prev,
-                    vol_total_detalhes: { ...prev.vol_total_detalhes, valor3: parseFloat(e.target.value) || 0 }
-                  }))} 
+                    vol_total_detalhes: { ...prev.vol_total_detalhes, valor3: val }
+                  }))}
                 />
               </div>
             </div>
@@ -355,7 +341,7 @@ export default function PartnerFormModal({ isOpen, onClose, partner, onSave }: P
             {/* Média Calculada */}
             <div style={{ marginTop: '1rem', paddingTop: '0.75rem', borderTop: '1px solid var(--border-color)', fontSize: '0.85rem', fontWeight: 700, color: 'var(--secondary-color)' }}>
               Média Estimada (Calculada automaticamente): {
-                new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(
+                new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(
                   [formData.vol_total_detalhes.valor1, formData.vol_total_detalhes.valor2, formData.vol_total_detalhes.valor3].filter(v => v > 0).length > 0
                     ? [formData.vol_total_detalhes.valor1, formData.vol_total_detalhes.valor2, formData.vol_total_detalhes.valor3].filter(v => v > 0).reduce((a, b) => a + b, 0) / [formData.vol_total_detalhes.valor1, formData.vol_total_detalhes.valor2, formData.vol_total_detalhes.valor3].filter(v => v > 0).length
                     : 0

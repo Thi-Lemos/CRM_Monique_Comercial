@@ -20,6 +20,7 @@ import {
 import PartnerFormModal from './PartnerFormModal';
 import WeekSelector from './WeekSelector';
 import { getCurrentWeek, WeekInfo, fmtDateBR } from '../utils/weekUtils';
+import CurrencyInput from './CurrencyInput';
 
 interface PartnerDetailProps {
   partnerId: string;
@@ -44,11 +45,11 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
 
   // Inline editing de semana
   const [editingSemanaId, setEditingSemanaId] = useState<string | null>(null);
-  const [editSemanaForm, setEditSemanaForm] = useState<Partial<ProducaoSemanal>>({});
+  const [editSemanaForm, setEditSemanaForm] = useState({ vol_fgts: 0, vol_clt: 0, vol_cgv: 0, vol_pix: 0, propostas_pagas: 0 });
 
   // Inline editing de registro mensal legado
   const [editingLegadoId, setEditingLegadoId] = useState<string | null>(null);
-  const [editLegadoForm, setEditLegadoForm] = useState<Partial<ProducaoMensal>>({});
+  const [editLegadoForm, setEditLegadoForm] = useState({ vol_fgts: 0, vol_clt: 0, vol_cgv: 0, vol_pix: 0, propostas_pagas: 0 });
 
   // Controle de expansão de meses no histórico unificado
   const [expandedMonths, setExpandedMonths] = useState<Set<string>>(new Set());
@@ -109,7 +110,7 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
   const notes = calculateCriteriaNotes(partner);
 
   const formatCurrency = (val: number) => {
-    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(val);
+    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(val);
   };
 
   const openEditModal = () => { setIsFormOpen(true); };
@@ -140,9 +141,9 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
   // ── Edição inline de semana ───────────────────────────────────────────────
   const startEditSemana = (s: ProducaoSemanal) => {
     setEditingSemanaId(s.id || null);
-    setEditSemanaForm({ vol_fgts: s.vol_fgts, vol_clt: s.vol_clt, vol_cgv: s.vol_cgv, vol_pix: s.vol_pix, propostas_pagas: s.propostas_pagas });
+    setEditSemanaForm({ vol_fgts: s.vol_fgts || 0, vol_clt: s.vol_clt || 0, vol_cgv: s.vol_cgv || 0, vol_pix: s.vol_pix || 0, propostas_pagas: s.propostas_pagas || 0 });
   };
-  const cancelEditSemana = () => { setEditingSemanaId(null); setEditSemanaForm({}); };
+  const cancelEditSemana = () => { setEditingSemanaId(null); setEditSemanaForm({ vol_fgts: 0, vol_clt: 0, vol_cgv: 0, vol_pix: 0, propostas_pagas: 0 }); };
   const saveEditSemana = async (s: ProducaoSemanal) => {
     if (!s.id) return;
     try {
@@ -166,9 +167,9 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
   // ── Edição/exclusão de registro mensal legado ─────────────────────────────
   const startEditLegado = (p: ProducaoMensal) => {
     setEditingLegadoId(p.id || null);
-    setEditLegadoForm({ vol_fgts: p.vol_fgts, vol_clt: p.vol_clt, vol_cgv: p.vol_cgv, vol_pix: p.vol_pix, propostas_pagas: p.propostas_pagas || 0 });
+    setEditLegadoForm({ vol_fgts: p.vol_fgts || 0, vol_clt: p.vol_clt || 0, vol_cgv: p.vol_cgv || 0, vol_pix: p.vol_pix || 0, propostas_pagas: p.propostas_pagas || 0 });
   };
-  const cancelEditLegado = () => { setEditingLegadoId(null); setEditLegadoForm({}); };
+  const cancelEditLegado = () => { setEditingLegadoId(null); setEditLegadoForm({ vol_fgts: 0, vol_clt: 0, vol_cgv: 0, vol_pix: 0, propostas_pagas: 0 }); };
   const saveLegado = async (p: ProducaoMensal) => {
     if (!p.id) return;
     try {
@@ -407,13 +408,21 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
                 return (
                   <tr key={s.id} style={{ backgroundColor: 'rgba(15,184,130,0.06)' }}>
                     <td style={{ padding: '0.4rem', fontSize: '0.72rem', whiteSpace: 'nowrap', color: 'var(--text-muted)', fontStyle: 'italic' }}>{periodo}</td>
-                    {(['vol_fgts','vol_clt','vol_cgv','vol_pix','propostas_pagas'] as const).map(field => (
+                    {(['vol_fgts','vol_clt','vol_cgv','vol_pix'] as const).map(field => (
                       <td key={field} style={{ padding: '0.25rem 0.3rem', textAlign: 'right' }}>
-                        <input type="number" min={0} step="any" style={{ width: '70px', textAlign: 'right', padding: '0.2rem 0.3rem', fontSize: '0.72rem', borderRadius: '4px', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-input, #fff)', MozAppearance: 'textfield' } as React.CSSProperties}
-                          value={(editSemanaForm as any)[field] ?? 0}
-                          onChange={ev => setEditSemanaForm(prev => ({ ...prev, [field]: parseFloat(ev.target.value) || 0 }))} />
+                        <CurrencyInput
+                          value={editSemanaForm[field] || 0}
+                          onChange={val => setEditSemanaForm(prev => ({ ...prev, [field]: val }))}
+                          style={{ width: '80px', textAlign: 'right', padding: '0.2rem 0.3rem', fontSize: '0.72rem', borderRadius: '4px', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-input, #fff)' }}
+                          className=""
+                        />
                       </td>
                     ))}
+                    <td style={{ padding: '0.25rem 0.3rem', textAlign: 'right' }}>
+                      <input type="number" min={0} style={{ width: '50px', textAlign: 'right', padding: '0.2rem 0.3rem', fontSize: '0.72rem', borderRadius: '4px', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-input, #fff)' }}
+                        value={editSemanaForm.propostas_pagas || ''}
+                        onChange={ev => setEditSemanaForm(prev => ({ ...prev, propostas_pagas: parseInt(ev.target.value) || 0 }))} />
+                    </td>
                     <td style={{ padding: '0.25rem 0.3rem', textAlign: 'right', fontSize: '0.72rem', fontWeight: 650, color: 'var(--primary-color)' }}>
                       {formatCurrency((editSemanaForm.vol_fgts||0)+(editSemanaForm.vol_clt||0)+(editSemanaForm.vol_cgv||0)+(editSemanaForm.vol_pix||0))}
                     </td>
@@ -515,14 +524,23 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
                               Editando totais mensais do registro legado de {mesLabel}
                             </p>
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))', gap: '0.5rem', marginBottom: '0.6rem' }}>
-                              {(['vol_fgts','vol_clt','vol_cgv','vol_pix','propostas_pagas'] as const).map(field => (
+                              {(['vol_fgts','vol_clt','vol_cgv','vol_pix'] as const).map(field => (
                                 <div key={field}>
                                   <label style={{ fontSize: '0.65rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>{field.replace('vol_','').toUpperCase()}</label>
-                                  <input type="number" min={0} step="any" className="form-input" style={{ padding: '0.3rem 0.4rem', fontSize: '0.78rem', marginTop: '0.15rem' }}
-                                    value={(editLegadoForm as any)[field] ?? 0}
-                                    onChange={ev => setEditLegadoForm(prev => ({ ...prev, [field]: parseFloat(ev.target.value) || 0 }))} />
+                                  <CurrencyInput
+                                    value={editLegadoForm[field] || 0}
+                                    onChange={val => setEditLegadoForm(prev => ({ ...prev, [field]: val }))}
+                                    style={{ padding: '0.3rem 0.4rem', fontSize: '0.78rem', marginTop: '0.15rem', width: '100%', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-color)', backgroundColor: 'var(--bg-input, #fff)' }}
+                                    className=""
+                                  />
                                 </div>
                               ))}
+                              <div>
+                                <label style={{ fontSize: '0.65rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>PROPOSTAS</label>
+                                <input type="number" min={0} className="form-input" style={{ padding: '0.3rem 0.4rem', fontSize: '0.78rem', marginTop: '0.15rem' }}
+                                  value={editLegadoForm.propostas_pagas || ''}
+                                  onChange={ev => setEditLegadoForm(prev => ({ ...prev, propostas_pagas: parseInt(ev.target.value) || 0 }))} />
+                              </div>
                             </div>
                             <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
                               <button className="btn btn-secondary" style={{ padding: '0.25rem 0.65rem', fontSize: '0.75rem' }} onClick={cancelEditLegado}>Cancelar</button>
@@ -672,26 +690,26 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
               <div className="form-row">
                 <div className="form-group">
                   <label className="form-label">FGTS (R$)</label>
-                  <input type="number" min={0} step="any" inputMode="decimal" className="form-input no-spinner" value={semanalForm.vol_fgts} onChange={e => setSemanalForm(p => ({ ...p, vol_fgts: parseFloat(e.target.value)||0 }))} />
+                  <CurrencyInput value={semanalForm.vol_fgts} onChange={val => setSemanalForm(p => ({ ...p, vol_fgts: val }))} />
                 </div>
                 <div className="form-group">
                   <label className="form-label">CLT Consignado (R$)</label>
-                  <input type="number" min={0} step="any" inputMode="decimal" className="form-input no-spinner" value={semanalForm.vol_clt} onChange={e => setSemanalForm(p => ({ ...p, vol_clt: parseFloat(e.target.value)||0 }))} />
+                  <CurrencyInput value={semanalForm.vol_clt} onChange={val => setSemanalForm(p => ({ ...p, vol_clt: val }))} />
                 </div>
               </div>
               <div className="form-row">
                 <div className="form-group">
                   <label className="form-label">CGV (R$)</label>
-                  <input type="number" min={0} step="any" inputMode="decimal" className="form-input no-spinner" value={semanalForm.vol_cgv} onChange={e => setSemanalForm(p => ({ ...p, vol_cgv: parseFloat(e.target.value)||0 }))} />
+                  <CurrencyInput value={semanalForm.vol_cgv} onChange={val => setSemanalForm(p => ({ ...p, vol_cgv: val }))} />
                 </div>
                 <div className="form-group">
                   <label className="form-label">Pix no Cartão (R$)</label>
-                  <input type="number" min={0} step="any" inputMode="decimal" className="form-input no-spinner" value={semanalForm.vol_pix} onChange={e => setSemanalForm(p => ({ ...p, vol_pix: parseFloat(e.target.value)||0 }))} />
+                  <CurrencyInput value={semanalForm.vol_pix} onChange={val => setSemanalForm(p => ({ ...p, vol_pix: val }))} />
                 </div>
               </div>
               <div className="form-group">
                 <label className="form-label">Propostas Pagas</label>
-                <input type="number" min={0} className="form-input" value={semanalForm.propostas_pagas} onChange={e => setSemanalForm(p => ({ ...p, propostas_pagas: parseInt(e.target.value)||0 }))} />
+                <input type="number" min={0} className="form-input" value={semanalForm.propostas_pagas || ''} onChange={e => setSemanalForm(p => ({ ...p, propostas_pagas: parseInt(e.target.value) || 0 }))} />
               </div>
 
               <div style={{ padding: '0.6rem 0.75rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(15,184,130,0.1)', marginTop: '0.75rem', fontSize: '0.85rem', fontWeight: 700, color: 'var(--secondary-color)', display: 'flex', justifyContent: 'space-between' }}>

@@ -83,7 +83,7 @@ function gerarAlertasDinamicos(pList: Parceiro[], lList: CrmLog[], allProds: Pro
             id: 'alert_early_warn_' + p.id,
             parceiro: p.nome,
             parceiroId: p.id,
-            mensagem: `Redução de ${queda.toFixed(1)}% no faturamento consolidado de ${labelMesRef} em relação a ${labelMesComparacao} (de R$ ${volComparacao.toLocaleString('pt-BR')} para R$ ${volPrataRef.toLocaleString('pt-BR')}).`,
+            mensagem: `Redução de ${queda.toFixed(1)}% no faturamento consolidado de ${labelMesRef} em relação a ${labelMesComparacao} (de R$ ${volComparacao.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} para R$ ${volPrataRef.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}).`,
             prioridade: 'Alta',
             ultimaInteracao: dataUltima ? dataUltima.toLocaleDateString('pt-BR') : 'Sem registro',
             data_criacao: hoje
@@ -453,7 +453,7 @@ export default function Dashboard({ onSelectPartner }: { onSelectPartner?: (id: 
 
   // Formatar Moeda
   const formatCurrency = (val: number) => {
-    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(val);
+    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(val);
   };
 
   return (
@@ -1257,7 +1257,7 @@ function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs, se
 
   // Formatar Moeda
   const formatCurrency = (val: number) => {
-    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(val);
+    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(val);
   };
 
   // Renderizar o cabeçalho e dados de acordo com o KPI

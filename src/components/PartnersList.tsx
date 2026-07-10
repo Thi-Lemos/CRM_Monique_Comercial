@@ -166,7 +166,7 @@ export default function PartnersList({ onSelectPartner }: PartnersListProps) {
   });
 
   const formatCurrency = (val: number) => {
-    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(val);
+    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(val);
   };
 
   return (
@@ -214,18 +214,52 @@ export default function PartnersList({ onSelectPartner }: PartnersListProps) {
           />
         </div>
 
-        <div style={{ width: '180px' }}>
-          <select 
-            className="form-input"
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-          >
-            <option value="">Todos Status</option>
-            <option value="Ativo">Ativo</option>
-            <option value="Onboarding">Onboarding</option>
-            <option value="Reativado">Reativado</option>
-            <option value="Inativo">Inativo</option>
-          </select>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          {/* Contador com a cor do status selecionado */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            minWidth: '36px',
+            height: '36px',
+            borderRadius: 'var(--radius-sm)',
+            backgroundColor: statusFilter === 'Ativo' ? 'rgba(15,184,130,0.15)' :
+                              statusFilter === 'Inativo' ? 'rgba(239,68,68,0.15)' :
+                              statusFilter === 'Reativado' ? 'rgba(245,158,11,0.15)' :
+                              statusFilter === 'Onboarding' ? 'rgba(59,130,246,0.15)' :
+                              'rgba(100,116,139,0.15)',
+            border: `1px solid ${
+              statusFilter === 'Ativo' ? 'rgba(15,184,130,0.4)' :
+              statusFilter === 'Inativo' ? 'rgba(239,68,68,0.4)' :
+              statusFilter === 'Reativado' ? 'rgba(245,158,11,0.4)' :
+              statusFilter === 'Onboarding' ? 'rgba(59,130,246,0.4)' :
+              'rgba(100,116,139,0.3)'
+            }`,
+            fontWeight: 800,
+            fontSize: '0.9rem',
+            color: statusFilter === 'Ativo' ? 'var(--success)' :
+                   statusFilter === 'Inativo' ? 'var(--danger)' :
+                   statusFilter === 'Reativado' ? 'var(--warning)' :
+                   statusFilter === 'Onboarding' ? '#3b82f6' :
+                   'var(--text-muted)',
+            transition: 'var(--transition)'
+          }}>
+            {sortedAndFilteredParceiros.length}
+          </div>
+
+          <div style={{ width: '180px' }}>
+            <select 
+              className="form-input"
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+            >
+              <option value="">Todos Status</option>
+              <option value="Ativo">Ativo</option>
+              <option value="Onboarding">Onboarding</option>
+              <option value="Reativado">Reativado</option>
+              <option value="Inativo">Inativo</option>
+            </select>
+          </div>
         </div>
 
         <div style={{ width: '180px' }}>

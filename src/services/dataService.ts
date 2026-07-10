@@ -504,7 +504,7 @@ export const dataService = {
     }
 
     const finalParceiros: Parceiro[] = [];
-    const fmtCur = (val: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(val);
+    const fmtCur = (val: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(val);
     const hoje = new Date();
     // Referência de "status vigente agora": o mês fechado mais recente (mês anterior
     // ao atual). Evita que o meio do mês em curso, sem produção lançada ainda,
@@ -1007,7 +1007,7 @@ export const dataService = {
       isOnboardingToAtivo ? 'ativacao' : 'reativacao';
 
     const fmtCur = (val: number) =>
-      new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(val);
+      new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(val);
     const volPrata = getVolPrataUltimaProducao(allProds);
 
     // Atualizar status imediatamente no banco
@@ -1833,8 +1833,7 @@ export const getPeriodLabel = (period: string) => {
 // (mês fechado mais recente, com dados completos).
 export const getDefaultPeriod = () => {
   const atual = getCurrentPeriodRef();
-  const anterior = shiftMonth(atual.ano, atual.mes, -1);
-  return buildMonthKey(anterior.ano, anterior.mes);
+  return buildMonthKey(atual.ano, atual.mes);
 };
 
 // Gera as opções do seletor de período dinamicamente: mês atual + 5 meses
