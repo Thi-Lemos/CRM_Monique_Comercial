@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { dataService, getVolPrataUltimaProducao } from '../services/dataService';
+import { dataService, getDefaultPeriod } from '../services/dataService';
 import { Parceiro, ProducaoMensal } from '../types';
 import { Search, Plus, Edit2, Trash2, FileSpreadsheet } from 'lucide-react';
 import PartnerFormModal from './PartnerFormModal';
@@ -136,20 +136,15 @@ export default function PartnersList({ onSelectPartner }: PartnersListProps) {
     reader.readAsBinaryString(file);
   };
 
-  // Vol. Prata exibido é sempre o da última produção lançada para o parceiro,
-  // independente de mês/período — a Carteira não usa mais seletor de período.
-  const prodsPorParceiro: Record<string, ProducaoMensal[]> = {};
-  allProducoes.forEach(prod => {
-    if (!prodsPorParceiro[prod.parceiro_id]) {
-      prodsPorParceiro[prod.parceiro_id] = [];
-    }
-    prodsPorParceiro[prod.parceiro_id].push(prod);
-  });
-
-  const parceirosComVolAtual = parceiros.map(p => ({
-    ...p,
-    vol_prata_mensal: getVolPrataUltimaProducao(prodsPorParceiro[p.id] || [])
-  }));
+  // Status e Vol. Prata exibidos são sempre os do mês atual, calculados pela mesma
+  // lógica do Dashboard (computeStatusAtMonth + produções do mês de referência).
+  // Isso garante consistência entre as duas telas.
+  const periodoAtual = getDefaultPeriod();
+  const parceirosComVolAtual = dataService.getParceirosComStatusNoPeriodo(
+    parceiros,
+    allProducoes,
+    periodoAtual
+  );
 
   const filteredParceiros = parceirosComVolAtual.filter(p => {
     const matchesSearch = p.nome.toLowerCase().includes(search.toLowerCase()) || 
