@@ -40,6 +40,15 @@ const DEFAULT_CRITERIOS: CriteriosConfig = {
     produtos_ativos: 10,
     modelo_atuacao: 10,
     diversificacao: 5
+  },
+  score_thresholds: {
+    estrategico: 70,
+    crescimento: 40
+  },
+  score_notas: {
+    vol_total_faixas: [30000, 80000, 150000, 300000],
+    concentracao_faixas: [10, 20, 30, 50],
+    vendedores_faixas: [1, 3, 5, 10]
   }
 };
 
@@ -394,6 +403,12 @@ export const dataService = {
             ...DEFAULT_CRITERIOS,
             ...stored,
             metas: { ...DEFAULT_CRITERIOS.metas, ...stored.metas },
+            score_thresholds: { ...DEFAULT_CRITERIOS.score_thresholds, ...(stored.score_thresholds || {}) },
+            score_notas: {
+              vol_total_faixas: stored.score_notas?.vol_total_faixas ?? DEFAULT_CRITERIOS.score_notas.vol_total_faixas,
+              concentracao_faixas: stored.score_notas?.concentracao_faixas ?? DEFAULT_CRITERIOS.score_notas.concentracao_faixas,
+              vendedores_faixas: stored.score_notas?.vendedores_faixas ?? DEFAULT_CRITERIOS.score_notas.vendedores_faixas,
+            },
           };
         }
       } catch (err) {
@@ -410,6 +425,12 @@ export const dataService = {
       ...DEFAULT_CRITERIOS,
       ...stored,
       metas: { ...DEFAULT_CRITERIOS.metas, ...stored.metas },
+      score_thresholds: { ...DEFAULT_CRITERIOS.score_thresholds, ...(stored.score_thresholds || {}) },
+      score_notas: {
+        vol_total_faixas: stored.score_notas?.vol_total_faixas ?? DEFAULT_CRITERIOS.score_notas.vol_total_faixas,
+        concentracao_faixas: stored.score_notas?.concentracao_faixas ?? DEFAULT_CRITERIOS.score_notas.concentracao_faixas,
+        vendedores_faixas: stored.score_notas?.vendedores_faixas ?? DEFAULT_CRITERIOS.score_notas.vendedores_faixas,
+      },
     };
   },
 
@@ -1198,9 +1219,10 @@ export const dataService = {
     const parceiros = await this.getParceiros();
     const tasks: TaskItem[] = [];
     
-    // Cada log que possui próxima ação gera uma tarefa
+    // Apenas logs registrados manualmente pela Monique geram tarefas.
+    // Logs automáticos de transição de status (origem === 'sistema') são excluídos.
     logs.forEach(log => {
-      if (log.proxima_acao && log.data_proxima_acao) {
+      if (log.proxima_acao && log.data_proxima_acao && log.origem !== 'sistema') {
         const partner = parceiros.find(p => p.id === log.parceiro_id);
         tasks.push({
           id: 'task_' + log.id,

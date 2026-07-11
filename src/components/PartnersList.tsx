@@ -10,18 +10,29 @@ const IMPORTACAO_XLSX_HABILITADA = false;
 
 interface PartnersListProps {
   onSelectPartner: (id: string) => void;
+  // Filtros elevados ao App para persistir ao navegar para a ficha do parceiro
+  search: string;
+  setSearch: (v: string) => void;
+  statusFilter: string;
+  setStatusFilter: (v: string) => void;
+  classFilter: string;
+  setClassFilter: (v: string) => void;
+  ascendingOrder: boolean;
+  setAscendingOrder: (v: boolean) => void;
 }
 
-export default function PartnersList({ onSelectPartner }: PartnersListProps) {
+export default function PartnersList({
+  onSelectPartner,
+  search, setSearch,
+  statusFilter, setStatusFilter,
+  classFilter, setClassFilter,
+  ascendingOrder, setAscendingOrder
+}: PartnersListProps) {
   const [parceiros, setParceiros] = useState<Parceiro[]>([]);
   const [allProducoes, setAllProducoes] = useState<ProducaoMensal[]>([]);
   const [allProducoesSemanais, setAllProducoesSemanais] = useState<ProducaoSemanal[]>([]);
   const [criterios, setCriterios] = useState<CriteriosConfig | null>(null);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
-  const [classFilter, setClassFilter] = useState('');
-  const [ascendingOrder, setAscendingOrder] = useState(false);
   
   // Controle de Modal e Edição
   const [isFormOpen, setIsFormOpen] = useState(false);

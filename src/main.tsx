@@ -18,6 +18,13 @@ function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [selectedPartnerId, setSelectedPartnerId] = useState<string | null>(null);
 
+  // Estado dos filtros da Carteira de Parceiros elevado para o App
+  // para que não seja resetado ao abrir a ficha de um parceiro e voltar.
+  const [partnersSearch, setPartnersSearch] = useState('');
+  const [partnersStatusFilter, setPartnersStatusFilter] = useState('');
+  const [partnersClassFilter, setPartnersClassFilter] = useState('');
+  const [partnersAscendingOrder, setPartnersAscendingOrder] = useState(false);
+
   useEffect(() => {
     async function checkUser() {
       try {
@@ -79,6 +86,14 @@ function App() {
               setSelectedPartnerId(id);
               setActiveTab('parceiro-detalhe');
             }}
+            search={partnersSearch}
+            setSearch={setPartnersSearch}
+            statusFilter={partnersStatusFilter}
+            setStatusFilter={setPartnersStatusFilter}
+            classFilter={partnersClassFilter}
+            setClassFilter={setPartnersClassFilter}
+            ascendingOrder={partnersAscendingOrder}
+            setAscendingOrder={setPartnersAscendingOrder}
           />
         );
       

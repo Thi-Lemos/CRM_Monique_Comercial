@@ -37,6 +37,26 @@ export default function CriteriaConfig() {
     }));
   };
 
+  // Handler para atualizar uma posição específica dentro de um array de faixas
+  const handleFaixaChange = (
+    arrayKey: 'vol_total_faixas' | 'concentracao_faixas' | 'vendedores_faixas',
+    idx: number,
+    value: number
+  ) => {
+    if (!config) return;
+    setConfig((prev: any) => {
+      const faixas = [...prev.score_notas[arrayKey]] as [number, number, number, number];
+      faixas[idx] = value;
+      return {
+        ...prev,
+        score_notas: {
+          ...prev.score_notas,
+          [arrayKey]: faixas
+        }
+      };
+    });
+  };
+
   const calculatePesosSum = () => {
     if (!config) return 0;
     const p = config.pesos_score;
@@ -53,6 +73,14 @@ export default function CriteriaConfig() {
     const sum = calculatePesosSum();
     if (sum !== 100) {
       setErrorMsg(`A soma dos pesos do Score Comercial deve ser exatamente 100%. Soma atual: ${sum}%.`);
+      return;
+    }
+
+    if (
+      config.score_thresholds &&
+      config.score_thresholds.crescimento >= config.score_thresholds.estrategico
+    ) {
+      setErrorMsg('O limiar de Crescimento deve ser menor que o limiar de Estratégico.');
       return;
     }
 
@@ -80,6 +108,15 @@ export default function CriteriaConfig() {
           meta_churn: 10,
           meta_media_produtos: 2,
           meta_taxa_reativacao: 25
+        },
+        score_thresholds: {
+          estrategico: 70,
+          crescimento: 40
+        },
+        score_notas: {
+          vol_total_faixas: [30000, 80000, 150000, 300000],
+          concentracao_faixas: [10, 20, 30, 50],
+          vendedores_faixas: [1, 3, 5, 10]
         },
         limites: {
           dias_inatividade_winback: 60,
@@ -418,6 +455,127 @@ export default function CriteriaConfig() {
                 </div>
               ))}
             </div>
+          </div>
+
+          {/* Seção 4: Limiares de Classificação do Score */}
+          <div className="card" style={{ padding: '1.5rem' }}>
+            <h3 className="card-title">
+              <Target size={20} /> Limiares de Classificação do Score
+            </h3>
+            <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '1.25rem' }}>
+              Define os valores mínimos de score (0–100) para que um parceiro seja classificado como Estratégico ou Crescimento.
+              Parceiros abaixo do limiar de Crescimento são classificados automaticamente como Desenvolvimento.
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem' }}>
+              <div className="form-group">
+                <label className="form-label" style={{ color: 'var(--success)', fontWeight: 700 }}>
+                  Estratégico — Score Mínimo
+                </label>
+                <input
+                  type="number" min={1} max={100} required className="form-input"
+                  value={config.score_thresholds?.estrategico ?? 70}
+                  onChange={(e) => handleInputChange('score_thresholds', 'estrategico', parseInt(e.target.value) || 0)}
+                />
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.15rem' }}>
+                  Score ≥ este valor → parceiro é Estratégico.
+                </span>
+              </div>
+              <div className="form-group">
+                <label className="form-label" style={{ color: '#3b82f6', fontWeight: 700 }}>
+                  Crescimento — Score Mínimo
+                </label>
+                <input
+                  type="number" min={1} max={100} required className="form-input"
+                  value={config.score_thresholds?.crescimento ?? 40}
+                  onChange={(e) => handleInputChange('score_thresholds', 'crescimento', parseInt(e.target.value) || 0)}
+                />
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.15rem' }}>
+                  Score ≥ este valor (e abaixo de Estratégico) → parceiro é Crescimento.
+                </span>
+              </div>
+            </div>
+            {config.score_thresholds && config.score_thresholds.crescimento >= config.score_thresholds.estrategico && (
+              <p style={{ marginTop: '0.75rem', fontSize: '0.8rem', color: 'var(--danger)', fontWeight: 600 }}>
+                ⚠️ O limiar de Crescimento deve ser menor que o de Estratégico.
+              </p>
+            )}
+          </div>
+
+          {/* Seção 5: Faixas de Pontuação dos Critérios Numéricos */}
+          <div className="card" style={{ padding: '1.5rem' }}>
+            <h3 className="card-title">
+              <Sliders size={20} /> Faixas de Pontuação dos Critérios Numéricos
+            </h3>
+            <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '1.5rem' }}>
+              Define os valores-limite que determinam a nota (1 → 3 → 5 → 7 → 9) para cada critério numérico.
+              Valores ≤ Faixa 1 recebem nota 1; entre Faixa 1 e 2 recebem nota 3; e assim por diante.
+              Acima de Faixa 4 sempre recebem nota 9.
+            </p>
+
+            {/* N1: Volume Total Mensal */}
+            <div style={{ marginBottom: '1.5rem', paddingBottom: '1.25rem', borderBottom: '1px solid #f1f5f9' }}>
+              <p style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--secondary-color)', marginBottom: '0.75rem' }}>
+                N1 · Volume Total Mensal (R$)
+              </p>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.75rem' }}>
+                {(['Faixa 1 (nota 1→3)', 'Faixa 2 (nota 3→5)', 'Faixa 3 (nota 5→7)', 'Faixa 4 (nota 7→9)'] as const).map((label, idx) => (
+                  <div className="form-group" key={idx}>
+                    <label className="form-label" style={{ fontSize: '0.72rem' }}>{label}</label>
+                    <input
+                      type="number" min={0} className="form-input"
+                      style={{ padding: '0.35rem 0.5rem' }}
+                      value={config.score_notas?.vol_total_faixas?.[idx] ?? [30000,80000,150000,300000][idx]}
+                      onChange={(e) => handleFaixaChange('vol_total_faixas', idx, parseFloat(e.target.value) || 0)}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* N2: Concentração */}
+            <div style={{ marginBottom: '1.5rem', paddingBottom: '1.25rem', borderBottom: '1px solid #f1f5f9' }}>
+              <p style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--secondary-color)', marginBottom: '0.75rem' }}>
+                N2 · Concentração no Prata (%)
+              </p>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.75rem' }}>
+                {(['Faixa 1 (nota 1→3)', 'Faixa 2 (nota 3→5)', 'Faixa 3 (nota 5→7)', 'Faixa 4 (nota 7→9)'] as const).map((label, idx) => (
+                  <div className="form-group" key={idx}>
+                    <label className="form-label" style={{ fontSize: '0.72rem' }}>{label}</label>
+                    <input
+                      type="number" min={0} max={100} className="form-input"
+                      style={{ padding: '0.35rem 0.5rem' }}
+                      value={config.score_notas?.concentracao_faixas?.[idx] ?? [10,20,30,50][idx]}
+                      onChange={(e) => handleFaixaChange('concentracao_faixas', idx, parseFloat(e.target.value) || 0)}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* N3: Nº Vendedores */}
+            <div>
+              <p style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--secondary-color)', marginBottom: '0.75rem' }}>
+                N3 · Estrutura (Nº de Vendedores)
+              </p>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.75rem' }}>
+                {(['Faixa 1 (nota 1→3)', 'Faixa 2 (nota 3→5)', 'Faixa 3 (nota 5→7)', 'Faixa 4 (nota 7→9)'] as const).map((label, idx) => (
+                  <div className="form-group" key={idx}>
+                    <label className="form-label" style={{ fontSize: '0.72rem' }}>{label}</label>
+                    <input
+                      type="number" min={0} className="form-input"
+                      style={{ padding: '0.35rem 0.5rem' }}
+                      value={config.score_notas?.vendedores_faixas?.[idx] ?? [1,3,5,10][idx]}
+                      onChange={(e) => handleFaixaChange('vendedores_faixas', idx, parseFloat(e.target.value) || 0)}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <p style={{ marginTop: '1rem', fontSize: '0.75rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>
+              Nota: Os critérios N4 (Abrangência), N5 (Produtos), N6 (Modelo de atuação) e N7 (Diversificação) usam categorias fixas
+              e não possuem faixas numéricas configuráveis.
+            </p>
           </div>
 
           {/* Botão de Gravar */}

@@ -132,6 +132,17 @@ export interface CriteriosConfig {
     modelo_atuacao: number;
     diversificacao: number;
   };
+  // Limiares de score para as classificacoes
+  score_thresholds: {
+    estrategico: number;
+    crescimento: number;
+  };
+  // Faixas de pontuacao para criterios numericos continuos (N1, N2, N3)
+  score_notas: {
+    vol_total_faixas: [number, number, number, number];
+    concentracao_faixas: [number, number, number, number];
+    vendedores_faixas: [number, number, number, number];
+  };
 }
 
 export interface ProducaoSemanal {
