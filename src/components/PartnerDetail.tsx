@@ -497,10 +497,10 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
                     return (
                       <div key={key} style={{ border: '1px solid var(--border-color)', borderRadius: 'var(--radius-sm)', overflow: 'hidden' }}>
                         <div
-                          onClick={() => !isLegacy && toggleMonth(key)}
-                          style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.6rem 0.75rem', backgroundColor: 'rgba(255,255,255,0.03)', cursor: isLegacy ? 'default' : 'pointer', borderBottom: (expanded && !isLegacy) ? '1px solid var(--border-color)' : 'none' }}>
+                          onClick={() => toggleMonth(key)}
+                          style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.6rem 0.75rem', backgroundColor: 'rgba(255,255,255,0.03)', cursor: 'pointer', borderBottom: expanded ? '1px solid var(--border-color)' : 'none' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                            {!isLegacy && (expanded ? <ChevronDown size={14} /> : <ChevronRightIcon size={14} />)}
+                            {expanded ? <ChevronDown size={14} /> : <ChevronRightIcon size={14} />}
                             <span style={{ fontWeight: 700, fontSize: '0.85rem', color: 'var(--secondary-color)' }}>{mesLabel}</span>
                             {isLegacy && <span style={{ fontSize: '0.65rem', padding: '0.1rem 0.35rem', backgroundColor: 'rgba(100,116,139,0.15)', color: 'var(--text-muted)', borderRadius: '3px', fontWeight: 600 }}>LEGADO</span>}
                             {!isLegacy && <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>{semanasDoMes.length} semana(s)</span>}
@@ -546,6 +546,35 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
                               <button className="btn btn-secondary" style={{ padding: '0.25rem 0.65rem', fontSize: '0.75rem' }} onClick={cancelEditLegado}>Cancelar</button>
                               <button className="btn btn-primary" style={{ padding: '0.25rem 0.65rem', fontSize: '0.75rem' }} onClick={() => saveLegado(prod)}>Salvar</button>
                             </div>
+                          </div>
+                        )}
+
+                        {isLegacy && expanded && !isEditingLeg && (
+                          <div className="table-container" style={{ border: 'none', boxShadow: 'none', margin: 0 }}>
+                            <table className="table" style={{ fontSize: '0.72rem', width: '100%' }}>
+                              <thead>
+                                <tr>
+                                  <th style={thStyle}>Período</th>
+                                  <th style={{ ...thStyle, textAlign: 'right' }}>FGTS</th>
+                                  <th style={{ ...thStyle, textAlign: 'right' }}>CLT</th>
+                                  <th style={{ ...thStyle, textAlign: 'right' }}>CGV</th>
+                                  <th style={{ ...thStyle, textAlign: 'right' }}>PIX</th>
+                                  <th style={{ ...thStyle, textAlign: 'right' }}>Propos.</th>
+                                  <th style={{ ...thStyle, textAlign: 'right' }}>Total</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr>
+                                  <td style={{ padding: '0.45rem 0.4rem', fontSize: '0.72rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>{mesLabel} (consolidado)</td>
+                                  <td style={{ padding: '0.45rem 0.4rem', textAlign: 'right', fontSize: '0.72rem' }}>{formatCurrency(prod.vol_fgts || 0)}</td>
+                                  <td style={{ padding: '0.45rem 0.4rem', textAlign: 'right', fontSize: '0.72rem' }}>{formatCurrency(prod.vol_clt || 0)}</td>
+                                  <td style={{ padding: '0.45rem 0.4rem', textAlign: 'right', fontSize: '0.72rem' }}>{formatCurrency(prod.vol_cgv || 0)}</td>
+                                  <td style={{ padding: '0.45rem 0.4rem', textAlign: 'right', fontSize: '0.72rem' }}>{formatCurrency(prod.vol_pix || 0)}</td>
+                                  <td style={{ padding: '0.45rem 0.4rem', textAlign: 'right', fontSize: '0.72rem' }}>{prod.propostas_pagas ?? 0}</td>
+                                  <td style={{ padding: '0.45rem 0.4rem', textAlign: 'right', fontSize: '0.72rem', fontWeight: 650, color: 'var(--primary-color)' }}>{formatCurrency(prod.vol_total || 0)}</td>
+                                </tr>
+                              </tbody>
+                            </table>
                           </div>
                         )}
 

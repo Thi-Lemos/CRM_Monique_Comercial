@@ -114,6 +114,10 @@ export interface CriteriosConfig {
     hunter_reativacoes_semana: number;
     farmer_propostas_pagas_semana: number;
     farmer_concentracao_minima: number;
+    meta_taxa_ativos: number;
+    meta_churn: number;
+    meta_media_produtos: number;
+    meta_taxa_reativacao: number;
   };
   limites: {
     dias_inatividade_winback: number;

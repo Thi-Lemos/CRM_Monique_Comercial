@@ -221,10 +221,10 @@ export default function InteractionForm({ initialPartnerId, onSave, onCancel }: 
           </div>
 
           <div className="form-group">
-            <label className="form-label">Resumo da Interação (Máx 500 caract.) *</label>
+            <label className="form-label">Resumo da Interação (Máx 2000 caract.) *</label>
             <textarea 
-              rows={3} 
-              maxLength={500} 
+              rows={5} 
+              maxLength={2000} 
               required
               className="form-input" 
               placeholder="O que foi conversado? Resuma o diagnóstico comercial em poucas linhas..."
@@ -232,7 +232,7 @@ export default function InteractionForm({ initialPartnerId, onSave, onCancel }: 
               onChange={(e) => setFormData(prev => ({ ...prev, resumo: e.target.value }))}
             />
             <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textAlign: 'right' }}>
-              {formData.resumo.length}/500 caracteres
+              {formData.resumo.length}/2000 caracteres
             </span>
           </div>
 

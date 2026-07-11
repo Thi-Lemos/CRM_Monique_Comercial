@@ -22,7 +22,11 @@ const DEFAULT_CRITERIOS: CriteriosConfig = {
     hunter_novos_ativos_semana: 2,
     hunter_reativacoes_semana: 1,
     farmer_propostas_pagas_semana: 1200,
-    farmer_concentracao_minima: 30
+    farmer_concentracao_minima: 30,
+    meta_taxa_ativos: 70,
+    meta_churn: 10,
+    meta_media_produtos: 2,
+    meta_taxa_reativacao: 25
   },
   limites: {
     dias_inatividade_winback: 60,
@@ -384,7 +388,13 @@ export const dataService = {
           .select('config')
           .single();
         if (!error && data?.config) {
-          return data.config as CriteriosConfig;
+          const stored = data.config as CriteriosConfig;
+          // Mescla com defaults para garantir compatibilidade com configs antigas
+          return {
+            ...DEFAULT_CRITERIOS,
+            ...stored,
+            metas: { ...DEFAULT_CRITERIOS.metas, ...stored.metas },
+          };
         }
       } catch (err) {
         console.warn('Erro ao carregar critérios do Supabase, usando local:', err);
@@ -395,7 +405,12 @@ export const dataService = {
       localStorage.setItem(LOCAL_CRITERIOS_KEY, JSON.stringify(DEFAULT_CRITERIOS));
       return DEFAULT_CRITERIOS;
     }
-    return JSON.parse(local);
+    const stored = JSON.parse(local) as CriteriosConfig;
+    return {
+      ...DEFAULT_CRITERIOS,
+      ...stored,
+      metas: { ...DEFAULT_CRITERIOS.metas, ...stored.metas },
+    };
   },
 
   async saveCriterios(config: CriteriosConfig): Promise<CriteriosConfig> {

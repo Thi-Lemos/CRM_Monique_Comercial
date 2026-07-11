@@ -530,7 +530,7 @@ export default function Dashboard({ onSelectPartner }: { onSelectPartner?: (id: 
           <div>
             <span className="kpi-label">Taxa de Parceiros Ativos</span>
             <div className="kpi-value">{taxaAtivos.toFixed(1)}%</div>
-            <span className={`kpi-meta ${taxaAtivos >= 70 ? 'success' : 'danger'}`}>Meta: &ge; 70%</span>
+            <span className={`kpi-meta ${taxaAtivos >= (criterios?.metas.meta_taxa_ativos ?? 70) ? 'success' : 'danger'}`}>Meta: &ge; {criterios?.metas.meta_taxa_ativos ?? 70}%</span>
           </div>
           <div className="kpi-icon-container">
             <Percent size={24} />
@@ -539,12 +539,12 @@ export default function Dashboard({ onSelectPartner }: { onSelectPartner?: (id: 
 
         {/* KPI 6: Churn da Carteira */}
         <div className="card kpi-card" 
-             style={{ borderLeft: churnRate >= 10 ? '4px solid var(--danger)' : '1px solid var(--border-color)' }}
+             style={{ borderLeft: churnRate >= (criterios?.metas.meta_churn ?? 10) ? '4px solid var(--danger)' : '1px solid var(--border-color)' }}
              onClick={() => setSelectedKpi('churn')}>
           <div>
             <span className="kpi-label">Churn da Carteira</span>
-            <div className="kpi-value" style={{ color: churnRate >= 10 ? 'var(--danger)' : 'inherit' }}>{churnRate.toFixed(1)}%</div>
-            <span className={`kpi-meta ${churnRate < 10 ? 'success' : 'danger'}`}>Meta: &lt; 10%</span>
+            <div className="kpi-value" style={{ color: churnRate >= (criterios?.metas.meta_churn ?? 10) ? 'var(--danger)' : 'inherit' }}>{churnRate.toFixed(1)}%</div>
+            <span className={`kpi-meta ${churnRate < (criterios?.metas.meta_churn ?? 10) ? 'success' : 'danger'}`}>Meta: &lt; {criterios?.metas.meta_churn ?? 10}%</span>
           </div>
           <div className="kpi-icon-container" style={{ color: 'var(--danger)', backgroundColor: 'rgba(239, 68, 68, 0.15)' }}>
             <AlertCircle size={24} />
@@ -555,21 +555,21 @@ export default function Dashboard({ onSelectPartner }: { onSelectPartner?: (id: 
       {/* Grid de KPIs Auxiliares (Demais Métricas) */}
       <div className="dashboard-summary-grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', marginBottom: '2rem' }}>
         <div className="card kpi-card" style={{ padding: '1rem 1.25rem' }} onClick={() => setSelectedKpi('media-produtos')}>
-          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>MÉDIA PRODUTOS</span>
+          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>MÉDIA DE PRODUTOS</span>
           <div style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--secondary-color)', margin: '0.2rem 0' }}>
             {mediaProdutos.toFixed(1)}
           </div>
-          <span style={{ fontSize: '0.7rem', color: mediaProdutos >= 2 ? 'var(--success)' : 'var(--danger)', fontWeight: 500 }}>
-            Meta: &ge; 2
+          <span style={{ fontSize: '0.7rem', color: mediaProdutos >= (criterios?.metas.meta_media_produtos ?? 2) ? 'var(--success)' : 'var(--danger)', fontWeight: 500 }}>
+            Meta: &ge; {criterios?.metas.meta_media_produtos ?? 2}
           </span>
         </div>
 
         <div className="card kpi-card" style={{ padding: '1rem 1.25rem' }} onClick={() => setSelectedKpi('taxa-reativacao')}>
-          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>TAXA REATIVAÇÃO</span>
+          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>TAXA DE REATIVAÇÃO</span>
           <div style={{ fontSize: '1.4rem', fontWeight: 700, color: 'var(--secondary-color)', margin: '0.2rem 0' }}>
             {taxaReativacaoDinamica.toFixed(1)}%
           </div>
-          <span style={{ fontSize: '0.7rem', color: taxaReativacaoDinamica >= 25 ? 'var(--success)' : 'var(--danger)', fontWeight: 500 }}>Meta: &ge; 25%</span>
+          <span style={{ fontSize: '0.7rem', color: taxaReativacaoDinamica >= (criterios?.metas.meta_taxa_reativacao ?? 25) ? 'var(--success)' : 'var(--danger)', fontWeight: 500 }}>Meta: &ge; {criterios?.metas.meta_taxa_reativacao ?? 25}%</span>
         </div>
       </div>
 
@@ -964,13 +964,13 @@ export default function Dashboard({ onSelectPartner }: { onSelectPartner?: (id: 
                     <div 
                       key={alert.id} 
                       className={`alert-item ${alert.prioridade}`}
-                      style={{ cursor: 'default', position: 'relative' }}
+                      style={{ cursor: onSelectPartner ? 'pointer' : 'default', position: 'relative' }}
+                      onClick={() => onSelectPartner?.(alert.parceiroId)}
                     >
                       <div className="alert-body">
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                           <span
-                            style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--secondary-color)', cursor: onSelectPartner ? 'pointer' : 'default' }}
-                            onClick={() => onSelectPartner?.(alert.parceiroId)}
+                            style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--secondary-color)' }}
                           >
                             {alert.parceiro}
                           </span>

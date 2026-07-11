@@ -75,7 +75,11 @@ export default function CriteriaConfig() {
           hunter_novos_ativos_semana: 2,
           hunter_reativacoes_semana: 1,
           farmer_propostas_pagas_semana: 1200,
-          farmer_concentracao_minima: 30
+          farmer_concentracao_minima: 30,
+          meta_taxa_ativos: 70,
+          meta_churn: 10,
+          meta_media_produtos: 2,
+          meta_taxa_reativacao: 25
         },
         limites: {
           dias_inatividade_winback: 60,
@@ -231,6 +235,83 @@ export default function CriteriaConfig() {
                   value={config.metas.hunter_reativacoes_semana}
                   onChange={(e) => handleInputChange('metas', 'hunter_reativacoes_semana', parseInt(e.target.value) || 0)}
                 />
+              </div>
+            </div>
+          </div>
+
+          {/* Seção 1b: Metas dos KPIs da Carteira */}
+          <div className="card" style={{ padding: '1.5rem' }}>
+            <h3 className="card-title">
+              <Target size={20} /> Metas dos KPIs da Carteira
+            </h3>
+            <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '1.25rem' }}>
+              Define os benchmarks exibidos nos cards de desempenho do Dashboard, determinando se cada indicador está dentro ou fora da meta.
+            </p>
+
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+              gap: '1.25rem'
+            }}>
+              <div className="form-group">
+                <label className="form-label">Taxa de Parceiros Ativos — Meta Mínima (%)</label>
+                <input
+                  type="number"
+                  min={1}
+                  max={100}
+                  required
+                  className="form-input"
+                  value={config.metas.meta_taxa_ativos}
+                  onChange={(e) => handleInputChange('metas', 'meta_taxa_ativos', parseFloat(e.target.value) || 0)}
+                />
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.15rem' }}>
+                  Percentual mínimo de parceiros Ativos sobre o total da carteira.
+                </span>
+              </div>
+              <div className="form-group">
+                <label className="form-label">Churn da Carteira — Meta Máxima (%)</label>
+                <input
+                  type="number"
+                  min={0}
+                  max={100}
+                  required
+                  className="form-input"
+                  value={config.metas.meta_churn}
+                  onChange={(e) => handleInputChange('metas', 'meta_churn', parseFloat(e.target.value) || 0)}
+                />
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.15rem' }}>
+                  Percentual máximo tolerado de parceiros que passaram para Inativo no período.
+                </span>
+              </div>
+              <div className="form-group">
+                <label className="form-label">Média de Produtos — Meta Mínima</label>
+                <input
+                  type="number"
+                  min={1}
+                  step={0.1}
+                  required
+                  className="form-input"
+                  value={config.metas.meta_media_produtos}
+                  onChange={(e) => handleInputChange('metas', 'meta_media_produtos', parseFloat(e.target.value) || 0)}
+                />
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.15rem' }}>
+                  Número médio mínimo de produtos ativos por parceiro Ativo no período.
+                </span>
+              </div>
+              <div className="form-group">
+                <label className="form-label">Taxa de Reativação — Meta Mínima (%)</label>
+                <input
+                  type="number"
+                  min={0}
+                  max={100}
+                  required
+                  className="form-input"
+                  value={config.metas.meta_taxa_reativacao}
+                  onChange={(e) => handleInputChange('metas', 'meta_taxa_reativacao', parseFloat(e.target.value) || 0)}
+                />
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.15rem' }}>
+                  Percentual mínimo de parceiros Inativos que devem ser reativados no período.
+                </span>
               </div>
             </div>
           </div>
