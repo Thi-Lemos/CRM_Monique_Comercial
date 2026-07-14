@@ -1504,7 +1504,7 @@ export const dataService = {
 
   // Salva (ou faz upsert) de uma produção semanal.
   //
-  // FONTE DE VERDADE: semana_inicio (string YYYY-MM-DD — segunda-feira).
+  // FONTE DE VERDADE: semana_inicio (string YYYY-MM-DD — domingo).
   //   - ano, mes e semana_num são SEMPRE derivados de getWeekInfo(semana_inicio).
   //     Qualquer valor de ano/mes passado pelo chamador é ignorado.
   //   - Deduplicação por (parceiro_id, semana_inicio). Se já existe registro:

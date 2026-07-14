@@ -19,17 +19,17 @@ export default function WeekSelector({
   const currentWeek = getWeekInfo();
 
   const goBack = () => {
-    // A segunda-feira anterior = inicio - 7 dias
-    const prevMonday = new Date(value.inicio + 'T12:00:00Z');
-    prevMonday.setUTCDate(prevMonday.getUTCDate() - 7);
-    onChange(getWeekInfo(prevMonday));
+    // O domingo anterior = inicio - 7 dias
+    const prevSunday = new Date(value.inicio + 'T12:00:00Z');
+    prevSunday.setUTCDate(prevSunday.getUTCDate() - 7);
+    onChange(getWeekInfo(prevSunday));
   };
 
   const goForward = () => {
     if (maxCurrentWeek && value.inicio >= currentWeek.inicio) return;
-    const nextMonday = new Date(value.inicio + 'T12:00:00Z');
-    nextMonday.setUTCDate(nextMonday.getUTCDate() + 7);
-    onChange(getWeekInfo(nextMonday));
+    const nextSunday = new Date(value.inicio + 'T12:00:00Z');
+    nextSunday.setUTCDate(nextSunday.getUTCDate() + 7);
+    onChange(getWeekInfo(nextSunday));
   };
 
   const isAtCurrentWeek = value.inicio >= currentWeek.inicio;
@@ -74,7 +74,7 @@ export default function WeekSelector({
             {value.label}
           </div>
           <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.1rem' }}>
-            {fmtDateBR(value.inicio)} (Seg) → {fmtDateBR(value.fim)} (Dom)
+            {fmtDateBR(value.inicio)} (Dom) → {fmtDateBR(value.fim)} (Sáb)
           </div>
         </div>
 

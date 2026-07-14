@@ -72,8 +72,8 @@ export interface CrmLog {
 
 export interface EventoSemana {
   id?: string;
-  semana_inicio: string;   // YYYY-MM-DD — segunda-feira
-  semana_fim: string;      // YYYY-MM-DD — domingo
+  semana_inicio: string;   // YYYY-MM-DD — domingo
+  semana_fim: string;      // YYYY-MM-DD — sábado
   ano: number;
   mes: number;
   semana_num: number;
@@ -151,7 +151,7 @@ export interface ProducaoSemanal {
   ano: number;
   mes: number;
   semana: number;           // número ordinal dentro do mês (1-5)
-  semana_inicio?: string;   // YYYY-MM-DD — segunda-feira (fonte de verdade para deduplicação)
+  semana_inicio?: string;   // YYYY-MM-DD — domingo (fonte de verdade para deduplicação)
   vol_fgts: number;
   vol_clt: number;
   vol_cgv: number;

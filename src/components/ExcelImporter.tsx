@@ -289,7 +289,7 @@ export default function ExcelImporter({ onClose, onImportSuccess }: ExcelImporte
             />
             <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '0.4rem', lineHeight: 1.35 }}>
               💡 Selecione a semana civil a que se referem os dados da planilha. O ano e o mês são determinados
-              pelo domingo da semana ({selectedWeek.fim} → {selectedWeek.ano}/{String(selectedWeek.mes).padStart(2,'0')}).
+              pelo sábado da semana ({selectedWeek.fim} → {selectedWeek.ano}/{String(selectedWeek.mes).padStart(2,'0')}).
             </p>
           </div>
 
