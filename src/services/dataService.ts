@@ -1733,21 +1733,31 @@ export const dataService = {
 
         const statusCalculado = computeStatusAtMonth(p.created_at, prodsAteReferencia, limites, refAno, refMes);
 
-        // Calcular volume do parceiro específico no período selecionado (média mensal do período)
-        let volAcumuladoPeriodo = 0;
+        // Calcular volume do parceiro específico no período selecionado (média mensal do período).
+        // vol_total_mensal e vol_prata_mensal são calculados com o mesmo critério de período,
+        // garantindo que a concentração Prata (vol_prata / vol_total) nunca ultrapasse 100%.
+        let volPrataAcumulado = 0;
+        let volTotalAcumulado = 0;
         activeMonths.forEach(m => {
           const matchProd = prods.find(pr => pr.ano === m.ano && pr.mes === m.mes);
           if (matchProd) {
-            volAcumuladoPeriodo += (matchProd.vol_fgts || 0) + (matchProd.vol_clt || 0) + (matchProd.vol_cgv || 0) + (matchProd.vol_pix || 0);
+            const volProdPrata = (matchProd.vol_fgts || 0) + (matchProd.vol_clt || 0) + (matchProd.vol_cgv || 0) + (matchProd.vol_pix || 0);
+            volPrataAcumulado += volProdPrata;
+            // vol_total do registro já inclui todos os produtos; usa vol_prata como fallback
+            // se vol_total não estiver preenchido (registros antigos sem esse campo).
+            const volProdTotal = (matchProd.vol_total || 0) > 0 ? matchProd.vol_total : volProdPrata;
+            volTotalAcumulado += volProdTotal;
           }
         });
-        const volPrataMensalPeriodo = volAcumuladoPeriodo / numMonths;
+        const volPrataMensalPeriodo = volPrataAcumulado / numMonths;
+        // vol_total nunca pode ser menor que vol_prata — garante concentração ≤ 100%
+        const volTotalMensalPeriodo = Math.max(volTotalAcumulado / numMonths, volPrataMensalPeriodo);
 
         return {
           ...p,
           status: statusCalculado,
           vol_prata_mensal: volPrataMensalPeriodo,
-          vol_total_mensal: (p.vol_total_mensal || 0) > 0 ? Math.max(p.vol_total_mensal, volPrataMensalPeriodo) : 0
+          vol_total_mensal: volTotalMensalPeriodo
         };
       });
   },

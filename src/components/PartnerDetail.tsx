@@ -222,6 +222,14 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
             <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', marginTop: '0.25rem' }}>
               CNPJ: {partner.cnpj} · Atuação: {partner.modelo_atuacao} ({partner.area_geografica})
             </p>
+            {partner.status === 'Onboarding' && partner.created_at && (
+              <p style={{ fontSize: '0.8rem', marginTop: '0.2rem', color: 'var(--text-muted)' }}>
+                <span style={{ fontWeight: 600, color: 'var(--info, #38bdf8)' }}>Data de cadastro:</span>{' '}
+                {new Date(partner.created_at).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+                {' · '}
+                {Math.floor((Date.now() - new Date(partner.created_at).getTime()) / (1000 * 60 * 60 * 24))} dia(s) em Onboarding
+              </p>
+            )}
           </div>
           
           <div style={{ display: 'flex', gap: '0.75rem' }}>
