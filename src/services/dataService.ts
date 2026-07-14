@@ -1201,7 +1201,7 @@ export const dataService = {
     // (RLS ou concorrência), deixando allProds sem dados do mês atual.
     // Nesse caso, buscamos diretamente de producoes_semanais e somamos.
     let prodsParaCalculo = allProds;
-    const temProducaoMesAtual = allProds.some(p => p.ano === refAno && p.mes === refMes && p.vol_total > 0);
+    const temProducaoMesAtual = allProds.some(p => p.ano === refAno && p.mes === refMes && (p.vol_total ?? 0) > 0);
     if (!temProducaoMesAtual && supabase) {
       try {
         const { data: semanais } = await supabase
