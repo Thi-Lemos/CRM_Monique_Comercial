@@ -807,12 +807,17 @@ export const dataService = {
 
         // Sem producao e fora da janela: inativar
         if (supabase) {
-          await supabase
+          const { error: updateErr } = await supabase
             .from('parceiros')
             .update({ status: 'Inativo' })
             .eq('id', parceiro.id);
 
-          // Gravar log de sistema
+          if (updateErr) {
+            console.warn(`checkAndInactivateOnboarding: falha ao inativar ${parceiro.nome}:`, updateErr);
+            continue;
+          }
+
+          // Gravar log de sistema apenas se o update foi bem-sucedido
           await supabase.from('crm_logs').insert([{
             parceiro_id: parceiro.id,
             data_contato: agora.toISOString(),

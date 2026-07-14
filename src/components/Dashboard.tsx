@@ -690,13 +690,13 @@ export default function Dashboard({ onSelectPartner }: { onSelectPartner?: (id: 
               {/* Contagens */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '0.75rem' }}>
                 <div style={{ padding: '0.6rem 0.75rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(0,0,0,0.2)', border: '1px solid var(--border-color)' }}>
-                  <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>Ativações</div>
+                  <div style={{ fontSize: '0.7rem', color: '#8ecfb8', textTransform: 'uppercase', fontWeight: 600 }}>Ativações</div>
                   <div style={{ fontSize: '1.4rem', fontWeight: 800, color: semaforo.hunterAtivacoes.length > 0 ? 'var(--success)' : 'var(--text-muted)', lineHeight: 1.2 }}>
                     {semaforo.hunterAtivacoes.length}
                   </div>
                 </div>
                 <div style={{ padding: '0.6rem 0.75rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(0,0,0,0.2)', border: '1px solid var(--border-color)' }}>
-                  <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>Reativações</div>
+                  <div style={{ fontSize: '0.7rem', color: '#8ecfb8', textTransform: 'uppercase', fontWeight: 600 }}>Reativações</div>
                   <div style={{ fontSize: '1.4rem', fontWeight: 800, color: semaforo.hunterReativacoes.length > 0 ? 'var(--success)' : 'var(--text-muted)', lineHeight: 1.2 }}>
                     {semaforo.hunterReativacoes.length}
                   </div>
@@ -748,7 +748,7 @@ export default function Dashboard({ onSelectPartner }: { onSelectPartner?: (id: 
               <div style={{ padding: '0.75rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(0,0,0,0.2)', border: '1px solid var(--border-color)', marginBottom: '0.75rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
                   <div>
-                    <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>Propostas Pagas</div>
+                    <div style={{ fontSize: '0.7rem', color: '#8ecfb8', textTransform: 'uppercase', fontWeight: 600 }}>Propostas Pagas</div>
                     <div style={{ fontSize: '1.6rem', fontWeight: 800, color: semaforo.farmer === 'Verde' ? 'var(--success)' : 'var(--danger)', lineHeight: 1.1 }}>
                       {semaforo.farmerPropostasSemana.toLocaleString('pt-BR')}
                     </div>
@@ -1243,9 +1243,9 @@ function SemafaroMesModal({ tipo, semanaAtual, criterios, onClose }: SemafaroMes
     >
       <div
         style={{
-          background: 'var(--card-bg)',
+          background: '#0d2b1f',
           borderRadius: 'var(--radius)',
-          border: '1px solid var(--border-color)',
+          border: '1px solid rgba(15,184,130,0.35)',
           padding: '1.5rem',
           width: '100%',
           maxWidth: '640px',
@@ -1257,8 +1257,8 @@ function SemafaroMesModal({ tipo, semanaAtual, criterios, onClose }: SemafaroMes
         {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.25rem' }}>
           <div>
-            <h2 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-main)' }}>{titulo}</h2>
-            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>{nomeMes}/{ano} · semanas fechadas</div>
+            <h2 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#e2f5ee' }}>{titulo}</h2>
+            <div style={{ fontSize: '0.8rem', color: '#8ecfb8', marginTop: '0.2rem' }}>{nomeMes}/{ano} · semanas fechadas</div>
           </div>
           <button onClick={onClose} style={{ border: 'none', background: 'none', cursor: 'pointer', color: 'var(--text-muted)', fontSize: '1.2rem', lineHeight: 1 }}>
             <X size={18} />
@@ -1266,11 +1266,11 @@ function SemafaroMesModal({ tipo, semanaAtual, criterios, onClose }: SemafaroMes
         </div>
 
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>Carregando...</div>
+          <div style={{ textAlign: 'center', padding: '2rem', color: '#8ecfb8' }}>Carregando...</div>
         ) : tipo === 'hunter' ? (
           semanasOrdem.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>
-              Nenhuma ativação ou reativação registrada em {nomeMes}/{ano}.
+              Nenhuma ativação ou reativação registrada em {nomeMes}/{ano}. (Confira se a importação da semana já foi feita)
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -1286,21 +1286,21 @@ function SemafaroMesModal({ tipo, semanaAtual, criterios, onClose }: SemafaroMes
                 const iniStr = `${d}/${m}`;
                 const semLabel = `Sem. ${grupo.ativacoes[0]?.semana_num ?? grupo.reativacoes[0]?.semana_num ?? '?'} · ${iniStr} → ${fimStr}`;
                 return (
-                  <div key={semInicio} style={{ padding: '1rem', borderRadius: 'var(--radius-sm)', border: `1px solid ${atingiu ? 'var(--success)' : 'var(--border-color)'}`, backgroundColor: 'rgba(0,0,0,0.15)' }}>
+                  <div key={semInicio} style={{ padding: '1rem', borderRadius: 'var(--radius-sm)', border: `1px solid ${atingiu ? 'var(--success)' : 'var(--border-color)'}`, backgroundColor: 'rgba(255,255,255,0.07)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.6rem' }}>
-                      <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>{semLabel}</span>
+                      <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#b8ddd0', textTransform: 'uppercase' }}>{semLabel}</span>
                       <span style={{ fontSize: '0.72rem', fontWeight: 600, color: atingiu ? 'var(--success)' : 'var(--danger)' }}>{atingiu ? '● Verde' : '● Vermelho'}</span>
                     </div>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', marginBottom: totalAtv + totalReat > 0 ? '0.75rem' : 0 }}>
-                      <div style={{ padding: '0.5rem 0.6rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(0,0,0,0.2)' }}>
+                      <div style={{ padding: '0.5rem 0.6rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(255,255,255,0.1)' }}>
                         <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>Ativações</div>
                         <div style={{ fontSize: '1.3rem', fontWeight: 800, color: totalAtv > 0 ? 'var(--success)' : 'var(--text-muted)' }}>{totalAtv}</div>
-                        <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>meta: {metaHunterNovos}</div>
+                        <div style={{ fontSize: '0.65rem', color: '#8ecfb8' }}>meta: {metaHunterNovos}</div>
                       </div>
-                      <div style={{ padding: '0.5rem 0.6rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(0,0,0,0.2)' }}>
+                      <div style={{ padding: '0.5rem 0.6rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(255,255,255,0.1)' }}>
                         <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>Reativações</div>
                         <div style={{ fontSize: '1.3rem', fontWeight: 800, color: totalReat > 0 ? 'var(--success)' : 'var(--text-muted)' }}>{totalReat}</div>
-                        <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>meta: {metaHunterReativados}</div>
+                        <div style={{ fontSize: '0.65rem', color: '#8ecfb8' }}>meta: {metaHunterReativados}</div>
                       </div>
                     </div>
                     {(totalAtv > 0 || totalReat > 0) && (
@@ -1308,14 +1308,14 @@ function SemafaroMesModal({ tipo, semanaAtual, criterios, onClose }: SemafaroMes
                         {grupo.ativacoes.map(e => (
                           <div key={e.id || e.parceiro_id + '-atv'} style={{ fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--text-main)' }}>
                             <span style={{ color: 'var(--success)', fontWeight: 700 }}>✓</span>
-                            <span>{e.parceiro_nome ?? 'Parceiro'}</span>
+                            <span style={{ color: '#e2f5ee' }}>{e.parceiro_nome ?? 'Parceiro'}</span>
                             <span className="badge badge-info" style={{ fontSize: '0.6rem', padding: '0.1rem 0.35rem' }}>Ativado</span>
                           </div>
                         ))}
                         {grupo.reativacoes.map(e => (
                           <div key={e.id || e.parceiro_id + '-reat'} style={{ fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--text-main)' }}>
                             <span style={{ color: 'var(--warning)', fontWeight: 700 }}>↑</span>
-                            <span>{e.parceiro_nome ?? 'Parceiro'}</span>
+                            <span style={{ color: '#e2f5ee' }}>{e.parceiro_nome ?? 'Parceiro'}</span>
                             <span className="badge badge-warning" style={{ fontSize: '0.6rem', padding: '0.1rem 0.35rem' }}>Reativado</span>
                           </div>
                         ))}
@@ -1343,9 +1343,9 @@ function SemafaroMesModal({ tipo, semanaAtual, criterios, onClose }: SemafaroMes
                 const iniStr = `${d}/${m}`;
                 const semLabel = `Sem. ${s.semana_num} · ${iniStr} → ${fimStr}`;
                 return (
-                  <div key={s.semana_inicio} style={{ padding: '1rem', borderRadius: 'var(--radius-sm)', border: `1px solid ${atingiu ? 'var(--success)' : 'var(--border-color)'}`, backgroundColor: 'rgba(0,0,0,0.15)' }}>
+                  <div key={s.semana_inicio} style={{ padding: '1rem', borderRadius: 'var(--radius-sm)', border: `1px solid ${atingiu ? 'var(--success)' : 'var(--border-color)'}`, backgroundColor: 'rgba(255,255,255,0.07)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-                      <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>{semLabel}</span>
+                      <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#b8ddd0', textTransform: 'uppercase' }}>{semLabel}</span>
                       <span style={{ fontSize: '0.72rem', fontWeight: 600, color: atingiu ? 'var(--success)' : 'var(--danger)' }}>{atingiu ? '● Verde' : '● Vermelho'}</span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '0.4rem' }}>
@@ -1354,14 +1354,14 @@ function SemafaroMesModal({ tipo, semanaAtual, criterios, onClose }: SemafaroMes
                         <div style={{ fontSize: '1.5rem', fontWeight: 800, color: atingiu ? 'var(--success)' : 'var(--danger)' }}>{s.total.toLocaleString('pt-BR')}</div>
                       </div>
                       <div style={{ textAlign: 'right' }}>
-                        <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>Meta</div>
-                        <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-muted)' }}>{metaFarmer.toLocaleString('pt-BR')}</div>
+                        <div style={{ fontSize: '0.68rem', color: '#8ecfb8' }}>Meta</div>
+                        <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#b8ddd0' }}>{metaFarmer.toLocaleString('pt-BR')}</div>
                       </div>
                     </div>
                     <div style={{ width: '100%', height: '5px', borderRadius: '3px', backgroundColor: 'rgba(255,255,255,0.1)', overflow: 'hidden' }}>
                       <div style={{ width: `${pct}%`, height: '100%', backgroundColor: atingiu ? 'var(--success)' : 'var(--danger)', transition: 'width 0.4s ease' }} />
                     </div>
-                    <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '0.3rem', textAlign: 'right' }}>{pct}% da meta</div>
+                    <div style={{ fontSize: '0.7rem', color: '#8ecfb8', marginTop: '0.3rem', textAlign: 'right' }}>{pct}% da meta</div>
                   </div>
                 );
               })}
