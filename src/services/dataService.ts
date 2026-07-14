@@ -465,12 +465,17 @@ export const dataService = {
   async saveParceiroStatusOnly(id: string, status: Parceiro['status']): Promise<void> {
     if (supabase) {
       try {
-        await supabase
+        const { error } = await supabase
           .from('parceiros')
           .update({ status, updated_at: new Date().toISOString() })
           .eq('id', id);
+        if (error) {
+          console.error(`saveParceiroStatusOnly: falha ao gravar status "${status}" para parceiro ${id}:`, error);
+          throw error;
+        }
       } catch (e) {
         console.warn('Erro ao salvar status do parceiro no Supabase:', e);
+        throw e;
       }
     } else {
       const db = getLocalDB();
@@ -1064,17 +1069,22 @@ export const dataService = {
     return [];
   },
 
-  // Busca todos os eventos_semana de um mês/ano específico (todas as semanas do mês)
+  // Busca todos os eventos_semana de um mês/ano específico, enriquecidos com nome do parceiro
   async getEventosMes(ano: number, mes: number): Promise<EventoSemana[]> {
     if (supabase) {
       try {
         const { data, error } = await supabase
           .from('eventos_semana')
-          .select('*')
+          .select('*, parceiros(nome)')
           .eq('ano', ano)
           .eq('mes', mes)
           .order('semana_inicio', { ascending: true });
-        if (!error && data) return data as EventoSemana[];
+        if (!error && data) {
+          return data.map((e: any) => ({
+            ...e,
+            parceiro_nome: e.parceiros?.nome ?? undefined,
+          })) as EventoSemana[];
+        }
       } catch (err) {
         console.warn('Erro ao ler eventos_semana do mês no Supabase:', err);
       }
@@ -1088,7 +1098,7 @@ export const dataService = {
       try {
         const { data, error } = await supabase
           .from('producoes_semanais')
-          .select('semana_inicio, semana_num, propostas_pagas')
+          .select('semana_inicio, semana, propostas_pagas')
           .eq('ano', ano)
           .eq('mes', mes);
         if (!error && data) {
@@ -1096,7 +1106,7 @@ export const dataService = {
           const grouped: Record<string, { semana_inicio: string; semana_num: number; total: number }> = {};
           data.forEach((r: any) => {
             if (!grouped[r.semana_inicio]) {
-              grouped[r.semana_inicio] = { semana_inicio: r.semana_inicio, semana_num: r.semana_num || 0, total: 0 };
+              grouped[r.semana_inicio] = { semana_inicio: r.semana_inicio, semana_num: r.semana || 0, total: 0 };
             }
             grouped[r.semana_inicio].total += r.propostas_pagas || 0;
           });
@@ -1186,7 +1196,49 @@ export const dataService = {
     const refAno = hoje.getFullYear();
     const refMes = hoje.getMonth() + 1;
 
-    const newStatus = computeStatusAtMonth(parceiro.created_at, allProds, config.limites, refAno, refMes, parceiro.status);
+    // Garantir que producao do mês corrente está em allProds.
+    // Durante importação semanal, consolidateMensal pode falhar silenciosamente
+    // (RLS ou concorrência), deixando allProds sem dados do mês atual.
+    // Nesse caso, buscamos diretamente de producoes_semanais e somamos.
+    let prodsParaCalculo = allProds;
+    const temProducaoMesAtual = allProds.some(p => p.ano === refAno && p.mes === refMes && p.vol_total > 0);
+    if (!temProducaoMesAtual && supabase) {
+      try {
+        const { data: semanais } = await supabase
+          .from('producoes_semanais')
+          .select('*')
+          .eq('parceiro_id', parceiro.id)
+          .eq('ano', refAno)
+          .eq('mes', refMes);
+        if (semanais && semanais.length > 0) {
+          const sumFgts = semanais.reduce((a: number, s: any) => a + (s.vol_fgts || 0), 0);
+          const sumClt  = semanais.reduce((a: number, s: any) => a + (s.vol_clt  || 0), 0);
+          const sumCgv  = semanais.reduce((a: number, s: any) => a + (s.vol_cgv  || 0), 0);
+          const sumPix  = semanais.reduce((a: number, s: any) => a + (s.vol_pix  || 0), 0);
+          const sumTotal = sumFgts + sumClt + sumCgv + sumPix;
+          if (sumTotal > 0) {
+            // Sintetizar um registro mensal a partir das semanas para uso no cálculo
+            const prodSintetica: ProducaoMensal = {
+              id: `synth_${refAno}_${refMes}`,
+              parceiro_id: parceiro.id,
+              ano: refAno,
+              mes: refMes,
+              vol_fgts: sumFgts,
+              vol_clt: sumClt,
+              vol_cgv: sumCgv,
+              vol_pix: sumPix,
+              vol_total: sumTotal,
+              propostas_pagas: semanais.reduce((a: number, s: any) => a + (s.propostas_pagas || 0), 0),
+            };
+            prodsParaCalculo = [...allProds, prodSintetica];
+          }
+        }
+      } catch (e) {
+        console.warn('detectAndFireUpwardTransitions: fallback semanais falhou:', e);
+      }
+    }
+
+    const newStatus = computeStatusAtMonth(parceiro.created_at, prodsParaCalculo, config.limites, refAno, refMes, parceiro.status);
     const currentStatus = parceiro.status;
 
     if (newStatus === currentStatus) return { disparou: false, tipo: null };
