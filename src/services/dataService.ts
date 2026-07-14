@@ -1814,7 +1814,6 @@ export const dataService = {
     });
 
     const limites = limitesConfig || { dias_inatividade_winback: 60, dias_conversao_hunter: 7 };
-    const numMonths = activeMonths.length;
 
     return parceiros
       .map(p => {
