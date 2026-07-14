@@ -2,7 +2,7 @@ import { supabase } from '../supabaseClient';
 import { Parceiro, ProducaoMensal, CrmLog, SemafaroStatus, TaskItem, CriteriosConfig, ProducaoSemanal, EventoSemana } from '../types';
 import { initialParceiros, initialProducao, initialLogs } from './mockData';
 import { calculateScoreAndClassification } from './scoreCalculator';
-import { getWeekInfo, getCurrentWeek, WeekInfo } from '../utils/weekUtils';
+import { getWeekInfo, getCurrentWeek, getLastCompletedWeek, WeekInfo } from '../utils/weekUtils';
 
 const LOCAL_STORAGE_KEY = 'crm_prata_digital_db';
 const LOCAL_CRITERIOS_KEY = 'crm_prata_digital_criterios';
@@ -1059,6 +1059,51 @@ export const dataService = {
     return [];
   },
 
+  // Busca todos os eventos_semana de um mês/ano específico (todas as semanas do mês)
+  async getEventosMes(ano: number, mes: number): Promise<EventoSemana[]> {
+    if (supabase) {
+      try {
+        const { data, error } = await supabase
+          .from('eventos_semana')
+          .select('*')
+          .eq('ano', ano)
+          .eq('mes', mes)
+          .order('semana_inicio', { ascending: true });
+        if (!error && data) return data as EventoSemana[];
+      } catch (err) {
+        console.warn('Erro ao ler eventos_semana do mês no Supabase:', err);
+      }
+    }
+    return [];
+  },
+
+  // Busca os totais de propostas_pagas agrupados por semana para um mês/ano
+  async getProducoesSemanaisMes(ano: number, mes: number): Promise<{ semana_inicio: string; semana_num: number; total: number }[]> {
+    if (supabase) {
+      try {
+        const { data, error } = await supabase
+          .from('producoes_semanais')
+          .select('semana_inicio, semana_num, propostas_pagas')
+          .eq('ano', ano)
+          .eq('mes', mes);
+        if (!error && data) {
+          // Agrupa por semana_inicio somando propostas_pagas
+          const grouped: Record<string, { semana_inicio: string; semana_num: number; total: number }> = {};
+          data.forEach((r: any) => {
+            if (!grouped[r.semana_inicio]) {
+              grouped[r.semana_inicio] = { semana_inicio: r.semana_inicio, semana_num: r.semana_num || 0, total: 0 };
+            }
+            grouped[r.semana_inicio].total += r.propostas_pagas || 0;
+          });
+          return Object.values(grouped).sort((a, b) => a.semana_inicio.localeCompare(b.semana_inicio));
+        }
+      } catch (err) {
+        console.warn('Erro ao ler producoes_semanais do mês no Supabase:', err);
+      }
+    }
+    return [];
+  },
+
   async saveEventoSemana(evento: Omit<EventoSemana, 'id' | 'created_at'>): Promise<EventoSemana | null> {
     if (supabase) {
       try {
@@ -1233,9 +1278,10 @@ export const dataService = {
   async getSemafaroStatus(preloadedParceiros?: Parceiro[]): Promise<SemafaroStatus> {
     const parceiros = preloadedParceiros || await this.getParceiros();
     const config = await this.getCriterios();
-    const weekInfo = getCurrentWeek();
+    // Semáforo exibe sempre a última semana FECHADA (não a corrente em aberto)
+    const weekInfo = getLastCompletedWeek();
 
-    // FARMER: soma propostas_pagas das producoes_semanais da semana civil corrente
+    // FARMER: soma propostas_pagas das producoes_semanais da última semana fechada
     let farmerPropostasSemana = 0;
     if (supabase) {
       try {

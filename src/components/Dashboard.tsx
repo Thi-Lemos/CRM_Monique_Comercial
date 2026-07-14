@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { dataService, getMonthsForPeriod, getPeriodLabel, getDefaultPeriod, getPeriodOptions, shiftMonth, getMonthShortLabel, computeStatusTimeline, computeStatusAtMonth, getCurrentPeriodRef } from '../services/dataService';
-import { Parceiro, SemafaroStatus, CrmLog, ProducaoMensal, CriteriosConfig } from '../types';
+import { Parceiro, SemafaroStatus, CrmLog, ProducaoMensal, CriteriosConfig, EventoSemana } from '../types';
+import { NOMES_MESES } from '../utils/weekUtils';
 import ExcelImporter from './ExcelImporter';
 import { 
   TrendingUp, 
@@ -193,6 +194,7 @@ export default function Dashboard({ onSelectPartner }: { onSelectPartner?: (id: 
   const [logs, setLogs] = useState<CrmLog[]>([]);
   const [allProducoes, setAllProducoes] = useState<ProducaoMensal[]>([]);
   const [semaforo, setSemaforo] = useState<SemafaroStatus | null>(null);
+  const [showSemafaroModal, setShowSemafaroModal] = useState<'hunter' | 'farmer' | null>(null);
   const [loading, setLoading] = useState(true);
   const [showImporter, setShowImporter] = useState(false);
   const [selectedKpi, setSelectedKpi] = useState<string | null>(null);
@@ -670,7 +672,7 @@ export default function Dashboard({ onSelectPartner }: { onSelectPartner?: (id: 
         {semaforo && (
           <div className="semaforo-container">
             {/* Hunter / Winback */}
-            <div className={`card semaforo-card ${semaforo.hunter}`}>
+            <div className={`card semaforo-card ${semaforo.hunter}`} onClick={() => setShowSemafaroModal('hunter')} style={{ cursor: 'pointer' }}>
               <div className="semaforo-header">
                 <span style={{ fontWeight: 600, color: 'var(--text-muted)', fontSize: '0.85rem', textTransform: 'uppercase' }}>WINBACK / HUNTER</span>
                 <div className="semaforo-indicator">
@@ -680,8 +682,9 @@ export default function Dashboard({ onSelectPartner }: { onSelectPartner?: (id: 
               </div>
 
               {/* Período */}
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.5rem', marginBottom: '0.75rem' }}>
-                {semaforo.semanaInfo.label} &nbsp;·&nbsp; {semaforo.semanaInfo.labelRange}
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.5rem', marginBottom: '0.75rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span>{semaforo.semanaInfo.label} &nbsp;·&nbsp; {semaforo.semanaInfo.labelRange}</span>
+                <span style={{ fontSize: '0.68rem', color: 'var(--accent-color)', opacity: 0.7 }}>▶ ver mês completo</span>
               </div>
 
               {/* Contagens */}
@@ -726,7 +729,7 @@ export default function Dashboard({ onSelectPartner }: { onSelectPartner?: (id: 
             </div>
 
             {/* Farmer */}
-            <div className={`card semaforo-card ${semaforo.farmer}`}>
+            <div className={`card semaforo-card ${semaforo.farmer}`} onClick={() => setShowSemafaroModal('farmer')} style={{ cursor: 'pointer' }}>
               <div className="semaforo-header">
                 <span style={{ fontWeight: 600, color: 'var(--text-muted)', fontSize: '0.85rem', textTransform: 'uppercase' }}>CARTEIRA / FARMER</span>
                 <div className="semaforo-indicator">
@@ -736,8 +739,9 @@ export default function Dashboard({ onSelectPartner }: { onSelectPartner?: (id: 
               </div>
 
               {/* Período */}
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.5rem', marginBottom: '0.75rem' }}>
-                {semaforo.semanaInfo.label} &nbsp;·&nbsp; {semaforo.semanaInfo.labelRange}
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.5rem', marginBottom: '0.75rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span>{semaforo.semanaInfo.label} &nbsp;·&nbsp; {semaforo.semanaInfo.labelRange}</span>
+                <span style={{ fontSize: '0.68rem', color: 'var(--accent-color)', opacity: 0.7 }}>▶ ver mês completo</span>
               </div>
 
               {/* Propostas realizadas vs meta */}
@@ -1158,6 +1162,217 @@ export default function Dashboard({ onSelectPartner }: { onSelectPartner?: (id: 
           selectedPeriod={selectedPeriod}
         />
       )}
+
+      {showSemafaroModal && semaforo && (
+        <SemafaroMesModal
+          tipo={showSemafaroModal}
+          semanaAtual={semaforo.semanaInfo}
+          criterios={criterios}
+          onClose={() => setShowSemafaroModal(null)}
+        />
+      )}
+    </div>
+  );
+}
+
+// ─── Modal: Semanas fechadas do mês corrente (Semáforo) ────────────────────────
+interface SemafaroMesModalProps {
+  tipo: 'hunter' | 'farmer';
+  semanaAtual: { ano: number; mes: number };
+  criterios: CriteriosConfig | null;
+  onClose: () => void;
+}
+
+function SemafaroMesModal({ tipo, semanaAtual, criterios, onClose }: SemafaroMesModalProps) {
+  const [loading, setLoading] = useState(true);
+  // Hunter
+  const [eventosPorSemana, setEventosPorSemana] = useState<Record<string, { ativacoes: EventoSemana[]; reativacoes: EventoSemana[] }>>({});
+  const [semanasOrdem, setSemanasOrdem] = useState<string[]>([]);
+  // Farmer
+  const [farmerSemanais, setFarmerSemanais] = useState<{ semana_inicio: string; semana_num: number; total: number }[]>([]);
+
+  const { ano, mes } = semanaAtual;
+  const nomeMes = NOMES_MESES[mes - 1];
+
+  useEffect(() => {
+    let cancelled = false;
+    async function load() {
+      setLoading(true);
+      if (tipo === 'hunter') {
+        const eventos = await dataService.getEventosMes(ano, mes);
+        if (cancelled) return;
+        // Agrupa por semana_inicio
+        const grouped: Record<string, { ativacoes: EventoSemana[]; reativacoes: EventoSemana[] }> = {};
+        const ordem: string[] = [];
+        eventos.forEach((e) => {
+          if (!grouped[e.semana_inicio]) {
+            grouped[e.semana_inicio] = { ativacoes: [], reativacoes: [] };
+            ordem.push(e.semana_inicio);
+          }
+          if (e.tipo === 'ativacao') grouped[e.semana_inicio].ativacoes.push(e);
+          else grouped[e.semana_inicio].reativacoes.push(e);
+        });
+        setEventosPorSemana(grouped);
+        setSemanasOrdem(ordem);
+      } else {
+        const semanais = await dataService.getProducoesSemanaisMes(ano, mes);
+        if (cancelled) return;
+        setFarmerSemanais(semanais);
+      }
+      setLoading(false);
+    }
+    load();
+    return () => { cancelled = true; };
+  }, [tipo, ano, mes]);
+
+  const metaHunterNovos     = criterios?.metas.hunter_novos_ativos_semana ?? 2;
+  const metaHunterReativados = criterios?.metas.hunter_reativacoes_semana ?? 2;
+  const metaFarmer          = criterios?.metas.farmer_propostas_pagas_semana ?? 1200;
+
+  const titulo = tipo === 'hunter' ? 'Winback / Hunter — Semanas do Mês' : 'Carteira / Farmer — Semanas do Mês';
+
+  return (
+    <div
+      style={{
+        position: 'fixed', inset: 0, zIndex: 1000,
+        backgroundColor: 'rgba(0,0,0,0.6)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        padding: '1rem'
+      }}
+      onClick={onClose}
+    >
+      <div
+        style={{
+          background: 'var(--card-bg)',
+          borderRadius: 'var(--radius)',
+          border: '1px solid var(--border-color)',
+          padding: '1.5rem',
+          width: '100%',
+          maxWidth: '640px',
+          maxHeight: '85vh',
+          overflowY: 'auto'
+        }}
+        onClick={e => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.25rem' }}>
+          <div>
+            <h2 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-main)' }}>{titulo}</h2>
+            <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>{nomeMes}/{ano} · semanas fechadas</div>
+          </div>
+          <button onClick={onClose} style={{ border: 'none', background: 'none', cursor: 'pointer', color: 'var(--text-muted)', fontSize: '1.2rem', lineHeight: 1 }}>
+            <X size={18} />
+          </button>
+        </div>
+
+        {loading ? (
+          <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>Carregando...</div>
+        ) : tipo === 'hunter' ? (
+          semanasOrdem.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>
+              Nenhuma ativação ou reativação registrada em {nomeMes}/{ano}.
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              {semanasOrdem.map((semInicio) => {
+                const grupo = eventosPorSemana[semInicio];
+                const totalAtv = grupo.ativacoes.length;
+                const totalReat = grupo.reativacoes.length;
+                const atingiu = totalAtv >= metaHunterNovos || totalReat >= metaHunterReativados;
+                // Formata o range da semana
+                const [y, m, d] = semInicio.split('-');
+                const fimDate = new Date(Date.UTC(Number(y), Number(m) - 1, Number(d) + 6));
+                const fimStr = `${String(fimDate.getUTCDate()).padStart(2,'0')}/${String(fimDate.getUTCMonth()+1).padStart(2,'0')}`;
+                const iniStr = `${d}/${m}`;
+                const semLabel = `Sem. ${grupo.ativacoes[0]?.semana_num ?? grupo.reativacoes[0]?.semana_num ?? '?'} · ${iniStr} → ${fimStr}`;
+                return (
+                  <div key={semInicio} style={{ padding: '1rem', borderRadius: 'var(--radius-sm)', border: `1px solid ${atingiu ? 'var(--success)' : 'var(--border-color)'}`, backgroundColor: 'rgba(0,0,0,0.15)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.6rem' }}>
+                      <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>{semLabel}</span>
+                      <span style={{ fontSize: '0.72rem', fontWeight: 600, color: atingiu ? 'var(--success)' : 'var(--danger)' }}>{atingiu ? '● Verde' : '● Vermelho'}</span>
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', marginBottom: totalAtv + totalReat > 0 ? '0.75rem' : 0 }}>
+                      <div style={{ padding: '0.5rem 0.6rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(0,0,0,0.2)' }}>
+                        <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>Ativações</div>
+                        <div style={{ fontSize: '1.3rem', fontWeight: 800, color: totalAtv > 0 ? 'var(--success)' : 'var(--text-muted)' }}>{totalAtv}</div>
+                        <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>meta: {metaHunterNovos}</div>
+                      </div>
+                      <div style={{ padding: '0.5rem 0.6rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(0,0,0,0.2)' }}>
+                        <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>Reativações</div>
+                        <div style={{ fontSize: '1.3rem', fontWeight: 800, color: totalReat > 0 ? 'var(--success)' : 'var(--text-muted)' }}>{totalReat}</div>
+                        <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>meta: {metaHunterReativados}</div>
+                      </div>
+                    </div>
+                    {(totalAtv > 0 || totalReat > 0) && (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+                        {grupo.ativacoes.map(e => (
+                          <div key={e.id || e.parceiro_id + '-atv'} style={{ fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--text-main)' }}>
+                            <span style={{ color: 'var(--success)', fontWeight: 700 }}>✓</span>
+                            <span>{e.parceiro_nome ?? 'Parceiro'}</span>
+                            <span className="badge badge-info" style={{ fontSize: '0.6rem', padding: '0.1rem 0.35rem' }}>Ativado</span>
+                          </div>
+                        ))}
+                        {grupo.reativacoes.map(e => (
+                          <div key={e.id || e.parceiro_id + '-reat'} style={{ fontSize: '0.78rem', display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--text-main)' }}>
+                            <span style={{ color: 'var(--warning)', fontWeight: 700 }}>↑</span>
+                            <span>{e.parceiro_nome ?? 'Parceiro'}</span>
+                            <span className="badge badge-warning" style={{ fontSize: '0.6rem', padding: '0.1rem 0.35rem' }}>Reativado</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )
+        ) : (
+          // FARMER
+          farmerSemanais.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: '2rem', color: 'var(--text-muted)' }}>
+              Nenhuma produção semanal registrada em {nomeMes}/{ano}.
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+              {farmerSemanais.map((s) => {
+                const atingiu = s.total >= metaFarmer;
+                const pct = Math.min(100, Math.round((s.total / metaFarmer) * 100));
+                const [y, m, d] = s.semana_inicio.split('-');
+                const fimDate = new Date(Date.UTC(Number(y), Number(m) - 1, Number(d) + 6));
+                const fimStr = `${String(fimDate.getUTCDate()).padStart(2,'0')}/${String(fimDate.getUTCMonth()+1).padStart(2,'0')}`;
+                const iniStr = `${d}/${m}`;
+                const semLabel = `Sem. ${s.semana_num} · ${iniStr} → ${fimStr}`;
+                return (
+                  <div key={s.semana_inicio} style={{ padding: '1rem', borderRadius: 'var(--radius-sm)', border: `1px solid ${atingiu ? 'var(--success)' : 'var(--border-color)'}`, backgroundColor: 'rgba(0,0,0,0.15)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                      <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>{semLabel}</span>
+                      <span style={{ fontSize: '0.72rem', fontWeight: 600, color: atingiu ? 'var(--success)' : 'var(--danger)' }}>{atingiu ? '● Verde' : '● Vermelho'}</span>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '0.4rem' }}>
+                      <div>
+                        <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>Propostas Pagas</div>
+                        <div style={{ fontSize: '1.5rem', fontWeight: 800, color: atingiu ? 'var(--success)' : 'var(--danger)' }}>{s.total.toLocaleString('pt-BR')}</div>
+                      </div>
+                      <div style={{ textAlign: 'right' }}>
+                        <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>Meta</div>
+                        <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-muted)' }}>{metaFarmer.toLocaleString('pt-BR')}</div>
+                      </div>
+                    </div>
+                    <div style={{ width: '100%', height: '5px', borderRadius: '3px', backgroundColor: 'rgba(255,255,255,0.1)', overflow: 'hidden' }}>
+                      <div style={{ width: `${pct}%`, height: '100%', backgroundColor: atingiu ? 'var(--success)' : 'var(--danger)', transition: 'width 0.4s ease' }} />
+                    </div>
+                    <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '0.3rem', textAlign: 'right' }}>{pct}% da meta</div>
+                  </div>
+                );
+              })}
+            </div>
+          )
+        )}
+
+        <div style={{ marginTop: '1.5rem', textAlign: 'right' }}>
+          <button onClick={onClose} className="btn btn-primary" style={{ padding: '0.5rem 1.5rem' }}>Fechar</button>
+        </div>
+      </div>
     </div>
   );
 }
