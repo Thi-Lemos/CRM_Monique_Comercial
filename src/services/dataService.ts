@@ -2,7 +2,7 @@ import { supabase } from '../supabaseClient';
 import { Parceiro, ProducaoMensal, CrmLog, SemafaroStatus, TaskItem, CriteriosConfig, ProducaoSemanal, EventoSemana } from '../types';
 import { initialParceiros, initialProducao, initialLogs } from './mockData';
 import { calculateScoreAndClassification } from './scoreCalculator';
-import { getWeekInfo, getCurrentWeek, getLastCompletedWeek, WeekInfo } from '../utils/weekUtils';
+import { getWeekInfo, getLastCompletedWeek, WeekInfo } from '../utils/weekUtils';
 
 const LOCAL_STORAGE_KEY = 'crm_prata_digital_db';
 const LOCAL_CRITERIOS_KEY = 'crm_prata_digital_criterios';
