@@ -107,7 +107,9 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
   }
 
   // Notas de Critérios do Score
-  const notes = calculateCriteriaNotes(partner);
+  // vol_prata_mensal para o score deve ser o do mês anterior fechado (volPrataAtual),
+  // não o valor bruto do banco que pode estar desatualizado.
+  const notes = calculateCriteriaNotes({ ...partner, vol_prata_mensal: volPrataAtual });
 
   const formatCurrency = (val: number) => {
     return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(val);
