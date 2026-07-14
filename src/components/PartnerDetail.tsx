@@ -281,11 +281,11 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
           <div>
             <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>CONCENTRAÇÃO PRATA</span>
             <p style={{ fontWeight: 700, color: 'var(--secondary-color)', fontSize: '1.1rem', marginTop: '0.15rem' }}>
-              {partner.vol_total_mensal > 0 ? `${((partner.vol_prata_mensal / partner.vol_total_mensal) * 100).toFixed(0)}%` : 'NVT'}
+              {partner.vol_total_mensal > 0 ? `${Math.min((volPrataAtual / partner.vol_total_mensal) * 100, 100).toFixed(0)}%` : 'NVT'}
             </p>
             {partner.vol_total_mensal > 0 ? (
-              <span className={`badge ${(partner.vol_prata_mensal / partner.vol_total_mensal) >= 0.3 ? 'badge-success' : 'badge-warning'}`} style={{ fontSize: '0.65rem', padding: '0.1rem 0.4rem', marginTop: '0.1rem' }}>
-                {(partner.vol_prata_mensal / partner.vol_total_mensal) >= 0.3 ? 'Verde' : 'Abaixo Meta (30%)'}
+              <span className={`badge ${(volPrataAtual / partner.vol_total_mensal) >= 0.3 ? 'badge-success' : 'badge-warning'}`} style={{ fontSize: '0.65rem', padding: '0.1rem 0.4rem', marginTop: '0.1rem' }}>
+                {(volPrataAtual / partner.vol_total_mensal) >= 0.3 ? 'Verde' : 'Abaixo Meta (30%)'}
               </span>
             ) : (
               <span className="badge badge-warning" style={{ fontSize: '0.65rem', padding: '0.1rem 0.4rem', marginTop: '0.1rem' }}>
@@ -339,7 +339,7 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
             {[
               { label: 'Volume total mensal (25%)', note: notes.n1, desc: 'Declarado' },
-              { label: 'Concentração atual no Prata (20%)', note: notes.n2, desc: partner.vol_total_mensal > 0 ? `${((partner.vol_prata_mensal / partner.vol_total_mensal) * 100).toFixed(0)}%` : 'NVT' },
+              { label: 'Concentração atual no Prata (20%)', note: notes.n2, desc: partner.vol_total_mensal > 0 ? `${Math.min((volPrataAtual / partner.vol_total_mensal) * 100, 100).toFixed(0)}%` : 'NVT' },
               { label: 'Estrutura / Nº Vendedores (15%)', note: notes.n3, desc: `${partner.num_vendedores || 0} vend.` },
               { label: 'Abrangência geográfica (15%)', note: notes.n4, desc: partner.area_geografica || 'Local' },
               { label: 'Produtos ativos no Prata (10%)', note: notes.n5, desc: `${(partner.produtos_ativos || []).length} prod.` },

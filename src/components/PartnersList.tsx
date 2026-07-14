@@ -377,7 +377,7 @@ export default function PartnersList({
             </thead>
             <tbody>
               {sortedAndFilteredParceiros.map((p) => {
-                const concText = p.vol_total_mensal > 0 ? `${((p.vol_prata_mensal / p.vol_total_mensal) * 100).toFixed(0)}%` : 'NVT';
+                const concText = p.vol_total_mensal > 0 ? `${Math.min((p.vol_prata_mensal / p.vol_total_mensal) * 100, 100).toFixed(0)}%` : 'NVT';
                 return (
                   <tr 
                     key={p.id}

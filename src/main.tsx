@@ -30,6 +30,14 @@ function App() {
       try {
         const currentUser = await dataService.getCurrentUser();
         setUser(currentUser);
+
+        // Verificar parceiros Onboarding que ultrapassaram a janela sem produção.
+        // Executado na abertura do sistema, independente de importação de planilha.
+        if (currentUser) {
+          dataService.checkAndInactivateOnboarding().catch(err =>
+            console.warn('Falha na verificação de Onboarding:', err)
+          );
+        }
       } catch (e) {
         console.error('Erro ao buscar usuário atual:', e);
       } finally {

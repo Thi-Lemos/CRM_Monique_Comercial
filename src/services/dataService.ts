@@ -747,7 +747,100 @@ export const dataService = {
     saveLocalDB(db);
   },
 
-  // --- PRODUÇÃO ---
+  // Verifica parceiros em Onboarding que ultrapassaram a janela de dias_conversao_hunter
+  // sem registrar produção e os inativa automaticamente.
+  // Chamado na abertura do sistema (checkUser), independente de importação de planilha.
+  async checkAndInactivateOnboarding(
+    diasConversao: number = 7
+  ): Promise<{ inativados: string[] }> {
+    const inativados: string[] = [];
+    const agora = new Date();
+
+    try {
+      // Buscar apenas parceiros em Onboarding pós-corte (created_at confiável)
+      const DATA_CORTE = new Date('2026-07-01T00:00:00Z');
+
+      let candidatos: Parceiro[] = [];
+      if (supabase) {
+        const { data, error } = await supabase
+          .from('parceiros')
+          .select('*')
+          .eq('status', 'Onboarding');
+        if (error) throw error;
+        candidatos = (data as Parceiro[]).filter(p => {
+          const criacao = new Date(p.created_at || '');
+          return criacao >= DATA_CORTE;
+        });
+      } else {
+        const db = getLocalDB();
+        candidatos = db.parceiros.filter(p => {
+          if (p.status !== 'Onboarding') return false;
+          const criacao = new Date(p.created_at || '');
+          return criacao >= DATA_CORTE;
+        });
+      }
+
+      for (const parceiro of candidatos) {
+        const criacao = new Date(parceiro.created_at || '');
+        const diasDesde = (agora.getTime() - criacao.getTime()) / (1000 * 60 * 60 * 24);
+
+        if (diasDesde <= diasConversao) continue;
+
+        // Verificar se tem alguma produção registrada (semanal ou mensal)
+        let temProducao = false;
+        if (supabase) {
+          const [{ data: semanais }, { data: mensais }] = await Promise.all([
+            supabase.from('producoes_semanais').select('id, vol_total').eq('parceiro_id', parceiro.id),
+            supabase.from('producao').select('id, vol_total').eq('parceiro_id', parceiro.id)
+          ]);
+          temProducao =
+            (semanais || []).some((s: any) => (s.vol_total || 0) > 0) ||
+            (mensais || []).some((m: any) => (m.vol_total || 0) > 0);
+        } else {
+          const db = getLocalDB();
+          temProducao = db.producao.some(
+            pr => pr.parceiro_id === parceiro.id && (pr.vol_total || 0) > 0
+          );
+        }
+
+        if (temProducao) continue;
+
+        // Sem producao e fora da janela: inativar
+        if (supabase) {
+          await supabase
+            .from('parceiros')
+            .update({ status: 'Inativo' })
+            .eq('id', parceiro.id);
+
+          // Gravar log de sistema
+          await supabase.from('crm_logs').insert([{
+            parceiro_id: parceiro.id,
+            data_contato: agora.toISOString(),
+            canal: 'Sistema',
+            processo: 'Inativacao Automatica',
+            resumo: `Inativacao automatica: Parceiro em Onboarding ha ${Math.floor(diasDesde)} dias sem registrar producao (janela: ${diasConversao} dias).`,
+            origem: 'sistema',
+            created_at: agora.toISOString()
+          }]);
+        } else {
+          const db = getLocalDB();
+          const idx = db.parceiros.findIndex(p => p.id === parceiro.id);
+          if (idx !== -1) {
+            db.parceiros[idx].status = 'Inativo';
+            saveLocalDB(db);
+          }
+        }
+
+        inativados.push(parceiro.nome);
+      }
+    } catch (err) {
+      console.warn('checkAndInactivateOnboarding: erro ao verificar parceiros:', err);
+    }
+
+    return { inativados };
+  },
+
+  // --- PRODUCAO ---
   async getProducao(parceiroId: string): Promise<ProducaoMensal[]> {
     if (supabase) {
       try {
@@ -1733,31 +1826,24 @@ export const dataService = {
 
         const statusCalculado = computeStatusAtMonth(p.created_at, prodsAteReferencia, limites, refAno, refMes);
 
-        // Calcular volume do parceiro específico no período selecionado (média mensal do período).
-        // vol_total_mensal e vol_prata_mensal são calculados com o mesmo critério de período,
-        // garantindo que a concentração Prata (vol_prata / vol_total) nunca ultrapasse 100%.
-        let volPrataAcumulado = 0;
-        let volTotalAcumulado = 0;
-        activeMonths.forEach(m => {
-          const matchProd = prods.find(pr => pr.ano === m.ano && pr.mes === m.mes);
-          if (matchProd) {
-            const volProdPrata = (matchProd.vol_fgts || 0) + (matchProd.vol_clt || 0) + (matchProd.vol_cgv || 0) + (matchProd.vol_pix || 0);
-            volPrataAcumulado += volProdPrata;
-            // vol_total do registro já inclui todos os produtos; usa vol_prata como fallback
-            // se vol_total não estiver preenchido (registros antigos sem esse campo).
-            const volProdTotal = (matchProd.vol_total || 0) > 0 ? matchProd.vol_total : volProdPrata;
-            volTotalAcumulado += volProdTotal;
-          }
-        });
-        const volPrataMensalPeriodo = volPrataAcumulado / numMonths;
-        // vol_total nunca pode ser menor que vol_prata — garante concentração ≤ 100%
-        const volTotalMensalPeriodo = Math.max(volTotalAcumulado / numMonths, volPrataMensalPeriodo);
+        // vol_prata_mensal = produção Prata do mês anterior fechado (mês imediatamente
+        // anterior ao refMes/refAno). É esse valor que alimenta concentração, ordenação
+        // e exibição de "Vol. Prata" na listagem e na ficha do parceiro.
+        // vol_total_mensal = campo fixo cadastrado manualmente na ficha (média dos 3
+        // últimos meses informados pelo operador). Não é recalculado aqui — vem do banco.
+        // A concentração (vol_prata / vol_total) é capada em 100% no ponto de exibição.
+        const { ano: anoAnt, mes: mesAnt } = shiftMonth(refAno, refMes, -1);
+        const prodMesAnterior = prods.find(pr => pr.ano === anoAnt && pr.mes === mesAnt);
+        const volPrataMesAnterior = prodMesAnterior
+          ? (prodMesAnterior.vol_fgts || 0) + (prodMesAnterior.vol_clt || 0) +
+            (prodMesAnterior.vol_cgv || 0) + (prodMesAnterior.vol_pix || 0)
+          : 0;
 
         return {
           ...p,
           status: statusCalculado,
-          vol_prata_mensal: volPrataMensalPeriodo,
-          vol_total_mensal: volTotalMensalPeriodo
+          vol_prata_mensal: volPrataMesAnterior,
+          vol_total_mensal: p.vol_total_mensal || 0
         };
       });
   },
