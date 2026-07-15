@@ -1309,9 +1309,10 @@ export const dataService = {
       return { disparou: true, tipo: 'reativado_para_ativo' };
     }
 
-    // Verificar deduplicação: se já existe evento para esse parceiro+tipo+semana, não registrar novamente
-    const eventosExistentes = await this.getEventosSemana(weekInfo.inicio);
-    const jaExiste = eventosExistentes.some(
+    // Verificar deduplicação: se já existe evento para esse parceiro+tipo em qualquer semana
+    // do mesmo mês, não registrar novamente — evita duplicatas causadas por flapping de status.
+    const eventosMes = await this.getEventosMes(weekInfo.ano, weekInfo.mes);
+    const jaExiste = eventosMes.some(
       e => e.parceiro_id === parceiro.id && e.tipo === tipoEvento
     );
 

@@ -703,26 +703,6 @@ export default function Dashboard({ onSelectPartner }: { onSelectPartner?: (id: 
                 </div>
               </div>
 
-              {/* Lista de parceiros ativados/reativados */}
-              {(semaforo.hunterAtivacoes.length > 0 || semaforo.hunterReativacoes.length > 0) && (
-                <div style={{ fontSize: '0.78rem', marginBottom: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-                  {semaforo.hunterAtivacoes.map(e => (
-                    <div key={e.id || e.parceiro_id} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--text-main)' }}>
-                      <span style={{ color: 'var(--success)', fontWeight: 700 }}>✓</span>
-                      <span>{e.parceiro_nome}</span>
-                      <span className="badge badge-info" style={{ fontSize: '0.6rem', padding: '0.1rem 0.35rem' }}>Ativado</span>
-                    </div>
-                  ))}
-                  {semaforo.hunterReativacoes.map(e => (
-                    <div key={e.id || e.parceiro_id} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--text-main)' }}>
-                      <span style={{ color: 'var(--warning)', fontWeight: 700 }}>↑</span>
-                      <span>{e.parceiro_nome}</span>
-                      <span className="badge badge-warning" style={{ fontSize: '0.6rem', padding: '0.1rem 0.35rem' }}>Reativado</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-
               <div style={{ padding: '0.75rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(0, 0, 0, 0.25)', border: '1px solid var(--border-color)', fontSize: '0.85rem' }}>
                 <strong>Recomendação:</strong> {semaforo.hunterAcao}
               </div>
