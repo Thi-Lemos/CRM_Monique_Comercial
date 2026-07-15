@@ -182,6 +182,22 @@ export function computeStatusTimeline(
     const hasProd = vol > 0;
     if (hasProd) lastProdMonth = { ano: curAno, mes: curMes };
 
+    // Onboarding→Inativo é avaliado também no primeiro mês da simulação para
+    // parceiros novos (pós-corte) criados no mês corrente: a transição é pontual
+    // por data (não depende de mês anterior ter fechado) e o loop só roda uma
+    // iteração quando startMes === uptoMes, então o bloco !isFirstMonth nunca
+    // chegaria a avaliar o case Onboarding.
+    if (isFirstMonth && status === 'Onboarding') {
+      if (hasProd) {
+        status = 'Ativo';
+      } else {
+        const diasDesdeCriacao = (nowBrasilia.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24);
+        if (diasDesdeCriacao > limites.dias_conversao_hunter) {
+          status = 'Inativo';
+        }
+      }
+    }
+
     if (!isFirstMonth) {
       switch (status) {
         case 'Onboarding': {
@@ -189,11 +205,12 @@ export function computeStatusTimeline(
           // Downward transition (→ Inativo): based solely on days since registration — fires
           // as soon as dias_conversao_hunter days have elapsed without production, on any import,
           // including during the current open month. This is independent of month-end closing.
+          // NOTE: uses nowBrasilia (today) as reference, NOT the end of the iterated month,
+          // so that partners created in the current open month are correctly evaluated.
           if (hasProd) {
             status = 'Ativo';
           } else {
-            const monthEndDate = new Date(curAno, curMes, 0);
-            const diasDesdeCriacao = (monthEndDate.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24);
+            const diasDesdeCriacao = (nowBrasilia.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24);
             if (diasDesdeCriacao > limites.dias_conversao_hunter) {
               status = 'Inativo';
             }
@@ -225,8 +242,18 @@ export function computeStatusTimeline(
           if (reativadoTriggerMonth) {
             const nextMonth = shiftMonthRaw(reativadoTriggerMonth.ano, reativadoTriggerMonth.mes, 1);
             if (curAno === nextMonth.ano && curMes === nextMonth.mes) {
-              status = hasProd ? 'Ativo' : 'Inativo';
-              reativadoTriggerMonth = null;
+              const isCurrentOpenMonth = curAno === currentOpenAno && curMes === currentOpenMes;
+              if (hasProd) {
+                // Produziu no mês seguinte: confirma Ativo IMEDIATAMENTE, não espera o mês fechar.
+                status = 'Ativo';
+                reativadoTriggerMonth = null;
+              } else if (!isCurrentOpenMonth) {
+                // Não produziu E o mês de confirmação já fechou: confirma Inativo.
+                status = 'Inativo';
+                reativadoTriggerMonth = null;
+              }
+              // else: mês de confirmação ainda em aberto sem produção registrada —
+              // mantém 'Reativado', aguarda o mês fechar antes de decidir.
             }
           }
           break;
@@ -564,11 +591,13 @@ export const dataService = {
     const finalParceiros: Parceiro[] = [];
     const fmtCur = (val: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(val);
     const hoje = new Date();
-    // Referência de "status vigente agora": o mês fechado mais recente (mês anterior
-    // ao atual). Evita que o meio do mês em curso, sem produção lançada ainda,
-    // dispare transições precoces (ex.: Reativado -> Inativo antes mesmo do mês
-    // seguinte ter sido consolidado).
-    const refAgora = shiftMonthRaw(hoje.getFullYear(), hoje.getMonth() + 1, -1);
+    // Referência de "status vigente agora": o mês CORRENTE (hoje).
+    // Anteriormente usava o mês fechado anterior, o que impedia a avaliação de
+    // parceiros criados ou reativados no mês corrente — causa raiz dos bugs de
+    // Onboarding→Inativo e Reativado→Inativo prematura. As proteções temporais
+    // corretas vivem dentro de computeStatusTimeline (case 'Ativo' e case 'Reativado'),
+    // tornando o corte externo desnecessário e prejudicial.
+    const refAgora = { ano: hoje.getFullYear(), mes: hoje.getMonth() + 1 };
 
     for (let p of list) {
       p.propostas_pagas_semana = p.propostas_pagas_semana !== undefined && p.propostas_pagas_semana !== null ? p.propostas_pagas_semana : 0;
