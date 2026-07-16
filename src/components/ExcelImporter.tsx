@@ -174,6 +174,57 @@ export default function ExcelImporter({ onClose, onImportSuccess }: ExcelImporte
             setProgress(Math.min(90, p));
           }
 
+          setProgress(90);
+
+          // Inserir produção ZERO para parceiros ativos/reativados/onboarding ausentes na planilha.
+          // Garante que o gap de produção fique registrado explicitamente, evitando que
+          // a máquina de estados interprete ausência de registro como "ainda não chegou a data"
+          // em vez de "não produziu nesta semana".
+          {
+            // Identificar CNPJs que apareceram na planilha (já processados ou encontrados)
+            const cnpjsNaPlanilha = new Set<string>();
+            for (const row of rawRows) {
+              const cnpjRaw = String(row.cnpj || row.CNPJ || '').trim();
+              if (cnpjRaw) cnpjsNaPlanilha.add(cnpjRaw.replace(/[^\d]/g, ''));
+            }
+
+            // Filtrar parceiros que deveriam estar na planilha mas não estavam
+            const statusQueDevemTerZero: string[] = ['Ativo', 'Reativado', 'Onboarding'];
+            const parceirosSemRegistro = parceiros.filter(p => {
+              if (!statusQueDevemTerZero.includes(p.status || '')) return false;
+              const cnpjLimpo = (p.cnpj || '').replace(/[^\d]/g, '');
+              return !cnpjsNaPlanilha.has(cnpjLimpo);
+            });
+
+            if (parceirosSemRegistro.length > 0) {
+              addLog('info', `${parceirosSemRegistro.length} parceiro(s) ativo(s)/reativado(s) ausentes na planilha — registrando produção zero...`);
+              let zerosInseridos = 0;
+              for (const p of parceirosSemRegistro) {
+                try {
+                  const salvoZero = await dataService.saveProducaoSemanal({
+                    parceiro_id: p.id,
+                    semana_inicio: selectedWeek.inicio,
+                    origem_entrada: 'planilha',
+                    vol_fgts: 0,
+                    vol_clt: 0,
+                    vol_cgv: 0,
+                    vol_pix: 0,
+                    propostas_pagas: 0
+                  });
+                  // Só conta se não foi bloqueado por entrada manual existente
+                  if (salvoZero.origem_entrada !== 'manual') {
+                    zerosInseridos++;
+                  }
+                } catch (err: any) {
+                  addLog('error', `Erro ao registrar zero para ${p.nome}: ${err.message || 'Erro desconhecido'}`);
+                }
+              }
+              if (zerosInseridos > 0) {
+                addLog('info', `${zerosInseridos} registro(s) zero inserido(s) para manter histórico completo.`);
+              }
+            }
+          }
+
           setProgress(95);
 
           // Se esta é a última semana do mês, disparar avaliação de inativações.
