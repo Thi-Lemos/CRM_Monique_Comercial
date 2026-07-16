@@ -1488,6 +1488,28 @@ export const dataService = {
     }
   },
 
+  // Ao registrar novo contato manual, limpa compromissos agendados anteriores do mesmo parceiro
+  async clearPendingCommitmentsForPartner(parceiroId: string): Promise<void> {
+    if (supabase) {
+      try {
+        await supabase
+          .from('crm_logs')
+          .update({ proxima_acao: null, data_proxima_acao: null })
+          .eq('parceiro_id', parceiroId)
+          .eq('origem', 'manual')
+          .not('proxima_acao', 'is', null);
+      } catch (err) {
+        console.error('Erro ao limpar compromissos pendentes:', err);
+      }
+    } else {
+      const db = getLocalDB();
+      db.logs
+        .filter(l => l.parceiro_id === parceiroId && l.origem !== 'sistema' && l.proxima_acao)
+        .forEach(l => { l.proxima_acao = ''; l.data_proxima_acao = ''; });
+      saveLocalDB(db);
+    }
+  },
+
   async getAllProducao(): Promise<ProducaoMensal[]> {
     try {
       const allProds = await fetchAllRows<ProducaoMensal>('producao');

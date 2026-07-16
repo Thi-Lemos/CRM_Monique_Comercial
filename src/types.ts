@@ -50,8 +50,8 @@ export interface CrmLog {
   canal: 'WhatsApp' | 'Ligação' | 'Reunião' | 'E-mail';
   processo: 'Farmer' | 'Win-back' | 'Hunter';
   resumo: string; // máx 500 caracteres
-  proxima_acao: string;
-  data_proxima_acao: string;
+  proxima_acao?: string | null;
+  data_proxima_acao?: string | null;
   classificacao_pos_contato: 'Estratégico' | 'Crescimento' | 'Desenvolvimento';
   crm_atualizado: boolean;
   score_no_momento?: number;

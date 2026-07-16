@@ -81,7 +81,7 @@ export default function InteractionForm({ initialPartnerId, onSave, onCancel }: 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.parceiro_id || !formData.resumo || !formData.proxima_acao || !formData.data_proxima_acao) {
+    if (!formData.parceiro_id || !formData.resumo) {
       alert('Por favor, preencha todos os campos obrigatórios.');
       return;
     }
@@ -98,14 +98,18 @@ export default function InteractionForm({ initialPartnerId, onSave, onCancel }: 
       (selected.status === 'Inativo' || selected.status === 'Reativado') ? 'Win-back' : 'Farmer';
 
     try {
+      // Limpar compromisso agendado anterior deste parceiro (nullar proxima_acao/data_proxima_acao
+      // de todos os logs manuais que ainda tenham compromisso pendente)
+      await dataService.clearPendingCommitmentsForPartner(formData.parceiro_id);
+
       const logToSave: CrmLog = {
         parceiro_id: formData.parceiro_id,
         data_contato: new Date(formData.data_contato).toISOString(),
         canal: formData.canal,
         processo: processoDerivado,
         resumo: formData.resumo,
-        proxima_acao: formData.proxima_acao,
-        data_proxima_acao: formData.data_proxima_acao,
+        proxima_acao: formData.proxima_acao || null,
+        data_proxima_acao: formData.data_proxima_acao || null,
         classificacao_pos_contato: selected.classificacao, // Copia a classificação do parceiro
         crm_atualizado: formData.crm_atualizado,
         score_no_momento: selected.score_comercial,
@@ -238,10 +242,9 @@ export default function InteractionForm({ initialPartnerId, onSave, onCancel }: 
 
           <div className="form-row">
             <div className="form-group">
-              <label className="form-label">Próxima Ação Acordada *</label>
+              <label className="form-label">Próxima Ação Acordada</label>
               <input 
                 type="text" 
-                required 
                 placeholder="Ex: Enviar proposta de cashback por e-mail"
                 className="form-input" 
                 value={formData.proxima_acao}
@@ -249,10 +252,9 @@ export default function InteractionForm({ initialPartnerId, onSave, onCancel }: 
               />
             </div>
             <div className="form-group">
-              <label className="form-label">Data da Próxima Ação *</label>
+              <label className="form-label">Data da Próxima Ação</label>
               <input 
                 type="date" 
-                required 
                 className="form-input" 
                 value={formData.data_proxima_acao}
                 onChange={(e) => setFormData(prev => ({ ...prev, data_proxima_acao: e.target.value }))}
