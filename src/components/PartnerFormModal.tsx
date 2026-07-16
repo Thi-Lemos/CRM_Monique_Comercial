@@ -370,7 +370,7 @@ export default function PartnerFormModal({ isOpen, onClose, partner, onSave }: P
           </div>
 
           <div className="form-group" style={{ margin: '1rem 0' }}>
-            <label className="form-label" style={{ marginBottom: '0.5rem' }}>Produtos Ativos no Saque/Prata Digital</label>
+            <label className="form-label" style={{ marginBottom: '0.5rem' }}>Produtos ativos no Prata Digital</label>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
               {['FGTS', 'CLT', 'CGV', 'Pix'].map(prod => {
                 const isChecked = formData.produtos_ativos.includes(prod);

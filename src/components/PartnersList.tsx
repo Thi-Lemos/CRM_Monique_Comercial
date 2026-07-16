@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { dataService, getDefaultPeriod, getCurrentPeriodRef } from '../services/dataService';
 import { Parceiro, ProducaoMensal, ProducaoSemanal, CriteriosConfig } from '../types';
-import { Search, Plus, Edit2, Trash2, FileSpreadsheet } from 'lucide-react';
+import { Search, Plus, Edit2, Trash2, FileSpreadsheet, X } from 'lucide-react';
 import PartnerFormModal from './PartnerFormModal';
 
 // Cadastro de parceiros passou a ser feito diretamente no CRM. Import em massa via
@@ -352,6 +352,33 @@ export default function PartnersList({
             Ordem Crescente (Volume Prata)
           </label>
         </div>
+
+        {/* Botão Limpar Filtros — só aparece quando há algum filtro ativo */}
+        {(search || statusFilter || classFilter) && (
+          <button
+            onClick={() => { setSearch(''); setStatusFilter(''); setClassFilter(''); }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.35rem',
+              padding: '0.45rem 0.9rem',
+              borderRadius: 'var(--radius-sm)',
+              border: '1px solid rgba(239,68,68,0.4)',
+              backgroundColor: 'rgba(239,68,68,0.1)',
+              color: 'var(--danger)',
+              fontSize: '0.8rem',
+              fontWeight: 700,
+              cursor: 'pointer',
+              transition: 'var(--transition)',
+              whiteSpace: 'nowrap'
+            }}
+            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'rgba(239,68,68,0.2)'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'rgba(239,68,68,0.1)'; }}
+          >
+            <X size={14} />
+            Limpar Filtros
+          </button>
+        )}
       </div>
 
       {/* Tabela de Parceiros */}

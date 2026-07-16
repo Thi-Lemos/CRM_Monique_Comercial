@@ -689,15 +689,23 @@ export default function Dashboard({ onSelectPartner }: { onSelectPartner?: (id: 
 
               {/* Contagens */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '0.75rem' }}>
-                <div style={{ padding: '0.6rem 0.75rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(0,0,0,0.2)', border: '1px solid var(--border-color)' }}>
+                <div style={{
+                  padding: '0.6rem 0.75rem', borderRadius: 'var(--radius-sm)',
+                  backgroundColor: semaforo.hunterAtivacoes.length > 0 ? 'rgba(16,185,129,0.18)' : 'rgba(0,0,0,0.2)',
+                  border: `1px solid ${semaforo.hunterAtivacoes.length > 0 ? 'rgba(16,185,129,0.45)' : 'var(--border-color)'}`
+                }}>
                   <div style={{ fontSize: '0.7rem', color: '#8ecfb8', textTransform: 'uppercase', fontWeight: 600 }}>Ativações</div>
-                  <div style={{ fontSize: '1.4rem', fontWeight: 800, color: semaforo.hunterAtivacoes.length > 0 ? 'var(--success)' : 'var(--text-muted)', lineHeight: 1.2 }}>
+                  <div style={{ fontSize: '1.4rem', fontWeight: 800, color: semaforo.hunterAtivacoes.length > 0 ? '#d1fae5' : 'var(--text-muted)', lineHeight: 1.2 }}>
                     {semaforo.hunterAtivacoes.length}
                   </div>
                 </div>
-                <div style={{ padding: '0.6rem 0.75rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(0,0,0,0.2)', border: '1px solid var(--border-color)' }}>
+                <div style={{
+                  padding: '0.6rem 0.75rem', borderRadius: 'var(--radius-sm)',
+                  backgroundColor: semaforo.hunterReativacoes.length > 0 ? 'rgba(16,185,129,0.18)' : 'rgba(0,0,0,0.2)',
+                  border: `1px solid ${semaforo.hunterReativacoes.length > 0 ? 'rgba(16,185,129,0.45)' : 'var(--border-color)'}`
+                }}>
                   <div style={{ fontSize: '0.7rem', color: '#8ecfb8', textTransform: 'uppercase', fontWeight: 600 }}>Reativações</div>
-                  <div style={{ fontSize: '1.4rem', fontWeight: 800, color: semaforo.hunterReativacoes.length > 0 ? 'var(--success)' : 'var(--text-muted)', lineHeight: 1.2 }}>
+                  <div style={{ fontSize: '1.4rem', fontWeight: 800, color: semaforo.hunterReativacoes.length > 0 ? '#d1fae5' : 'var(--text-muted)', lineHeight: 1.2 }}>
                     {semaforo.hunterReativacoes.length}
                   </div>
                 </div>
@@ -725,11 +733,15 @@ export default function Dashboard({ onSelectPartner }: { onSelectPartner?: (id: 
               </div>
 
               {/* Propostas realizadas vs meta */}
-              <div style={{ padding: '0.75rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(0,0,0,0.2)', border: '1px solid var(--border-color)', marginBottom: '0.75rem' }}>
+              <div style={{
+                padding: '0.75rem', borderRadius: 'var(--radius-sm)', marginBottom: '0.75rem',
+                backgroundColor: semaforo.farmer === 'Verde' ? 'rgba(16,185,129,0.18)' : 'rgba(0,0,0,0.2)',
+                border: `1px solid ${semaforo.farmer === 'Verde' ? 'rgba(16,185,129,0.45)' : 'var(--border-color)'}`
+              }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
                   <div>
                     <div style={{ fontSize: '0.7rem', color: '#8ecfb8', textTransform: 'uppercase', fontWeight: 600 }}>Propostas Pagas</div>
-                    <div style={{ fontSize: '1.6rem', fontWeight: 800, color: semaforo.farmer === 'Verde' ? 'var(--success)' : 'var(--danger)', lineHeight: 1.1 }}>
+                    <div style={{ fontSize: '1.6rem', fontWeight: 800, color: semaforo.farmer === 'Verde' ? '#d1fae5' : 'var(--danger)', lineHeight: 1.1 }}>
                       {semaforo.farmerPropostasSemana.toLocaleString('pt-BR')}
                     </div>
                   </div>
