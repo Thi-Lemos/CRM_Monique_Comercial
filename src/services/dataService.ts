@@ -225,7 +225,7 @@ export function computeStatusTimeline(
             const monthEndDate = new Date(curAno, curMes, 0);
             const lastProdEndDate = new Date(lastProdMonth.ano, lastProdMonth.mes, 0);
             const diasSemProd = (monthEndDate.getTime() - lastProdEndDate.getTime()) / (1000 * 60 * 60 * 24);
-            if (diasSemProd > limites.dias_inatividade_winback) {
+            if (diasSemProd >= limites.dias_inatividade_winback) {
               status = 'Inativo';
             }
           }
