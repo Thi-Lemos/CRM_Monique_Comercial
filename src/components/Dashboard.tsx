@@ -1159,6 +1159,7 @@ export default function Dashboard({ onSelectPartner, onNavigateToCarteira }: { o
           allProducoes={allProducoes}
           allLogs={logs}
           selectedPeriod={selectedPeriod}
+          onNavigateToCarteira={onNavigateToCarteira}
         />
       )}
 
@@ -1377,7 +1378,7 @@ function SemafaroMesModal({ tipo, semanaAtual, criterios, onClose }: SemafaroMes
 }
 
 // Modal de auditoria da origem de dados de cada KPI comercial
-function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs, selectedPeriod }: { kpiType: string; onClose: () => void; parceiros: Parceiro[]; allProducoes: ProducaoMensal[]; allLogs: CrmLog[]; selectedPeriod: string }) {
+function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs, selectedPeriod, onNavigateToCarteira }: { kpiType: string; onClose: () => void; parceiros: Parceiro[]; allProducoes: ProducaoMensal[]; allLogs: CrmLog[]; selectedPeriod: string; onNavigateToCarteira?: (status: string) => void }) {
   const [loading, setLoading] = useState(false);
   const [details, setDetails] = useState<any[]>([]);
 
@@ -1611,7 +1612,7 @@ function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs, se
       return acc;
     }, {});
     const handleStatusClick = (status: string) => {
-      setSelectedKpi(null);
+      onClose();
       onNavigateToCarteira?.(status);
     };
     const cardStyle = (bg: string): React.CSSProperties => ({

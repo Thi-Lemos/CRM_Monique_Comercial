@@ -37,6 +37,7 @@ export default function PartnerFormModal({ isOpen, onClose, partner, onSave }: P
     produtos_ativos: [] as string[],
     concorrentes: '',
     descricao: '',
+    status: 'Onboarding' as Parceiro['status'],
     vol_total_detalhes: {
       mes1: '',
       valor1: 0,
