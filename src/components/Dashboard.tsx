@@ -6,7 +6,7 @@ import ExcelImporter from './ExcelImporter';
 import { 
   TrendingUp, 
   Users, 
-  Percent, 
+
   Briefcase,
   Layers,
   AlertCircle,
@@ -529,29 +529,25 @@ export default function Dashboard({ onSelectPartner }: { onSelectPartner?: (id: 
 
       {/* Grid de KPIs Inferiores (Status da Carteira) */}
       <div className="dashboard-summary-grid" style={{ marginBottom: '2rem' }}>
-        {/* KPI 4: Parceiros Ativos */}
+        {/* KPI 4+5: Parceiros Ativos (unificado) */}
         <div className="card kpi-card" onClick={() => setSelectedKpi('parceiros-ativos')}>
-          <div>
+          <div style={{ flex: 1 }}>
             <span className="kpi-label">Parceiros Ativos</span>
-            <div className="kpi-value">{parceirosAtivos}</div>
-            <span className="kpi-meta" style={{ color: 'var(--text-muted)' }}>
-              Total geral: {parceiros.length} (Semáforo/Alertas fixos)
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.6rem', flexWrap: 'wrap' }}>
+              <div className="kpi-value">{Math.round(parceirosAtivos)}</div>
+              <span style={{ fontSize: '1.1rem', fontWeight: 700, color: taxaAtivos >= (criterios?.metas.meta_taxa_ativos ?? 70) ? 'var(--success)' : 'var(--danger)' }}>
+                ({taxaAtivos.toFixed(1)}%)
+              </span>
+              <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 400 }}>
+                de {parceiros.length} parceiros
+              </span>
+            </div>
+            <span className={`kpi-meta ${taxaAtivos >= (criterios?.metas.meta_taxa_ativos ?? 70) ? 'success' : 'danger'}`}>
+              Meta: &ge; {criterios?.metas.meta_taxa_ativos ?? 70}%
             </span>
           </div>
           <div className="kpi-icon-container">
             <Users size={24} />
-          </div>
-        </div>
-
-        {/* KPI 5: Taxa de Ativos */}
-        <div className="card kpi-card" onClick={() => setSelectedKpi('taxa-ativos')}>
-          <div>
-            <span className="kpi-label">Taxa de Parceiros Ativos</span>
-            <div className="kpi-value">{taxaAtivos.toFixed(1)}%</div>
-            <span className={`kpi-meta ${taxaAtivos >= (criterios?.metas.meta_taxa_ativos ?? 70) ? 'success' : 'danger'}`}>Meta: &ge; {criterios?.metas.meta_taxa_ativos ?? 70}%</span>
-          </div>
-          <div className="kpi-icon-container">
-            <Percent size={24} />
           </div>
         </div>
 
@@ -1614,97 +1610,29 @@ function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs, se
       </table>
     );
   } else if (kpiType === 'parceiros-ativos') {
-    title = 'Parceiros Ativos na Carteira';
-    const rows = parceiros
-      .filter(p => p.status === 'Ativo')
-      .map(p => ({
-        ...p,
-        volPrataPeriodo: (parceiroProdMap[p.id]?.total || 0) / numMonths
-      }))
-      .sort((a,b) => b.score_comercial - a.score_comercial);
-    content = (
-      <table className="table">
-        <thead>
-          <tr>
-            <th>Parceiro</th>
-            <th>Classificação</th>
-            <th style={{ textAlign: 'center' }}>Score Comercial</th>
-            <th>Modelo de Atuação</th>
-            <th style={{ textAlign: 'right' }}>Volume Prata</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map(p => (
-            <tr key={p.id}>
-              <td style={{ fontWeight: 600 }}>{p.nome}</td>
-              <td>{p.classificacao}</td>
-              <td style={{ textAlign: 'center' }}>
-                <span className={`badge ${p.score_comercial >= 80 ? 'badge-success' : p.score_comercial >= 50 ? 'badge-info' : 'badge-warning'}`}>
-                  {p.score_comercial}
-                </span>
-              </td>
-              <td>{p.modelo_atuacao}</td>
-              <td style={{ textAlign: 'right', fontWeight: 600 }}>{formatCurrency(p.volPrataPeriodo)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    );
-  } else if (kpiType === 'taxa-ativos') {
     title = 'Distribuição Geral do Status dos Parceiros';
     const statusCounts = parceiros.reduce((acc: any, p) => {
       acc[p.status] = (acc[p.status] || 0) + 1;
       return acc;
     }, {});
-    const rows = [...parceiros].sort((a, b) => a.status.localeCompare(b.status));
     content = (
-      <div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem', marginBottom: '1.5rem', textAlign: 'center' }}>
-          <div style={{ padding: '0.75rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(16, 185, 129, 0.1)' }}>
-            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>ATIVOS</span>
-            <div style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--success)' }}>{statusCounts['Ativo'] || 0}</div>
-          </div>
-          <div style={{ padding: '0.75rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(59, 130, 246, 0.1)' }}>
-            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>ONBOARDING</span>
-            <div style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--info)' }}>{statusCounts['Onboarding'] || 0}</div>
-          </div>
-          <div style={{ padding: '0.75rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(245, 158, 11, 0.1)' }}>
-            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>REATIVADO</span>
-            <div style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--warning)' }}>{statusCounts['Reativado'] || 0}</div>
-          </div>
-          <div style={{ padding: '0.75rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(239, 68, 68, 0.1)' }}>
-            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>INATIVO</span>
-            <div style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--danger)' }}>{statusCounts['Inativo'] || 0}</div>
-          </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem', textAlign: 'center', padding: '0.5rem 0' }}>
+        <div style={{ padding: '1rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(16, 185, 129, 0.1)' }}>
+          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>ATIVOS</span>
+          <div style={{ fontSize: '1.6rem', fontWeight: 700, color: 'var(--success)', marginTop: '0.25rem' }}>{statusCounts['Ativo'] || 0}</div>
         </div>
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Parceiro</th>
-              <th>Status</th>
-              <th>Classificação</th>
-              <th style={{ textAlign: 'center' }}>Score Comercial</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map(p => (
-              <tr key={p.id}>
-                <td style={{ fontWeight: 600 }}>{p.nome}</td>
-                <td>
-                  <span className={`badge ${
-                    p.status === 'Ativo' ? 'badge-success' :
-                    p.status === 'Inativo' ? 'badge-danger' :
-                    p.status === 'Reativado' ? 'badge-warning' : 'badge-info'
-                  }`}>
-                    {p.status}
-                  </span>
-                </td>
-                <td>{p.classificacao}</td>
-                <td style={{ textAlign: 'center' }}>{p.score_comercial}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <div style={{ padding: '1rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(59, 130, 246, 0.1)' }}>
+          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>ONBOARDING</span>
+          <div style={{ fontSize: '1.6rem', fontWeight: 700, color: 'var(--info)', marginTop: '0.25rem' }}>{statusCounts['Onboarding'] || 0}</div>
+        </div>
+        <div style={{ padding: '1rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(245, 158, 11, 0.1)' }}>
+          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>REATIVADO</span>
+          <div style={{ fontSize: '1.6rem', fontWeight: 700, color: 'var(--warning)', marginTop: '0.25rem' }}>{statusCounts['Reativado'] || 0}</div>
+        </div>
+        <div style={{ padding: '1rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(239, 68, 68, 0.1)' }}>
+          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>INATIVO</span>
+          <div style={{ fontSize: '1.6rem', fontWeight: 700, color: 'var(--danger)', marginTop: '0.25rem' }}>{statusCounts['Inativo'] || 0}</div>
+        </div>
       </div>
     );
   } else if (kpiType === 'churn') {
