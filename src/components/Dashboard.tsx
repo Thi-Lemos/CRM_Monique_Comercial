@@ -329,14 +329,12 @@ export default function Dashboard({ onSelectPartner }: { onSelectPartner?: (id: 
   // Cálculo de KPIs Médios (se o período tiver múltiplos meses, calculamos a média de cada mês)
   let parceirosAtivos = 0;
   let taxaAtivos = 0;
-  let inativos = 0;
   let churnRate = 0;
   let mixProdutos = { fgts: 0, clt: 0, cgv: 0, pix: 0 };
 
   if (numMonths > 1) {
     let somaAtivos = 0;
     let somaTaxaAtivos = 0;
-    let somaInativos = 0;
     let somaChurnRate = 0;
     let somaFgts = 0;
     let somaClt = 0;
@@ -378,7 +376,6 @@ export default function Dashboard({ onSelectPartner }: { onSelectPartner?: (id: 
       const ativosNoMesAnt = pNoMesAnt.filter(p => p.status === 'Ativo');
       const idsMesAtualInativos = new Set(pNoMes.filter(p => p.status === 'Inativo').map(p => p.id));
       const perdidosNoMes = ativosNoMesAnt.filter(p => idsMesAtualInativos.has(p.id));
-      somaInativos += perdidosNoMes.length;
       somaChurnRate += ativosNoMesAnt.length > 0 ? (perdidosNoMes.length / ativosNoMesAnt.length) * 100 : 0;
       
       somaFgts += fgtsAtivosNoMes;
@@ -389,7 +386,6 @@ export default function Dashboard({ onSelectPartner }: { onSelectPartner?: (id: 
 
     parceirosAtivos = somaAtivos / numMonths;
     taxaAtivos = somaTaxaAtivos / numMonths;
-    inativos = somaInativos / numMonths;
     churnRate = somaChurnRate / numMonths;
     
     mixProdutos = {
@@ -412,7 +408,6 @@ export default function Dashboard({ onSelectPartner }: { onSelectPartner?: (id: 
     const ativosNoMesAntUnico = pNoMesAntUnico.filter(p => p.status === 'Ativo');
     const idsMesAtualInat = new Set(parceirosNoPeriodo.filter(p => p.status === 'Inativo').map(p => p.id));
     const perdidosNoMesUnico = ativosNoMesAntUnico.filter(p => idsMesAtualInat.has(p.id));
-    inativos = perdidosNoMesUnico.length;
     churnRate = ativosNoMesAntUnico.length > 0 ? (perdidosNoMesUnico.length / ativosNoMesAntUnico.length) * 100 : 0;
     
     let fgtsAtivos = 0;
