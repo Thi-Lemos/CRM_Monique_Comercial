@@ -370,8 +370,16 @@ export default function Dashboard({ onSelectPartner }: { onSelectPartner?: (id: 
 
       somaAtivos += qtdAtivosNoMes;
       somaTaxaAtivos += pNoMes.length > 0 ? (qtdAtivosNoMes / pNoMes.length) * 100 : 0;
-      somaInativos += pNoMes.filter(p => p.status === 'Inativo').length;
-      somaChurnRate += pNoMes.length > 0 ? (pNoMes.filter(p => p.status === 'Inativo').length / pNoMes.length) * 100 : 0;
+
+      // Churn: parceiros que eram Ativos no mês anterior e estão Inativos no mês atual
+      const mesAnterior = shiftMonth(m.ano, m.mes, -1);
+      const mesAntStr = `${mesAnterior.ano}-${mesAnterior.mes}`;
+      const pNoMesAnt = dataService.getParceirosComStatusNoPeriodo(parceiros, allProducoes, mesAntStr, criterios?.limites);
+      const ativosNoMesAnt = pNoMesAnt.filter(p => p.status === 'Ativo');
+      const idsMesAtualInativos = new Set(pNoMes.filter(p => p.status === 'Inativo').map(p => p.id));
+      const perdidosNoMes = ativosNoMesAnt.filter(p => idsMesAtualInativos.has(p.id));
+      somaInativos += perdidosNoMes.length;
+      somaChurnRate += ativosNoMesAnt.length > 0 ? (perdidosNoMes.length / ativosNoMesAnt.length) * 100 : 0;
       
       somaFgts += fgtsAtivosNoMes;
       somaClt += cltAtivosNoMes;
@@ -396,8 +404,16 @@ export default function Dashboard({ onSelectPartner }: { onSelectPartner?: (id: 
 
     parceirosAtivos = qtdAtivos;
     taxaAtivos = parceirosNoPeriodo.length > 0 ? (parceirosAtivos / parceirosNoPeriodo.length) * 100 : 0;
-    inativos = parceirosNoPeriodo.filter(p => p.status === 'Inativo').length;
-    churnRate = parceirosNoPeriodo.length > 0 ? (inativos / parceirosNoPeriodo.length) * 100 : 0;
+
+    // Churn: parceiros que eram Ativos no mês anterior e estão Inativos no mês atual
+    const mesUnico = activeMonths[0];
+    const mesAntUnico = shiftMonth(mesUnico.ano, mesUnico.mes, -1);
+    const pNoMesAntUnico = dataService.getParceirosComStatusNoPeriodo(parceiros, allProducoes, `${mesAntUnico.ano}-${mesAntUnico.mes}`, criterios?.limites);
+    const ativosNoMesAntUnico = pNoMesAntUnico.filter(p => p.status === 'Ativo');
+    const idsMesAtualInat = new Set(parceirosNoPeriodo.filter(p => p.status === 'Inativo').map(p => p.id));
+    const perdidosNoMesUnico = ativosNoMesAntUnico.filter(p => idsMesAtualInat.has(p.id));
+    inativos = perdidosNoMesUnico.length;
+    churnRate = ativosNoMesAntUnico.length > 0 ? (perdidosNoMesUnico.length / ativosNoMesAntUnico.length) * 100 : 0;
     
     let fgtsAtivos = 0;
     let cltAtivos = 0;
@@ -1692,24 +1708,52 @@ function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs, se
       </div>
     );
   } else if (kpiType === 'churn') {
-    title = 'Churn da Carteira (Parceiros Inativos)';
-    const rows = parceiros.filter(p => p.status === 'Inativo').sort((a,b) => b.vol_total_mensal - a.vol_total_mensal);
-    content = (
+    title = `Churn da Carteira — Parceiros Perdidos no Período (${getPeriodLabel(selectedPeriod)})`;
+
+    // Identificar parceiros que eram Ativos no mês anterior ao início do período
+    // e estão Inativos em algum mês do período selecionado — mesma lógica do card KPI.
+    const perdidosNosPeriodo: { parceiro: Parceiro; mesInativacao: string }[] = [];
+    const jaAdicionados = new Set<string>();
+
+    activeMonths.forEach(m => {
+      const mesAntStr = (() => { const ma = shiftMonth(m.ano, m.mes, -1); return `${ma.ano}-${ma.mes}`; })();
+      const pNoMes = dataService.getParceirosComStatusNoPeriodo(parceiros, allProducoes, `${m.ano}-${m.mes}`, undefined);
+      const pNoMesAnt = dataService.getParceirosComStatusNoPeriodo(parceiros, allProducoes, mesAntStr, undefined);
+      const ativosAnt = new Set(pNoMesAnt.filter(p => p.status === 'Ativo').map(p => p.id));
+      const inatAtual = new Set(pNoMes.filter(p => p.status === 'Inativo').map(p => p.id));
+      pNoMes
+        .filter(p => ativosAnt.has(p.id) && inatAtual.has(p.id) && !jaAdicionados.has(p.id))
+        .forEach(p => {
+          jaAdicionados.add(p.id);
+          const parceiro = parceiros.find(pa => pa.id === p.id) || p;
+          perdidosNosPeriodo.push({ parceiro, mesInativacao: `${m.mes.toString().padStart(2,'0')}/${m.ano}` });
+        });
+    });
+
+    perdidosNosPeriodo.sort((a, b) => b.parceiro.vol_total_mensal - a.parceiro.vol_total_mensal);
+
+    content = perdidosNosPeriodo.length === 0 ? (
+      <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>
+        Nenhum parceiro perdido no período selecionado. Ótimo resultado!
+      </div>
+    ) : (
       <table className="table">
         <thead>
           <tr>
             <th>Parceiro</th>
+            <th style={{ textAlign: 'center' }}>Mês de Inativação</th>
             <th style={{ textAlign: 'right' }}>Último Faturamento Mercado</th>
-            <th>Data de Cadastro</th>
-            <th style={{ textAlign: 'center' }}>Score Comercial</th>
+            <th style={{ textAlign: 'center' }}>Classificação</th>
+            <th style={{ textAlign: 'center' }}>Score</th>
           </tr>
         </thead>
         <tbody>
-          {rows.map(p => (
+          {perdidosNosPeriodo.map(({ parceiro: p, mesInativacao }) => (
             <tr key={p.id}>
               <td style={{ fontWeight: 600, color: 'var(--danger)' }}>{p.nome}</td>
+              <td style={{ textAlign: 'center' }}>{mesInativacao}</td>
               <td style={{ textAlign: 'right' }}>{formatCurrency(p.vol_total_mensal)}</td>
-              <td>{p.created_at ? new Date(p.created_at).toLocaleDateString('pt-BR') : 'N/A'}</td>
+              <td style={{ textAlign: 'center' }}>{p.classificacao}</td>
               <td style={{ textAlign: 'center' }}>{p.score_comercial}</td>
             </tr>
           ))}

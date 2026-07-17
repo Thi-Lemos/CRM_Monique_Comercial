@@ -514,6 +514,32 @@ export const dataService = {
     }
   },
 
+  async saveParceiroClassificacaoOnly(id: string, score: number, classificacao: Parceiro['classificacao']): Promise<void> {
+    if (supabase) {
+      try {
+        const { error } = await supabase
+          .from('parceiros')
+          .update({ score_comercial: score, classificacao, updated_at: new Date().toISOString() })
+          .eq('id', id);
+        if (error) {
+          console.error(`saveParceiroClassificacaoOnly: falha ao gravar classificação "${classificacao}" (score ${score}) para parceiro ${id}:`, error);
+          throw error;
+        }
+      } catch (e) {
+        console.warn('Erro ao salvar classificação do parceiro no Supabase:', e);
+        throw e;
+      }
+    } else {
+      const db = getLocalDB();
+      const idx = db.parceiros.findIndex(p => p.id === id);
+      if (idx !== -1) {
+        db.parceiros[idx].score_comercial = score;
+        db.parceiros[idx].classificacao = classificacao;
+        saveLocalDB(db);
+      }
+    }
+  },
+
   // --- PARCEIROS ---
   async getParceiros(): Promise<Parceiro[]> {
     let list: Parceiro[] = [];
@@ -690,6 +716,26 @@ export const dataService = {
         }
 
         this.saveParceiroStatusOnly(p.id, statusCalculado).catch(console.error);
+      }
+
+      // Recalcular score e classificação com o config atual e persistir se houver divergência
+      // Garante que mudanças de limiar no CriteriaConfig sejam refletidas em todos os parceiros
+      // sem depender de edição individual de cadastro.
+      const volPrataAtual = (() => {
+        const maisRecente = prods
+          .filter(pr => (pr.vol_fgts || 0) + (pr.vol_clt || 0) + (pr.vol_cgv || 0) + (pr.vol_pix || 0) > 0)
+          .sort((a, b) => a.ano !== b.ano ? b.ano - a.ano : b.mes - a.mes)[0];
+        if (!maisRecente) return p.vol_prata_mensal || 0;
+        return (maisRecente.vol_fgts || 0) + (maisRecente.vol_clt || 0) + (maisRecente.vol_cgv || 0) + (maisRecente.vol_pix || 0);
+      })();
+      const { score: scoreCalculado, classificacao: classificacaoCalculada } = calculateScoreAndClassification(
+        { ...p, vol_prata_mensal: volPrataAtual },
+        config
+      );
+      if (p.score_comercial !== scoreCalculado || p.classificacao !== classificacaoCalculada) {
+        p.score_comercial = scoreCalculado;
+        p.classificacao = classificacaoCalculada;
+        this.saveParceiroClassificacaoOnly(p.id, scoreCalculado, classificacaoCalculada).catch(console.error);
       }
 
       finalParceiros.push(p);
