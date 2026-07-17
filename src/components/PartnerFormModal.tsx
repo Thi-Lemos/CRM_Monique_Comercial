@@ -66,6 +66,7 @@ export default function PartnerFormModal({ isOpen, onClose, partner, onSave }: P
           produtos_ativos: partner.produtos_ativos || [],
           concorrentes: partner.concorrentes || '',
           descricao: partner.descricao || '',
+          status: partner.status,
           vol_total_detalhes: partner.vol_total_detalhes || {
             mes1: defaultMonths[0],
             valor1: partner.vol_total_mensal || 0,
