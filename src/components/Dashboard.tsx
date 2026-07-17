@@ -189,7 +189,7 @@ function gerarAlertasDinamicos(pList: Parceiro[], lList: CrmLog[], allProds: Pro
   return activeAlerts;
 }
 
-export default function Dashboard({ onSelectPartner }: { onSelectPartner?: (id: string) => void }) {
+export default function Dashboard({ onSelectPartner, onNavigateToCarteira }: { onSelectPartner?: (id: string) => void; onNavigateToCarteira?: (statusFilter: string) => void }) {
   const [parceiros, setParceiros] = useState<Parceiro[]>([]);
   const [logs, setLogs] = useState<CrmLog[]>([]);
   const [allProducoes, setAllProducoes] = useState<ProducaoMensal[]>([]);
@@ -1610,23 +1610,46 @@ function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs, se
       acc[p.status] = (acc[p.status] || 0) + 1;
       return acc;
     }, {});
+    const handleStatusClick = (status: string) => {
+      setSelectedKpi(null);
+      onNavigateToCarteira?.(status);
+    };
+    const cardStyle = (bg: string): React.CSSProperties => ({
+      padding: '1rem',
+      borderRadius: 'var(--radius-sm)',
+      backgroundColor: bg,
+      cursor: onNavigateToCarteira ? 'pointer' : 'default',
+      transition: 'opacity 0.15s',
+    });
     content = (
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem', textAlign: 'center', padding: '0.5rem 0' }}>
-        <div style={{ padding: '1rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(16, 185, 129, 0.1)' }}>
+        <div style={cardStyle('rgba(16, 185, 129, 0.1)')} onClick={() => handleStatusClick('Ativo')}
+          onMouseEnter={e => { if (onNavigateToCarteira) (e.currentTarget as HTMLElement).style.opacity = '0.7'; }}
+          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.opacity = '1'; }}>
           <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>ATIVOS</span>
           <div style={{ fontSize: '1.6rem', fontWeight: 700, color: 'var(--success)', marginTop: '0.25rem' }}>{statusCounts['Ativo'] || 0}</div>
+          {onNavigateToCarteira && <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>Ver na carteira →</div>}
         </div>
-        <div style={{ padding: '1rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(59, 130, 246, 0.1)' }}>
+        <div style={cardStyle('rgba(59, 130, 246, 0.1)')} onClick={() => handleStatusClick('Onboarding')}
+          onMouseEnter={e => { if (onNavigateToCarteira) (e.currentTarget as HTMLElement).style.opacity = '0.7'; }}
+          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.opacity = '1'; }}>
           <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>ONBOARDING</span>
           <div style={{ fontSize: '1.6rem', fontWeight: 700, color: 'var(--info)', marginTop: '0.25rem' }}>{statusCounts['Onboarding'] || 0}</div>
+          {onNavigateToCarteira && <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>Ver na carteira →</div>}
         </div>
-        <div style={{ padding: '1rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(245, 158, 11, 0.1)' }}>
+        <div style={cardStyle('rgba(245, 158, 11, 0.1)')} onClick={() => handleStatusClick('Reativado')}
+          onMouseEnter={e => { if (onNavigateToCarteira) (e.currentTarget as HTMLElement).style.opacity = '0.7'; }}
+          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.opacity = '1'; }}>
           <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>REATIVADO</span>
           <div style={{ fontSize: '1.6rem', fontWeight: 700, color: 'var(--warning)', marginTop: '0.25rem' }}>{statusCounts['Reativado'] || 0}</div>
+          {onNavigateToCarteira && <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>Ver na carteira →</div>}
         </div>
-        <div style={{ padding: '1rem', borderRadius: 'var(--radius-sm)', backgroundColor: 'rgba(239, 68, 68, 0.1)' }}>
+        <div style={cardStyle('rgba(239, 68, 68, 0.1)')} onClick={() => handleStatusClick('Inativo')}
+          onMouseEnter={e => { if (onNavigateToCarteira) (e.currentTarget as HTMLElement).style.opacity = '0.7'; }}
+          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.opacity = '1'; }}>
           <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>INATIVO</span>
           <div style={{ fontSize: '1.6rem', fontWeight: 700, color: 'var(--danger)', marginTop: '0.25rem' }}>{statusCounts['Inativo'] || 0}</div>
+          {onNavigateToCarteira && <div style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>Ver na carteira →</div>}
         </div>
       </div>
     );

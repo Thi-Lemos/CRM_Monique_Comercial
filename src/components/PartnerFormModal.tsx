@@ -36,7 +36,7 @@ export default function PartnerFormModal({ isOpen, onClose, partner, onSave }: P
     propostas_pagas_semana: 0,
     produtos_ativos: [] as string[],
     concorrentes: '',
-    status: 'Onboarding' as Parceiro['status'],
+    descricao: '',
     vol_total_detalhes: {
       mes1: '',
       valor1: 0,
@@ -64,7 +64,7 @@ export default function PartnerFormModal({ isOpen, onClose, partner, onSave }: P
           propostas_pagas_semana: partner.propostas_pagas_semana || 0,
           produtos_ativos: partner.produtos_ativos || [],
           concorrentes: partner.concorrentes || '',
-          status: partner.status,
+          descricao: partner.descricao || '',
           vol_total_detalhes: partner.vol_total_detalhes || {
             mes1: defaultMonths[0],
             valor1: partner.vol_total_mensal || 0,
@@ -88,6 +88,7 @@ export default function PartnerFormModal({ isOpen, onClose, partner, onSave }: P
           propostas_pagas_semana: 0,
           produtos_ativos: [],
           concorrentes: '',
+          descricao: '',
           status: 'Onboarding',
           vol_total_detalhes: {
             mes1: defaultMonths[0],
@@ -354,6 +355,26 @@ export default function PartnerFormModal({ isOpen, onClose, partner, onSave }: P
             <div className="form-group" style={{ width: '100%' }}>
               <label className="form-label">Concorrentes Declarados</label>
               <input type="text" placeholder="Ex: Facta, V8, Hub" className="form-input" value={formData.concorrentes} onChange={(e) => setFormData(prev => ({ ...prev, concorrentes: e.target.value }))} />
+            </div>
+          </div>
+
+          <div className="form-row">
+            <div className="form-group" style={{ width: '100%' }}>
+              <label className="form-label">
+                Descrição do Parceiro
+                <span style={{ fontWeight: 400, color: 'var(--text-muted)', marginLeft: '0.5rem' }}>
+                  ({(formData.descricao || '').length}/2000)
+                </span>
+              </label>
+              <textarea
+                className="form-input"
+                placeholder="Descreva o perfil, diferenciais, contexto comercial e observações relevantes sobre este parceiro..."
+                maxLength={2000}
+                rows={5}
+                style={{ resize: 'vertical', lineHeight: '1.5' }}
+                value={formData.descricao || ''}
+                onChange={(e) => setFormData(prev => ({ ...prev, descricao: e.target.value }))}
+              />
             </div>
           </div>
 

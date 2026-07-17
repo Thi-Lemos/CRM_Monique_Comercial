@@ -13,6 +13,7 @@ export interface Parceiro {
   vol_total_mensal: number;
   vol_prata_mensal: number;
   concorrentes?: string;
+  descricao?: string;
   status: 'Ativo' | 'Onboarding' | 'Inativo' | 'Reativado';
   score_comercial: number; // 0 - 100
   classificacao: 'Estratégico' | 'Crescimento' | 'Desenvolvimento';

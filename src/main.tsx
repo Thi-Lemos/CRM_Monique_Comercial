@@ -84,6 +84,10 @@ function App() {
               setSelectedPartnerId(id);
               setActiveTab('parceiro-detalhe');
             }}
+            onNavigateToCarteira={(statusFilter) => {
+              setPartnersStatusFilter(statusFilter);
+              setActiveTab('parceiros');
+            }}
           />
         );
       

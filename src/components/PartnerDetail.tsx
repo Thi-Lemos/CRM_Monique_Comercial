@@ -312,6 +312,18 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
         </div>
       </div>
 
+      {/* Descrição do Parceiro */}
+      {partner.descricao && (
+        <div className="card" style={{ padding: '1.25rem', marginBottom: '1.5rem' }}>
+          <h3 className="card-title" style={{ fontSize: '1rem', marginBottom: '0.75rem' }}>
+            Descrição do Parceiro
+          </h3>
+          <p style={{ color: 'var(--text-main)', lineHeight: '1.7', whiteSpace: 'pre-wrap', margin: 0, fontSize: '0.92rem' }}>
+            {partner.descricao}
+          </p>
+        </div>
+      )}
+
       {/* Grid de Duas Colunas: Score / Produção */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '1rem', marginBottom: '1.5rem', alignItems: 'start' }}>
         
