@@ -64,10 +64,10 @@ function gerarAlertasDinamicos(pList: Parceiro[], lList: CrmLog[], allProds: Pro
         id: 'alert_conc_sist_' + p.id,
         parceiro: p.nome,
         parceiroId: p.id,
-        mensagem: `Risco de Concentração Sistêmica (Ref: ${labelMesRef}): O parceiro representou ${sharePortfol.toFixed(1)}% do faturamento consolidado do Prata Digital no mês anterior.`,
+        mensagem: `Risco de Concentração Sistêmica (Ref: ${labelMesRef}): O parceiro representou ${sharePortfol.toFixed(1)}% do volume de produção total no Prata Digital no mês anterior.`,
         prioridade: 'Alta',
         ultimaInteracao: dataUltima ? dataUltima.toLocaleDateString('pt-BR') : 'Sem registro',
-        data_criacao: hoje
+        data_criacao: new Date(mesRef.ano, mesRef.mes - 1, 1)
       });
     }
 
@@ -84,10 +84,10 @@ function gerarAlertasDinamicos(pList: Parceiro[], lList: CrmLog[], allProds: Pro
             id: 'alert_early_warn_' + p.id,
             parceiro: p.nome,
             parceiroId: p.id,
-            mensagem: `Redução de ${queda.toFixed(1)}% no faturamento consolidado de ${labelMesRef} em relação a ${labelMesComparacao} (de R$ ${volComparacao.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} para R$ ${volPrataRef.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}).`,
+            mensagem: `Redução de ${queda.toFixed(1)}% no volume de produção no Prata de ${labelMesRef} em relação a ${labelMesComparacao} (de R$ ${volComparacao.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} para R$ ${volPrataRef.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}).`,
             prioridade: 'Alta',
             ultimaInteracao: dataUltima ? dataUltima.toLocaleDateString('pt-BR') : 'Sem registro',
-            data_criacao: hoje
+            data_criacao: new Date(mesRef.ano, mesRef.mes - 1, 1)
           });
         }
       }
@@ -106,31 +106,31 @@ function gerarAlertasDinamicos(pList: Parceiro[], lList: CrmLog[], allProds: Pro
             mensagem: 'Parceiro Estratégico sem nenhum contato registrado nos últimos 30 dias.',
             prioridade: 'Alta',
             ultimaInteracao: dataUltima ? dataUltima.toLocaleDateString('pt-BR') : 'Sem registro',
-            data_criacao: hoje
+            data_criacao: new Date(hoje.getTime() - 30 * 24 * 60 * 60 * 1000)
           });
         }
       }
     }
 
-    // Regra 2: Novo parceiro (Onboarding) sem nenhuma operação/volume em 7 dias após criação
+    // Regra 2: Novo parceiro (Onboarding) sem nenhuma operação/volume em 3 dias após criação
     if (p.status === 'Onboarding') {
       const dataCriacao = p.created_at ? new Date(p.created_at) : new Date();
-      if ((hoje.getTime() - dataCriacao.getTime()) > (7 * 24 * 60 * 60 * 1000) && p.vol_prata_mensal === 0) {
+      if ((hoje.getTime() - dataCriacao.getTime()) > (3 * 24 * 60 * 60 * 1000) && p.vol_prata_mensal === 0) {
         activeAlerts.push({
           id: 'alert_new_' + p.id,
           parceiro: p.nome,
           parceiroId: p.id,
-          mensagem: 'Novo parceiro cadastrado há mais de 7 dias sem registrar nenhuma operação.',
+          mensagem: 'Novo parceiro cadastrado há mais de 3 dias sem registrar nenhuma operação.',
           prioridade: 'Alta',
           ultimaInteracao: dataUltima ? dataUltima.toLocaleDateString('pt-BR') : 'Sem contato',
-          data_criacao: hoje
+          data_criacao: dataCriacao
         });
       }
     }
 
 
     // Regra 3: Parceiro Inativo com histórico real de produção (queda, não ausência
-    // desde sempre) e inatividade de 60+ dias desde a última produção válida.
+    // desde sempre) e inatividade de 31+ dias desde a última produção válida.
     // Usa o histórico real de produção (allProds), não mais vol_total_mensal — esse
     // campo é autodeclarado no cadastro e raramente atualizado, o que fazia o alerta
     // deixar de disparar para a maioria dos parceiros em Inativo mesmo com histórico.
@@ -145,15 +145,15 @@ function gerarAlertasDinamicos(pList: Parceiro[], lList: CrmLog[], allProds: Pro
         const dataUltimaProd = new Date(ultimaProd.ano, ultimaProd.mes, 0);
         const diasSemProducao = (hoje.getTime() - dataUltimaProd.getTime()) / (1000 * 60 * 60 * 24);
 
-        if (diasSemProducao >= 60) {
+        if (diasSemProducao >= 31) {
           activeAlerts.push({
             id: 'alert_inactive_' + p.id,
             parceiro: p.nome,
             parceiroId: p.id,
-            mensagem: 'Produção zerada há 60+ dias — processo Win-back deve ser iniciado.',
+            mensagem: 'Produção zerada há 31+ dias — processo Win-back deve ser iniciado.',
             prioridade: 'Alta',
             ultimaInteracao: dataUltima ? dataUltima.toLocaleDateString('pt-BR') : 'Sem registro',
-            data_criacao: hoje
+            data_criacao: dataUltimaProd
           });
         }
       }
@@ -168,7 +168,7 @@ function gerarAlertasDinamicos(pList: Parceiro[], lList: CrmLog[], allProds: Pro
         mensagem: 'Parceiro qualificado para expansão do produto CGV (ainda não ativado).',
         prioridade: 'Média',
         ultimaInteracao: dataUltima ? dataUltima.toLocaleDateString('pt-BR') : 'Sem registro',
-        data_criacao: hoje
+        data_criacao: new Date(mesRef.ano, mesRef.mes - 1, 1)
       });
     }
 
@@ -181,7 +181,7 @@ function gerarAlertasDinamicos(pList: Parceiro[], lList: CrmLog[], allProds: Pro
         mensagem: `Concentração no Prata abaixo de 25% no mês de ${labelMesRef} (${(shareMercadoRef * 100).toFixed(0)}%) — grande volume de mercado captável.`,
         prioridade: 'Média',
         ultimaInteracao: dataUltima ? dataUltima.toLocaleDateString('pt-BR') : 'Sem registro',
-        data_criacao: hoje
+        data_criacao: new Date(mesRef.ano, mesRef.mes - 1, 1)
       });
     }
   }
@@ -946,21 +946,25 @@ export default function Dashboard({ onSelectPartner, onNavigateToCarteira }: { o
           </h3>
           
           <div style={{ maxHeight: '420px', overflowY: 'auto', paddingRight: '0.25rem' }}>
-            {alertas.filter(a => !alertasDismissed.has(a.id)).length === 0 ? (
+            {alertas.filter(a => {
+              if (alertasDismissed.has(a.id)) return false;
+              // Auto-remove: se houver contato registrado com data posterior à data_criacao do alerta
+              const logsDosParceiro = logs.filter(l => l.parceiro_id === a.parceiroId);
+              const temContatoApos = logsDosParceiro.some(l => new Date(l.data_contato) > a.data_criacao);
+              return !temContatoApos;
+            }).length === 0 ? (
               <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', textAlign: 'center', padding: '2rem 0' }}>
                 Nenhum alerta ativo! Toda a carteira está em dia com as cadências.
               </p>
             ) : (
               alertas
-                .filter(a => !alertasDismissed.has(a.id))
+                .filter(a => {
+                  if (alertasDismissed.has(a.id)) return false;
+                  const logsDosParceiro = logs.filter(l => l.parceiro_id === a.parceiroId);
+                  const temContatoApos = logsDosParceiro.some(l => new Date(l.data_contato) > a.data_criacao);
+                  return !temContatoApos;
+                })
                 .map(alert => {
-                  // Um alerta pode ser descartado manualmente apenas se não houver
-                  // registro de contato com data posterior à criação do alerta.
-                  const logsDosParceiro = logs.filter(l => l.parceiro_id === alert.parceiroId);
-                  const temContatoAposAlerta = logsDosParceiro.some(
-                    l => new Date(l.data_contato) > alert.data_criacao
-                  );
-                  const podeDismiss = !temContatoAposAlerta;
                   const confirmandoEste = alertaDismissConfirm === alert.id;
 
                   return (
@@ -981,15 +985,13 @@ export default function Dashboard({ onSelectPartner, onNavigateToCarteira }: { o
                             <span className={`badge ${alert.prioridade === 'Alta' ? 'badge-danger' : 'badge-warning'}`} style={{ fontSize: '0.65rem' }}>
                               {alert.prioridade}
                             </span>
-                            {podeDismiss && (
-                              <button
-                                title="Descartar alerta"
-                                onClick={e => { e.stopPropagation(); setAlertaDismissConfirm(confirmandoEste ? null : alert.id); }}
-                                style={{ border: 'none', background: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '0.1rem', display: 'flex', alignItems: 'center', opacity: 0.7 }}
-                              >
-                                <X size={14} />
-                              </button>
-                            )}
+                            <button
+                              title="Descartar alerta"
+                              onClick={e => { e.stopPropagation(); setAlertaDismissConfirm(confirmandoEste ? null : alert.id); }}
+                              style={{ border: 'none', background: 'none', cursor: 'pointer', color: 'var(--text-muted)', padding: '0.1rem', display: 'flex', alignItems: 'center', opacity: 0.7 }}
+                            >
+                              <X size={14} />
+                            </button>
                           </div>
                         </div>
                         <p className="alert-text" style={{ marginTop: '0.35rem', fontWeight: 550 }}>{alert.mensagem}</p>

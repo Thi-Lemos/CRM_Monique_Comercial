@@ -357,7 +357,7 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
           <h4 style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-muted)', marginBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Notas por Critério (Pesos)</h4>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
             {[
-              { label: 'Volume total mensal (25%)', note: notes.n1, desc: 'Declarado' },
+              { label: 'Volume total do Mercado (25%)', note: notes.n1, desc: 'Declarado' },
               { label: 'Concentração atual no Prata (20%)', note: notes.n2, desc: partner.vol_total_mensal > 0 ? `${Math.min((volPrataAtual / partner.vol_total_mensal) * 100, 100).toFixed(0)}%` : 'NVT' },
               { label: 'Estrutura / Nº Vendedores (15%)', note: notes.n3, desc: `${partner.num_vendedores || 0} vend.` },
               { label: 'Abrangência geográfica (15%)', note: notes.n4, desc: partner.area_geografica || 'Local' },
