@@ -67,11 +67,17 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
         setPartner(current);
         const prodData = await dataService.getProducao(partnerId);
         setProducao(prodData);
-        // vol_prata_mensal já é calculado por getParceiros() como o mês anterior
-        // fechado (shiftMonth -1 a partir de hoje). Não usar getVolPrataUltimaProducao
-        // aqui — essa função pega o mês mais recente da tabela, que pode ser o mês
-        // corrente ainda em aberto, gerando valor parcial incorreto.
-        setVolPrataAtual(current.vol_prata_mensal || 0);
+        // Vol. Prata Mês Anterior = produção do mês imediatamente anterior ao atual (fechado).
+        // Calculado aqui a partir de prodData para evitar depender do campo vol_prata_mensal
+        // do banco (desatualizado) ou de getVolPrataUltimaProducao (que pega o mais recente,
+        // podendo ser o mês corrente ainda em aberto).
+        const hoje = new Date();
+        const mesAntRef = { ano: hoje.getFullYear(), mes: hoje.getMonth() }; // getMonth() já é 0-based → mês anterior
+        if (mesAntRef.mes === 0) { mesAntRef.mes = 12; mesAntRef.ano -= 1; }
+        const prodMesAnt = prodData.find(pr => pr.ano === mesAntRef.ano && pr.mes === mesAntRef.mes);
+        setVolPrataAtual(prodMesAnt
+          ? (prodMesAnt.vol_fgts || 0) + (prodMesAnt.vol_clt || 0) + (prodMesAnt.vol_cgv || 0) + (prodMesAnt.vol_pix || 0)
+          : 0);
         const logData = await dataService.getLogs(partnerId);
         // Histórico de Interações Comerciais mostra apenas contatos registrados manualmente
         // pela Monique; transições automáticas de status (origem 'sistema') não entram aqui,
