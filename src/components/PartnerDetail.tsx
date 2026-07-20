@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { dataService, getVolPrataUltimaProducao } from '../services/dataService';
+import { dataService } from '../services/dataService';
 import { calculateCriteriaNotes } from '../services/scoreCalculator';
 import { Parceiro, ProducaoMensal, CrmLog, ProducaoSemanal } from '../types';
 import { 
@@ -67,7 +67,11 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
         setPartner(current);
         const prodData = await dataService.getProducao(partnerId);
         setProducao(prodData);
-        setVolPrataAtual(getVolPrataUltimaProducao(prodData));
+        // vol_prata_mensal já é calculado por getParceiros() como o mês anterior
+        // fechado (shiftMonth -1 a partir de hoje). Não usar getVolPrataUltimaProducao
+        // aqui — essa função pega o mês mais recente da tabela, que pode ser o mês
+        // corrente ainda em aberto, gerando valor parcial incorreto.
+        setVolPrataAtual(current.vol_prata_mensal || 0);
         const logData = await dataService.getLogs(partnerId);
         // Histórico de Interações Comerciais mostra apenas contatos registrados manualmente
         // pela Monique; transições automáticas de status (origem 'sistema') não entram aqui,
