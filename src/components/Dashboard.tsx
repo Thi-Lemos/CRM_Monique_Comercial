@@ -131,7 +131,7 @@ function gerarAlertasDinamicos(pList: Parceiro[], lList: CrmLog[], allProds: Pro
 
     // Regra 3: Parceiro Inativo com histórico real de produção (queda, não ausência
     // desde sempre) e inatividade de 31+ dias desde a última produção válida.
-    // Usa o histórico real de produção (allProds), não mais vol_total_mensal — esse
+    // Usa o histórico real de produção (allProds), não mais vol_total_mercado — esse
     // campo é autodeclarado no cadastro e raramente atualizado, o que fazia o alerta
     // deixar de disparar para a maioria dos parceiros em Inativo mesmo com histórico.
     if (p.status === 'Inativo') {
@@ -172,8 +172,8 @@ function gerarAlertasDinamicos(pList: Parceiro[], lList: CrmLog[], allProds: Pro
       });
     }
 
-    const shareMercadoRef = p.vol_total_mensal > 0 ? (volPrataRef / p.vol_total_mensal) : 0;
-    if (p.status === 'Ativo' && p.vol_total_mensal > 150000 && shareMercadoRef < 0.25) {
+    const shareMercadoRef = p.vol_total_mercado > 0 ? (volPrataRef / p.vol_total_mercado) : 0;
+    if (p.status === 'Ativo' && p.vol_total_mercado > 150000 && shareMercadoRef < 0.25) {
       activeAlerts.push({
         id: 'alert_opp_conc_' + p.id,
         parceiro: p.nome,
@@ -790,11 +790,11 @@ export default function Dashboard({ onSelectPartner, onNavigateToCarteira }: { o
           
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', marginTop: '1rem' }}>
             {parceiros
-              .sort((a, b) => b.vol_total_mensal - a.vol_total_mensal)
+              .sort((a, b) => b.vol_total_mercado - a.vol_total_mercado)
               .slice(0, 5)
               .map(p => {
                 const volPrataPeriodo = (parceiroProdMap[p.id]?.total || 0) / numMonths;
-                const percPrata = p.vol_total_mensal > 0 ? (volPrataPeriodo / p.vol_total_mensal) * 100 : 0;
+                const percPrata = p.vol_total_mercado > 0 ? (volPrataPeriodo / p.vol_total_mercado) * 100 : 0;
                 return (
                   <div key={p.id} style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', fontWeight: 600 }}>
@@ -843,7 +843,7 @@ export default function Dashboard({ onSelectPartner, onNavigateToCarteira }: { o
                         color: 'var(--text-main)',
                         zIndex: 2
                       }}>
-                        Mercado: {formatCurrency(p.vol_total_mensal)}
+                        Mercado: {formatCurrency(p.vol_total_mercado)}
                       </span>
                     </div>
                   </div>
@@ -1056,7 +1056,7 @@ export default function Dashboard({ onSelectPartner, onNavigateToCarteira }: { o
                   .sort((a, b) => b.volPrataPeriodo - a.volPrataPeriodo)
                   .slice(0, 5)
                   .map((p, index) => {
-                    const concText = p.vol_total_mensal > 0 ? `${((p.volPrataPeriodo / p.vol_total_mensal) * 100).toFixed(0)}%` : 'NVT';
+                    const concText = p.vol_total_mercado > 0 ? `${((p.volPrataPeriodo / p.vol_total_mercado) * 100).toFixed(0)}%` : 'NVT';
                     return (
                       <tr key={p.id}>
                         <td style={{ fontWeight: 700, color: index === 0 ? 'var(--warning)' : 'var(--text-muted)' }}>
@@ -1483,7 +1483,7 @@ function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs, se
 
   if (kpiType === 'total-mercado') {
     title = `Detalhamento do Volume de Mercado (Faturamento Mensal Geral - ${getPeriodLabel(selectedPeriod)})`;
-    const rows = parceiros.filter(p => p.status === 'Ativo').sort((a, b) => b.vol_total_mensal - a.vol_total_mensal);
+    const rows = parceiros.filter(p => p.status === 'Ativo').sort((a, b) => b.vol_total_mercado - a.vol_total_mercado);
     content = (
       <table className="table">
         <thead>
@@ -1504,7 +1504,7 @@ function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs, se
                 </span>
               </td>
               <td>{p.classificacao}</td>
-              <td style={{ textAlign: 'right', fontWeight: 600 }}>{formatCurrency(p.vol_total_mensal)}</td>
+              <td style={{ textAlign: 'right', fontWeight: 600 }}>{formatCurrency(p.vol_total_mercado)}</td>
             </tr>
           ))}
         </tbody>
@@ -1512,7 +1512,7 @@ function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs, se
           <tr style={{ fontWeight: 800, backgroundColor: 'rgba(0, 0, 0, 0.05)' }}>
             <td colSpan={3}>Volume Total de Mercado</td>
             <td style={{ textAlign: 'right', color: 'var(--primary-color)' }}>
-              {formatCurrency(rows.reduce((sum, r) => sum + (r.vol_total_mensal || 0), 0))}
+              {formatCurrency(rows.reduce((sum, r) => sum + (r.vol_total_mercado || 0), 0))}
             </td>
           </tr>
         </tfoot>
@@ -1571,14 +1571,14 @@ function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs, se
   } else if (kpiType === 'concentracao') {
     title = `Taxa de Concentração por Parceiro (${getPeriodLabel(selectedPeriod)})`;
     const rows = [...parceiros]
-      .filter(p => p.vol_total_mensal > 0)
+      .filter(p => p.vol_total_mercado > 0)
       .map(p => {
         const volPrataPeriodo = (parceiroProdMap[p.id]?.total || 0) / numMonths;
-        const volTotalAjustado = Math.max(p.vol_total_mensal || 0, volPrataPeriodo);
+        const volTotalAjustado = Math.max(p.vol_total_mercado || 0, volPrataPeriodo);
         return {
           ...p,
           volPrataPeriodo,
-          vol_total_mensal: volTotalAjustado,
+          vol_total_mercado: volTotalAjustado,
           conc: volTotalAjustado > 0 ? (volPrataPeriodo / volTotalAjustado) * 100 : 0
         };
       })
@@ -1597,7 +1597,7 @@ function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs, se
           {rows.map(p => (
             <tr key={p.id}>
               <td style={{ fontWeight: 600 }}>{p.nome}</td>
-              <td style={{ textAlign: 'right' }}>{formatCurrency(p.vol_total_mensal)}</td>
+              <td style={{ textAlign: 'right' }}>{formatCurrency(p.vol_total_mercado)}</td>
               <td style={{ textAlign: 'right' }}>{formatCurrency(p.volPrataPeriodo)}</td>
               <td style={{ textAlign: 'right', fontWeight: 600, color: p.conc >= 30 ? 'var(--danger)' : 'var(--success)' }}>
                 {p.conc.toFixed(1)}%
@@ -1679,7 +1679,7 @@ function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs, se
         });
     });
 
-    perdidosNosPeriodo.sort((a, b) => b.parceiro.vol_total_mensal - a.parceiro.vol_total_mensal);
+    perdidosNosPeriodo.sort((a, b) => b.parceiro.vol_total_mercado - a.parceiro.vol_total_mercado);
 
     content = perdidosNosPeriodo.length === 0 ? (
       <div style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-muted)' }}>
@@ -1701,7 +1701,7 @@ function KpiOriginModal({ kpiType, onClose, parceiros, allProducoes, allLogs, se
             <tr key={p.id}>
               <td style={{ fontWeight: 600, color: 'var(--danger)' }}>{p.nome}</td>
               <td style={{ textAlign: 'center' }}>{mesInativacao}</td>
-              <td style={{ textAlign: 'right' }}>{formatCurrency(p.vol_total_mensal)}</td>
+              <td style={{ textAlign: 'right' }}>{formatCurrency(p.vol_total_mercado)}</td>
               <td style={{ textAlign: 'center' }}>{p.classificacao}</td>
               <td style={{ textAlign: 'center' }}>{p.score_comercial}</td>
             </tr>

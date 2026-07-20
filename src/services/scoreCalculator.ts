@@ -9,9 +9,9 @@ export function calculateCriteriaNotes(parceiro: Partial<Parceiro>, config?: any
   const vendFaixas: [number, number, number, number] =
     config?.score_notas?.vendedores_faixas ?? [1, 3, 5, 10];
 
-  // N1: Volume total mensal
+  // N1: Volume Total do Mercado declarado pelo parceiro (potencial de mercado)
   let n1 = 1;
-  const volTotal = parceiro.vol_total_mensal || 0;
+  const volTotal = parceiro.vol_total_mercado || 0;
   if (volTotal <= volFaixas[0]) n1 = 1;
   else if (volTotal <= volFaixas[1]) n1 = 3;
   else if (volTotal <= volFaixas[2]) n1 = 5;

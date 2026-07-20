@@ -31,7 +31,7 @@ export default function PartnerFormModal({ isOpen, onClose, partner, onSave }: P
     modelo_atuacao: 'Físico' as Parceiro['modelo_atuacao'],
     area_geografica: 'Local' as Parceiro['area_geografica'],
     num_vendedores: 1,
-    vol_total_mensal: 0,
+    vol_total_mercado: 0,
     vol_prata_mensal: 0,
     propostas_pagas_semana: 0,
     produtos_ativos: [] as string[],
@@ -60,7 +60,7 @@ export default function PartnerFormModal({ isOpen, onClose, partner, onSave }: P
           modelo_atuacao: partner.modelo_atuacao,
           area_geografica: partner.area_geografica,
           num_vendedores: partner.num_vendedores,
-          vol_total_mensal: partner.vol_total_mensal,
+          vol_total_mercado: partner.vol_total_mercado,
           vol_prata_mensal: partner.vol_prata_mensal,
           propostas_pagas_semana: partner.propostas_pagas_semana || 0,
           produtos_ativos: partner.produtos_ativos || [],
@@ -69,7 +69,7 @@ export default function PartnerFormModal({ isOpen, onClose, partner, onSave }: P
           status: partner.status,
           vol_total_detalhes: partner.vol_total_detalhes || {
             mes1: defaultMonths[0],
-            valor1: partner.vol_total_mensal || 0,
+            valor1: partner.vol_total_mercado || 0,
             mes2: defaultMonths[1],
             valor2: 0,
             mes3: defaultMonths[2],
@@ -85,7 +85,7 @@ export default function PartnerFormModal({ isOpen, onClose, partner, onSave }: P
           modelo_atuacao: 'Físico',
           area_geografica: 'Local',
           num_vendedores: 1,
-          vol_total_mensal: 0,
+          vol_total_mercado: 0,
           vol_prata_mensal: 0,
           propostas_pagas_semana: 0,
           produtos_ativos: [],
@@ -150,7 +150,7 @@ export default function PartnerFormModal({ isOpen, onClose, partner, onSave }: P
 
       const payload = {
         ...formData,
-        vol_total_mensal: media,
+        vol_total_mercado: media,
         ...(partner ? { id: partner.id } : {})
       };
       await dataService.saveParceiro(payload);

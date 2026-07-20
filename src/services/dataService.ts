@@ -2041,9 +2041,11 @@ export const dataService = {
         // vol_prata_mensal = produção Prata do mês anterior fechado (mês imediatamente
         // anterior ao refMes/refAno). É esse valor que alimenta concentração, ordenação
         // e exibição de "Vol. Prata" na listagem e na ficha do parceiro.
-        // vol_total_mensal = campo fixo cadastrado manualmente na ficha (média dos 3
-        // últimos meses informados pelo operador). Não é recalculado aqui — vem do banco.
-        // A concentração (vol_prata / vol_total) é capada em 100% no ponto de exibição.
+        // vol_total_mercado = Volume Total do Mercado declarado pelo parceiro —
+        // campo fixo cadastrado manualmente na ficha (média dos 3 últimos meses
+        // informados). Representa o potencial de mercado total do parceiro, não a
+        // produção real. Não é recalculado aqui — vem do banco.
+        // A concentração (vol_prata / vol_total_mercado) é capada em 100% no ponto de exibição.
         const { ano: anoAnt, mes: mesAnt } = shiftMonth(refAno, refMes, -1);
         const prodMesAnterior = prods.find(pr => pr.ano === anoAnt && pr.mes === mesAnt);
         const volPrataMesAnterior = prodMesAnterior
@@ -2055,7 +2057,7 @@ export const dataService = {
           ...p,
           status: statusCalculado,
           vol_prata_mensal: volPrataMesAnterior,
-          vol_total_mensal: p.vol_total_mensal || 0
+          vol_total_mercado: p.vol_total_mercado || 0
         };
       });
   },

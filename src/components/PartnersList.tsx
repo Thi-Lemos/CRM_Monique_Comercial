@@ -132,7 +132,7 @@ export default function PartnersList({
               modelo_atuacao: modelo as any,
               area_geografica: area as any,
               num_vendedores: vendedores,
-              vol_total_mensal: volTotal,
+              vol_total_mercado: volTotal,
               vol_prata_mensal: volPrata,
               produtos_ativos: produtos,
               propostas_pagas_semana: propostasPagas,
@@ -404,7 +404,7 @@ export default function PartnersList({
             </thead>
             <tbody>
               {sortedAndFilteredParceiros.map((p) => {
-                const concText = p.vol_total_mensal > 0 ? `${Math.min((p.vol_prata_mensal / p.vol_total_mensal) * 100, 100).toFixed(0)}%` : 'NVT';
+                const concText = p.vol_total_mercado > 0 ? `${Math.min((p.vol_prata_mensal / p.vol_total_mercado) * 100, 100).toFixed(0)}%` : 'NVT';
                 return (
                   <tr 
                     key={p.id}

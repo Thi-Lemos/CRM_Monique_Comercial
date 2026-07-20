@@ -10,7 +10,7 @@ export interface Parceiro {
   area_geografica: 'Local' | 'Regional' | 'Estadual' | 'Nacional';
   num_vendedores: number;
   produtos_ativos: string[]; // ex: ['FGTS', 'CLT']
-  vol_total_mensal: number;
+  vol_total_mercado: number;
   vol_prata_mensal: number;
   concorrentes?: string;
   descricao?: string;
