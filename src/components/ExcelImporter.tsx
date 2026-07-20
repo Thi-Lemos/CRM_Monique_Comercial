@@ -167,7 +167,10 @@ export default function ExcelImporter({ onClose, onImportSuccess }: ExcelImporte
               }
             } catch (err: any) {
               errorCount++;
-              addLog('error', `Erro ao salvar ${parceiro.nome}: ${err.message || 'Erro desconhecido'}`);
+              // Erros do Supabase têm estrutura { message, details, hint, code }.
+              // Erros JS padrão têm apenas message.
+              const detalhes = [err.message, err.details, err.hint].filter(Boolean).join(' — ');
+              addLog('error', `Erro ao salvar ${parceiro.nome}: ${detalhes || 'Erro desconhecido'}. Consolidação mensal pode estar incompleta — reimporte esta semana se necessário.`);
             }
 
             const p = Math.round(25 + ((i + 1) / rawRows.length) * 65);
@@ -216,7 +219,9 @@ export default function ExcelImporter({ onClose, onImportSuccess }: ExcelImporte
                     zerosInseridos++;
                   }
                 } catch (err: any) {
-                  addLog('error', `Erro ao registrar zero para ${p.nome}: ${err.message || 'Erro desconhecido'}`);
+                  // Mesmo tratamento do bloco principal: extrai message/details/hint do erro Supabase
+                  const detalhesZero = [err.message, err.details, err.hint].filter(Boolean).join(' — ');
+                  addLog('error', `Erro ao registrar zero para ${p.nome}: ${detalhesZero || 'Erro desconhecido'}. Reimporte esta semana se necessário.`);
                 }
               }
               if (zerosInseridos > 0) {

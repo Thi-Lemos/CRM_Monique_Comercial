@@ -1701,7 +1701,10 @@ export const dataService = {
           result = data as ProducaoSemanal;
         }
       } catch (err) {
-        console.warn('Erro ao salvar semana no Supabase, usando local:', err);
+        // Supabase está configurado e retornou erro — não há fallback local confiável
+        // aqui porque o dado pode ter sido parcialmente gravado. Relança para que
+        // o chamador (ExcelImporter) registre o erro no log de importação.
+        throw err;
       }
     } else {
       const db = getLocalDB();
