@@ -644,18 +644,30 @@ export const dataService = {
         ];
         const isUpward = upwardTransitions.some(t => t.from === p.status && t.to === statusCalculado);
 
-        // Para transições ascendentes: só aplicar se o parceiro NÃO tiver produção
-        // no mês corrente. Se tiver, significa que detectAndFireUpwardTransitions já
+        // Para transições ascendentes que criam evento_semana (Onboarding→Ativo e
+        // Inativo→Reativado): só aplicar se o parceiro NÃO tiver produção no mês
+        // corrente. Se tiver, significa que detectAndFireUpwardTransitions já
         // disparou a transição com referência mais recente e não devemos reverter.
-        const mesCorrente = { ano: hoje.getFullYear(), mes: hoje.getMonth() + 1 };
-        const temProducaoCorrenteNaTabela = prods.some(
-          pr => pr.ano === mesCorrente.ano && pr.mes === mesCorrente.mes &&
-                ((pr.vol_fgts || 0) + (pr.vol_clt || 0) + (pr.vol_cgv || 0) + (pr.vol_pix || 0)) > 0
-        );
-        if (isUpward && temProducaoCorrenteNaTabela) {
-          // Transição ascendente já tratada por detectAndFireUpwardTransitions — não sobrescrever.
-          finalParceiros.push(p);
-          continue;
+        //
+        // EXCEÇÃO — Reativado→Ativo: esta transição NÃO cria evento_semana (a
+        // reativação já foi contada no evento Inativo→Reativado anterior), portanto
+        // não há risco de duplicata de evento. Se detectAndFireUpwardTransitions
+        // falhou silenciosamente (ex.: consolidateMensal não consolidou a produção
+        // mensal antes de ele rodar), o parceiro fica preso como Reativado mesmo
+        // tendo produção confirmada no mês seguinte. Permitimos que getParceiros()
+        // aplique a transição aqui como mecanismo de auto-cura.
+        const isReativadoParaAtivo = p.status === 'Reativado' && statusCalculado === 'Ativo';
+        if (!isReativadoParaAtivo) {
+          const mesCorrente = { ano: hoje.getFullYear(), mes: hoje.getMonth() + 1 };
+          const temProducaoCorrenteNaTabela = prods.some(
+            pr => pr.ano === mesCorrente.ano && pr.mes === mesCorrente.mes &&
+                  ((pr.vol_fgts || 0) + (pr.vol_clt || 0) + (pr.vol_cgv || 0) + (pr.vol_pix || 0)) > 0
+          );
+          if (isUpward && temProducaoCorrenteNaTabela) {
+            // Transição ascendente já tratada por detectAndFireUpwardTransitions — não sobrescrever.
+            finalParceiros.push(p);
+            continue;
+          }
         }
 
         const statusAnterior = p.status;
