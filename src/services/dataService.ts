@@ -797,11 +797,17 @@ export const dataService = {
           result = data;
         }
         return result as Parceiro;
-      } catch (err) {
-        console.warn('Falha ao gravar no Supabase, usando banco local:', err);
+      } catch (err: any) {
+        // Propaga o erro ao chamador — o modal exibirá a mensagem ao usuário.
+        // Não deve cair silenciosamente no localStorage quando o Supabase está
+        // configurado, pois o dado ficaria perdido na próxima sessão.
+        const msg = err?.message || 'Erro desconhecido ao salvar no banco de dados.';
+        console.error('saveParceiro: erro no Supabase:', err);
+        throw new Error(msg);
       }
     }
 
+    // Fallback local apenas quando Supabase não está configurado (desenvolvimento offline)
     const db = getLocalDB();
     if (parceiro.id) {
       const idx = db.parceiros.findIndex(p => p.id === parceiro.id);
