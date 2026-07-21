@@ -72,8 +72,13 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
         // do banco (desatualizado) ou de getVolPrataUltimaProducao (que pega o mais recente,
         // podendo ser o mês corrente ainda em aberto).
         const hoje = new Date();
-        const mesAntRef = { ano: hoje.getFullYear(), mes: hoje.getMonth() }; // getMonth() já é 0-based → mês anterior
-        if (mesAntRef.mes === 0) { mesAntRef.mes = 12; mesAntRef.ano -= 1; }
+        // getMonth() é 0-based (jan=0, jul=6). Mês anterior = getMonth() sem +1.
+        // Mas para buscar na tabela producao (mes=1..12) precisamos de getMonth() SEM +1
+        // apenas quando getMonth() >= 1. Em janeiro (getMonth()=0) → dezembro do ano anterior.
+        const mesAtual1Based = hoje.getMonth() + 1;           // 1..12 — mês de HOJE
+        const mesAntRef = mesAtual1Based === 1
+          ? { ano: hoje.getFullYear() - 1, mes: 12 }
+          : { ano: hoje.getFullYear(), mes: mesAtual1Based - 1 };
         const prodMesAnt = prodData.find(pr => Number(pr.ano) === mesAntRef.ano && Number(pr.mes) === mesAntRef.mes);
         setVolPrataAtual(prodMesAnt
           ? (prodMesAnt.vol_fgts || 0) + (prodMesAnt.vol_clt || 0) + (prodMesAnt.vol_cgv || 0) + (prodMesAnt.vol_pix || 0)
@@ -276,7 +281,7 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
           <div>
             <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>VOL. PRATA MÊS ANTERIOR</span>
             <p style={{ fontWeight: 700, color: 'var(--primary-color)', fontSize: '1.1rem', marginTop: '0.15rem' }}>{formatCurrency(volPrataAtual)}</p>
-            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>de {formatCurrency(partner.vol_total_mercado)}</p>
+            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>de {formatCurrency(Number(partner.vol_total_mercado) || 0)}</p>
           </div>
           <div>
             <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>PARTICIPAÇÃO CARTEIRA</span>
