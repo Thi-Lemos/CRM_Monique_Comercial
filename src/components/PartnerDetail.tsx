@@ -74,7 +74,7 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
         const hoje = new Date();
         const mesAntRef = { ano: hoje.getFullYear(), mes: hoje.getMonth() }; // getMonth() já é 0-based → mês anterior
         if (mesAntRef.mes === 0) { mesAntRef.mes = 12; mesAntRef.ano -= 1; }
-        const prodMesAnt = prodData.find(pr => pr.ano === mesAntRef.ano && pr.mes === mesAntRef.mes);
+        const prodMesAnt = prodData.find(pr => Number(pr.ano) === mesAntRef.ano && Number(pr.mes) === mesAntRef.mes);
         setVolPrataAtual(prodMesAnt
           ? (prodMesAnt.vol_fgts || 0) + (prodMesAnt.vol_clt || 0) + (prodMesAnt.vol_cgv || 0) + (prodMesAnt.vol_pix || 0)
           : 0);
@@ -89,8 +89,9 @@ export default function PartnerDetail({ partnerId, onBack, onNewLog }: PartnerDe
         setSemanas(semanasData);
 
         // Participação na carteira total do Prata
-        const totalPrataGlobal = partnersList.reduce((sum, p) => sum + (p.vol_prata_mensal || 0), 0) || 1;
-        setSharePortfolio(((current.vol_prata_mensal || 0) / totalPrataGlobal) * 100);
+        // vol_prata_mensal vem do banco como string (coluna numeric) — coerce para number.
+        const totalPrataGlobal = partnersList.reduce((sum, p) => sum + (Number(p.vol_prata_mensal) || 0), 0) || 1;
+        setSharePortfolio(((Number(current.vol_prata_mensal) || 0) / totalPrataGlobal) * 100);
       }
     } catch (e) {
       console.error('Erro ao ler detalhes do parceiro:', e);

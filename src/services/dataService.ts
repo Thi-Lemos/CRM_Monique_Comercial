@@ -750,6 +750,10 @@ export const dataService = {
         this.saveParceiroClassificacaoOnly(p.id, scoreCalculado, classificacaoCalculada).catch(console.error);
       }
 
+      // vol_prata_mensal vem do banco como string (coluna numeric do Postgres).
+      // Normaliza para number antes de devolver, evitando bugs silenciosos em
+      // operações aritméticas (divisão de concentração, soma de carteira, etc.).
+      p.vol_prata_mensal = Number(p.vol_prata_mensal) || 0;
       finalParceiros.push(p);
     }
 
