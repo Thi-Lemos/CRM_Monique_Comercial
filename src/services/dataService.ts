@@ -1043,19 +1043,26 @@ export const dataService = {
     // Usa o mês fechado mais recente (mês anterior ao atual) como referência;
     // se esse mês ainda não tiver produção lançada, cai para o registro mais
     // recente disponível até essa referência (nunca fixo, sempre dinâmico).
+    //
+    // ATENÇÃO: o filtro PostgREST .or('ano.lt.X,and(ano.eq.X,mes.lte.Y)') com AND
+    // aninhado retorna resultado vazio silenciosamente no supabase-js v2 para colunas
+    // integer, causando o bug onde vol_prata_mensal nunca é atualizado após a primeira
+    // importação. Solução: buscar todos os registros do parceiro e filtrar client-side.
     const refAtual = getCurrentPeriodRef();
     const referencia = shiftMonth(refAtual.ano, refAtual.mes, -1);
     const { data: prods } = await supabase
       .from('producao')
-      .select('*')
+      .select('vol_fgts, vol_clt, vol_cgv, vol_pix, ano, mes')
       .eq('parceiro_id', parceiroId)
-      .or(`ano.lt.${referencia.ano},and(ano.eq.${referencia.ano},mes.lte.${referencia.mes})`)
       .order('ano', { ascending: false })
-      .order('mes', { ascending: false })
-      .limit(1);
+      .order('mes', { ascending: false });
 
-    if (prods && prods.length > 0) {
-      const consolidado = prods[0];
+    // Filtragem client-side: primeiro registro (DESC) cujo (ano, mes) ≤ referência
+    const consolidado = (prods || []).find(p =>
+      p.ano < referencia.ano || (p.ano === referencia.ano && p.mes <= referencia.mes)
+    );
+
+    if (consolidado) {
       const volPrata = parseFloat(consolidado.vol_fgts || 0) + parseFloat(consolidado.vol_clt || 0) + parseFloat(consolidado.vol_cgv || 0) + parseFloat(consolidado.vol_pix || 0);
       
       // Pega o parceiro para recalcular o score
